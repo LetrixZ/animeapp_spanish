@@ -20,6 +20,8 @@ public class AnimeSection extends Section {
     final public static int SERIES = 0;
     final public static int MOVIES = 1;
     final public static int OVA = 2;
+    final public static int ONGOING = 3;
+    final public static int FINISHED = 4;
 
     private final int type;
     private final String title;

@@ -26,12 +26,12 @@ class Client {
 
     // Series
 
-    Call<JSONResponse> getOngoingsList() {
-        return requestInterface.requestSeriesList("default", "1");
+    Call<JSONResponse> getOngoingsList(int page) {
+        return requestInterface.requestSeriesList("rating", "1", page);
     }
 
-    Call<JSONResponse> getFinishedList() {
-        return requestInterface.requestSeriesList("default", "2");
+    Call<JSONResponse> getFinishedList(int page) {
+        return requestInterface.requestSeriesList("rating", "2", page);
     }
 
     // Recientes

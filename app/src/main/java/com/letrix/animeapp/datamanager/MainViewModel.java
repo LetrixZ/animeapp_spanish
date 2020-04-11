@@ -18,7 +18,7 @@ public class MainViewModel extends ViewModel {
     private static final String TAG = "MainViewModel";
 
     private MutableLiveData<ArrayList<AnimeModel>> ongoingsList;
-    private MutableLiveData<ArrayList<AnimeModel>> finishedList;
+    private MutableLiveData<ArrayList<AnimeModel>> finishedList = new MutableLiveData<>();
     private MutableLiveData<ArrayList<AnimeModel>> tvList;
     private MutableLiveData<ArrayList<AnimeModel>> ovaList;
     private MutableLiveData<ArrayList<AnimeModel>> movieList;
@@ -44,19 +44,19 @@ public class MainViewModel extends ViewModel {
         this.url.setValue(url);
     }
 
-    public LiveData<ArrayList<AnimeModel>> getOngoingsList() {
+    public LiveData<ArrayList<AnimeModel>> getOngoingsList(int page) {
         if (ongoingsList == null) {
             ongoingsList = new MutableLiveData<>();
-            requestOngoingsList();
+            requestOngoingsList(page);
         }
         return ongoingsList;
     }
 
-    public LiveData<ArrayList<AnimeModel>> getFinishedList() {
+    public LiveData<ArrayList<AnimeModel>> getFinishedList(int page) {
         if (finishedList == null) {
-            finishedList = new MutableLiveData<>();
-            requestFinishedList();
+
         }
+        requestFinishedList(page);
         return finishedList;
     }
 
@@ -104,8 +104,8 @@ public class MainViewModel extends ViewModel {
         this.selectedAnime.setValue(selectedAnime);
     }
 
-    private void requestOngoingsList() {
-        Client.getINSTANCE().getOngoingsList().enqueue(new CallbackWithRetry<JSONResponse>() {
+    private void requestOngoingsList(int page) {
+        Client.getINSTANCE().getOngoingsList(page).enqueue(new CallbackWithRetry<JSONResponse>() {
             @Override
             public void onResponse(Call<JSONResponse> call, Response<JSONResponse> response) {
                 Log.d(TAG, "onResponse: API CALL SUCCESSFUL / ONGOING");
@@ -123,14 +123,19 @@ public class MainViewModel extends ViewModel {
         });
     }
 
-    private void requestFinishedList() {
-        Client.getINSTANCE().getFinishedList().enqueue(new CallbackWithRetry<JSONResponse>() {
+    private void requestFinishedList(int page) {
+        Client.getINSTANCE().getFinishedList(page).enqueue(new CallbackWithRetry<JSONResponse>() {
             @Override
             public void onResponse(Call<JSONResponse> call, Response<JSONResponse> response) {
                 Log.d(TAG, "onResponse: API CALL SUCCESSFUL / FINISHED");
                 if (response.body() != null) {
                     Log.d(TAG, "onResponse: RESPONSE BODY @GET SUCCESSFUL / FINISHED");
-                    finishedList.setValue(response.body().getAnimes());
+                    if (finishedList != null && page > 1) {
+                        finishedList.getValue().addAll(response.body().getAnimes());
+                        Log.d(TAG, "onResponse: PAGE 2");
+                    } else {
+                        finishedList.setValue(response.body().getAnimes());
+                    }
                 }
             }
 

@@ -43,6 +43,8 @@ public class HomeFragment extends Fragment {
 
         list = new ArrayList<>();
         list.add(new RecentAddedFragment());
+        list.add(new OngoingFragment());
+        list.add(new FinishedFragment());
 
     }
 
@@ -78,23 +80,9 @@ public class HomeFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.home_fragment, container, false);
-        ;
 
-        Log.d("info", "ONCREATEVIEW!");
 
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d("info", "ONRESUME!");
-
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d("info", "DESTROYED VIEW!");
-    }
 }

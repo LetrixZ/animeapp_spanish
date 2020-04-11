@@ -57,6 +57,7 @@ public class RecentAddedFragment extends Fragment implements AnimeSection.ClickL
         mRecyclerView.setLayoutManager(null);
         initRecycler();
 
+
     }
 
     @Override
@@ -78,8 +79,6 @@ public class RecentAddedFragment extends Fragment implements AnimeSection.ClickL
     }
 
     private void initRecycler() {
-
-
         mRecyclerView.setHasFixedSize(true);
         gridLayoutManager = new GridLayoutManager(getActivity(), 3);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {

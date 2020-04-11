@@ -1,6 +1,7 @@
 package com.letrix.animeapp.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,14 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,10 +31,7 @@ import com.letrix.animeapp.models.AnimeModel;
 import com.letrix.animeapp.models.ServerModel;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
-import java.util.ArrayList;
-
 public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClickListener {
-    private static final String TAG = "InfoFragment";
 
     private MainViewModel mViewModel;
     private View view;
@@ -49,7 +45,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         view = inflater.inflate(R.layout.fragment_info, container, false);
         return view;
     }
@@ -57,20 +53,10 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         backButton = view.findViewById(R.id.back);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                final FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.fragment_navigation_host, new HomeFragment());
-                transaction.commit();*/
-                getActivity().getSupportFragmentManager().popBackStack();
-            }
-        });
+        backButton.setOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
 
         mViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         mViewModel.getSelectedAnime().observe(getViewLifecycleOwner(), animeModel -> {
-            Toast.makeText(getActivity(), animeModel.getTitle(), Toast.LENGTH_SHORT).show();
             infoAdapter(animeModel);
         });
     }
@@ -121,26 +107,36 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     @Override
     public void onItemClick(int position) {
         String[] episodeId = mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().split("/");
-        mViewModel.getServerList(episodeId[0], episodeId[1]).observe(getViewLifecycleOwner(), new Observer<ArrayList<ServerModel>>() {
-            @SuppressLint("SourceLockedOrientationActivity")
-            @Override
-            public void onChanged(ArrayList<ServerModel> serverModels) {
-                for (ServerModel server : serverModels)
+        mViewModel.getServerList(episodeId[0], episodeId[1]).observe(getViewLifecycleOwner(), serverModels -> {
+
+            AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity(), R.style.alert_dialog).setCancelable(true);
+            View mView = getLayoutInflater().inflate(R.layout.alert_dialog, null);
+            TextView megaText = mView.findViewById(R.id.mega_text);
+            TextView natsukiText = mView.findViewById(R.id.natsuki_text);
+            AlertDialog serverSelector = mBuilder.create();
+            serverSelector.setView(mView);
+            serverSelector.show();
+
+            megaText.setOnClickListener(v -> {
+                for (ServerModel server : serverModels) {
                     if (server.getServer().equals("mega")) {
-                        String url = server.getUrl();
+                        String url = server.getCode();
                         String[] newURL = url.split("nz/");
                         newURL[0] = newURL[0] + "nz/embed";
                         mViewModel.setUrl(newURL[0] + newURL[1]);
-                        mViewModel.setImage(mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getImagePreview());
-                        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-                        final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                        final FragmentTransaction transaction = fragmentManager.beginTransaction();
-                        transaction.replace(R.id.fragment_navigation_host, new WebView_VideoPlayer());
-                        transaction.addToBackStack("TAG2");
-                        transaction.commit();
+                        getInfo(position);
                     }
-            }
+                }
+            });
+            natsukiText.setOnClickListener(v -> {
+                for (ServerModel server : serverModels) {
+                    if (server.getServer().equals("natsuki")) {
+                        String url = server.getCode();
+                        mViewModel.setUrl(url);
+                        getInfo(position);
+                    }
+                }
+            });
         });
     }
 
@@ -149,5 +145,18 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     public void onResume() {
         super.onResume();
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    private void getInfo(int position) {
+        mViewModel.setImage(mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getImagePreview());
+
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        final FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragment_navigation_host, new WebView_VideoPlayer());
+        transaction.addToBackStack("TAG2");
+        transaction.commit();
     }
 }

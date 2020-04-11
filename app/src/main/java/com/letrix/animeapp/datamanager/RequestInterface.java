@@ -7,8 +7,8 @@ import retrofit2.http.Path;
 public interface RequestInterface {
 
     // Series (Ongoings & Finished)
-    @GET("AnimeByState/{status}/{sorting}/1")
-    Call<JSONResponse> requestSeriesList(@Path("sorting") String sortingOrder, @Path("status") String status);
+    @GET("AnimeByState/{status}/{sorting}/{page}")
+    Call<JSONResponse> requestSeriesList(@Path("sorting") String sortingOrder, @Path("status") String status, @Path("page") int page);
 
     // TV
     @GET("TV/{sorting}/1")
