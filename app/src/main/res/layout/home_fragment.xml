@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_background"
+    android:orientation="vertical"
+    app:layoutDescription="@xml/homescene">
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:fontFamily="sans-serif-medium"
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="10dp"
+        android:text="Descubre"
+        android:textColor="@color/header"
+        android:textSize="36sp" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/searchButton"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="10dp"
+        android:src="@drawable/ic_search"
+        app:layout_constraintBottom_toTopOf="@id/shadowLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/favorite"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="10dp"
+        android:src="@drawable/ic_favorite"
+        app:layout_constraintBottom_toTopOf="@id/shadowLayout"
+        app:layout_constraintEnd_toStartOf="@id/searchButton"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <LinearLayout
+        android:id="@+id/shadowLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="300dp"
+        android:background="@color/app_background"
+        android:elevation="1dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header" />
+
+    <!--<LinearLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical">
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:background="@color/app_background" />
+
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tabs"
+                    android:background="@color/app_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </com.google.android.material.tabs.TabLayout>
+
+            </com.google.android.material.appbar.AppBarLayout>
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            android:focusable="true"
+            android:paddingHorizontal="12dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="#2196F3"
+            app:cardCornerRadius="20dp">
+
+            <TextView
+                android:id="@+id/debutTypeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:text="En emisión"
+                android:textColor="@android:color/white"
+                android:textSize="18sp" />
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout> -->
+
+    <com.ogaclejapan.smarttablayout.SmartTabLayout
+        android:id="@+id/viewpagertab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:stl_clickable="true"
+        app:stl_customTabTextLayoutId="@layout/text_layout"
+        app:stl_customTabTextViewId="@id/text_view_layout"
+        app:stl_defaultTabBackground="?attr/selectableItemBackground"
+        app:stl_defaultTabTextAllCaps="false"
+        app:stl_defaultTabTextColor="#FC000000"
+        app:stl_defaultTabTextHorizontalPadding="16dp"
+        app:stl_defaultTabTextMinWidth="0dp"
+        app:stl_distributeEvenly="false"
+        app:stl_dividerColor="#4D000000"
+        app:stl_dividerThickness="0dp"
+        app:stl_drawDecorationAfterTab="false"
+        app:stl_indicatorAlwaysInCenter="true"
+        app:stl_indicatorColor="#2196F3"
+        app:stl_indicatorCornerRadius="20dp"
+        app:stl_indicatorGravity="center"
+        app:stl_indicatorInFront="false"
+        app:stl_indicatorInterpolation="linear"
+        app:stl_indicatorThickness="32dp"
+        app:stl_indicatorWidth="120dp"
+        app:stl_indicatorWithoutPadding="true"
+        app:stl_overlineColor="#4D000000"
+        app:stl_overlineThickness="0dp"
+        app:stl_titleOffset="24dp"
+        app:stl_underlineColor="#4D000000"
+        app:stl_underlineThickness="0dp" />
+
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewpagertab"
+        tools:layout_editor_absoluteX="0dp" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>
