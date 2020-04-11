@@ -75,7 +75,7 @@
                     android:background="@color/main_text" />
 
                 <TextView
-                    android:id="@+id/natsuki_text"
+                    android:id="@+id/second_server"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight=".5"

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -84,7 +85,7 @@ public class RecentAddedFragment extends Fragment implements AnimeSection.ClickL
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                return (position == 0 || position == 25 || position == 50) ? 3 : 1;
+                return (position == 0 || position == 25 || position == 26 || position == 51 || position == 52 || position == 77) ? 3 : 1;
             }
         });
         mRecyclerView.setLayoutManager(gridLayoutManager);
@@ -93,7 +94,7 @@ public class RecentAddedFragment extends Fragment implements AnimeSection.ClickL
             @Override
             public void onChanged(ArrayList<AnimeModel> animeModels) {
                 sectionedAdapter = new SectionedRecyclerViewAdapter();
-                AnimeSection tvSeries = new AnimeSection(AnimeSection.SERIES, "Series", RecentAddedFragment.this::onItemRootViewClicked, animeModels);
+                AnimeSection tvSeries = new AnimeSection(AnimeSection.SERIES, "Series", RecentAddedFragment.this, animeModels);
                 sectionedAdapter.addSection(tvSeries);
                 mRecyclerView.setAdapter(sectionedAdapter);
                 progressBar.setVisibility(View.GONE);
@@ -101,14 +102,14 @@ public class RecentAddedFragment extends Fragment implements AnimeSection.ClickL
                 mViewModel.getMovieList().observe(getViewLifecycleOwner(), new Observer<ArrayList<AnimeModel>>() {
                     @Override
                     public void onChanged(ArrayList<AnimeModel> animeModels) {
-                        AnimeSection movies = new AnimeSection(AnimeSection.MOVIES, "Películas", RecentAddedFragment.this::onItemRootViewClicked, animeModels);
+                        AnimeSection movies = new AnimeSection(AnimeSection.MOVIES, "Películas", RecentAddedFragment.this, animeModels);
                         sectionedAdapter.addSection(movies);
                         sectionedAdapter.notifyDataSetChanged();
 
                         mViewModel.getOvaList().observe(getViewLifecycleOwner(), new Observer<ArrayList<AnimeModel>>() {
                             @Override
                             public void onChanged(ArrayList<AnimeModel> animeModels) {
-                                AnimeSection ovas = new AnimeSection(AnimeSection.OVA, "OVAs", RecentAddedFragment.this::onItemRootViewClicked, animeModels);
+                                AnimeSection ovas = new AnimeSection(AnimeSection.OVA, "OVAs", RecentAddedFragment.this, animeModels);
                                 sectionedAdapter.addSection(ovas);
                                 sectionedAdapter.notifyDataSetChanged();
                             }
@@ -127,10 +128,10 @@ public class RecentAddedFragment extends Fragment implements AnimeSection.ClickL
             mViewModel.setSelectedAnime(mViewModel.getTvList().getValue().get(itemAdapterPosition - 1));
         }
         if (title.equals("Películas")) {
-            mViewModel.setSelectedAnime(mViewModel.getMovieList().getValue().get(itemAdapterPosition - 26));
+            mViewModel.setSelectedAnime(mViewModel.getMovieList().getValue().get(itemAdapterPosition - 27));
         }
         if (title.equals("OVAs")) {
-            mViewModel.setSelectedAnime(mViewModel.getOvaList().getValue().get(itemAdapterPosition - 51));
+            mViewModel.setSelectedAnime(mViewModel.getOvaList().getValue().get(itemAdapterPosition - 53));
         }
 
         final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -138,6 +139,11 @@ public class RecentAddedFragment extends Fragment implements AnimeSection.ClickL
         transaction.replace(R.id.fragment_navigation_host, new InfoFragment());
         transaction.addToBackStack("TAG");
         transaction.commit();
+    }
+
+    @Override
+    public void onFooterRootViewClicked(String title) {
+        Toast.makeText(getActivity(), title, Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -32,8 +32,8 @@ public class AnimeSection extends Section {
         super(SectionParameters.builder()
                 .itemResourceId(R.layout.recycler_anime_home_item)
                 .headerResourceId(R.layout.recycler_anime_mini_header)
-                /*.footerResourceId(R.layout.section_ex3_footer)
-                .failedResourceId(R.layout.section_ex3_failed)
+                .footerResourceId(R.layout.recycler_footer)
+                /*.failedResourceId(R.layout.section_ex3_failed)
                 .loadingResourceId(R.layout.section_ex3_loading)*/
                 .build());
 
@@ -84,9 +84,27 @@ public class AnimeSection extends Section {
         headerHolder.tvTitle.setText(title);
     }
 
+    @Override
+    public RecyclerView.ViewHolder getFooterViewHolder(final View view) {
+        return new FooterViewHolder(view);
+    }
+
+    @Override
+    public void onBindFooterViewHolder(final RecyclerView.ViewHolder holder) {
+        final FooterViewHolder footerHolder = (FooterViewHolder) holder;
+
+        footerHolder.loadMore.setText("Ver más " + title);
+
+        footerHolder.rootView.setOnClickListener(v ->
+                clickListener.onFooterRootViewClicked(title)
+        );
+    }
+
     public interface ClickListener {
 
         void onItemRootViewClicked(final String title, final int itemAdapterPosition);
+
+        void onFooterRootViewClicked(final String title);
 
     }
 }

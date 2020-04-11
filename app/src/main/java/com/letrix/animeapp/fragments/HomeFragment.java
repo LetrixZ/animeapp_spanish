@@ -1,7 +1,6 @@
 package com.letrix.animeapp.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,9 +51,6 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         searchButton = view.findViewById(R.id.searchButton);
-        //list.add(new OngoingFragment());
-        //list.add(new FinishedAnimeFragment());
-        Log.d("info", "ONVIEWCREATED!");
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,9 +74,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
         view = inflater.inflate(R.layout.home_fragment, container, false);
-
 
         return view;
     }

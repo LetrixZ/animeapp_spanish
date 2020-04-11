@@ -68,7 +68,6 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         ChipGroup chipGroup;
         RecyclerView recyclerView;
 
-        recyclerView = view.findViewById(R.id.animeInfoRecyclerView);
         chipGroup = view.findViewById(R.id.flowLayout);
         animeImage = view.findViewById(R.id.animeInfoImage);
         animeStatus = view.findViewById(R.id.animeInfoStatus);
@@ -112,30 +111,22 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity(), R.style.alert_dialog).setCancelable(true);
             View mView = getLayoutInflater().inflate(R.layout.alert_dialog, null);
             TextView megaText = mView.findViewById(R.id.mega_text);
-            TextView natsukiText = mView.findViewById(R.id.natsuki_text);
+            TextView secondServer = mView.findViewById(R.id.second_server);
+            secondServer.setText(serverModels.get(0).getTitle());
             AlertDialog serverSelector = mBuilder.create();
             serverSelector.setView(mView);
             serverSelector.show();
-
             megaText.setOnClickListener(v -> {
                 for (ServerModel server : serverModels) {
                     if (server.getServer().equals("mega")) {
-                        String url = server.getCode();
-                        String[] newURL = url.split("nz/");
-                        newURL[0] = newURL[0] + "nz/embed";
-                        mViewModel.setUrl(newURL[0] + newURL[1]);
+                        mViewModel.setUrl(server.getCode());
                         getInfo(position);
                     }
                 }
             });
-            natsukiText.setOnClickListener(v -> {
-                for (ServerModel server : serverModels) {
-                    if (server.getServer().equals("natsuki")) {
-                        String url = server.getCode();
-                        mViewModel.setUrl(url);
-                        getInfo(position);
-                    }
-                }
+            secondServer.setOnClickListener(v -> {
+                mViewModel.setUrl(serverModels.get(0).getCode());
+                getInfo(position);
             });
         });
     }
