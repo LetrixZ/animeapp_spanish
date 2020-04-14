@@ -7,11 +7,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -33,9 +35,14 @@ import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClickListener {
 
+    private static final String TAG = "InfoFragment";
     private MainViewModel mViewModel;
-    private View view;
-    private AppCompatImageView backButton;
+    private View view, mView, separator;
+    private AppCompatImageView backButton, favouriteButton;
+    private TextView noEpisodeText, megaText, secondServer, thirdServer;
+    private String okru;
+    private AnimeModel selectedAnime;
+    private boolean isFavourite;
 
     public InfoFragment() {
         // Required empty public constructor
@@ -47,6 +54,36 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
                              Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_info, container, false);
+        mViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+        favouriteButton = view.findViewById(R.id.favourite);
+        mViewModel.getSelectedAnime().observe(getViewLifecycleOwner(), animeModel -> {
+            selectedAnime = animeModel;
+            infoAdapter(animeModel);
+            if (mViewModel.getFavouriteList() != null) {
+                for (AnimeModel anime : mViewModel.getFavouriteList().getValue()) {
+                    if (anime.getTitle().equals(animeModel.getTitle())) {
+                        favouriteButton.setImageResource(R.drawable.ic_favorite);
+                        isFavourite = true;
+                    }
+                }
+            }
+        });
+
+        favouriteButton.setOnClickListener(v -> {
+            if (!isFavourite) {
+                favouriteButton.setImageResource(R.drawable.ic_favorite);
+                mViewModel.addFavourite(selectedAnime);
+                isFavourite = true;
+                Toast.makeText(getActivity(), selectedAnime.getTitle() + " añadido a favoritos", Toast.LENGTH_SHORT).show();
+            } else {
+                favouriteButton.setImageResource(R.drawable.ic_unfavorite);
+                mViewModel.removeFavourite(selectedAnime);
+                isFavourite = false;
+                Toast.makeText(getActivity(), selectedAnime.getTitle() + " eliminado de favoritos", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         return view;
     }
 
@@ -54,11 +91,8 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         super.onViewCreated(view, savedInstanceState);
         backButton = view.findViewById(R.id.back);
         backButton.setOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
-
-        mViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
-        mViewModel.getSelectedAnime().observe(getViewLifecycleOwner(), animeModel -> {
-            infoAdapter(animeModel);
-        });
+        noEpisodeText = view.findViewById(R.id.noEpisodes);
+        noEpisodeText.setVisibility(View.GONE);
     }
 
     private void infoAdapter(AnimeModel anime) {
@@ -88,7 +122,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         recyclerView.setHasFixedSize(true);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 3);
         recyclerView.setLayoutManager(gridLayoutManager);
-        final EpisodeAdapter dataAdapter = new EpisodeAdapter(anime, InfoFragment.this);
+        final EpisodeAdapter dataAdapter = new EpisodeAdapter(anime, InfoFragment.this, noEpisodeText);
         recyclerView.setAdapter(dataAdapter);
 
         for (String item : anime.getGenres()) {
@@ -103,16 +137,28 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
 
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onItemClick(int position) {
         String[] episodeId = mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().split("/");
         mViewModel.getServerList(episodeId[0], episodeId[1]).observe(getViewLifecycleOwner(), serverModels -> {
-
+            mView = getLayoutInflater().inflate(R.layout.alert_dialog, null);
+            megaText = mView.findViewById(R.id.mega_text);
+            secondServer = mView.findViewById(R.id.second_server);
+            thirdServer = mView.findViewById(R.id.third_server);
+            separator = mView.findViewById(R.id.secondSeparator);
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity(), R.style.alert_dialog).setCancelable(true);
-            View mView = getLayoutInflater().inflate(R.layout.alert_dialog, null);
-            TextView megaText = mView.findViewById(R.id.mega_text);
-            TextView secondServer = mView.findViewById(R.id.second_server);
+            megaText.setText("Mega");
             secondServer.setText(serverModels.get(0).getTitle());
+            for (ServerModel server : serverModels) {
+                if (server.getServer().equals("okru")) {
+                    thirdServer.setVisibility(View.VISIBLE);
+                    separator.setVisibility(View.VISIBLE);
+                    thirdServer.setText("Okru");
+                    okru = server.getCode();
+                    break;
+                }
+            }
             AlertDialog serverSelector = mBuilder.create();
             serverSelector.setView(mView);
             serverSelector.show();
@@ -120,12 +166,19 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
                 for (ServerModel server : serverModels) {
                     if (server.getServer().equals("mega")) {
                         mViewModel.setUrl(server.getCode());
+                        serverSelector.dismiss();
                         getInfo(position);
                     }
                 }
             });
             secondServer.setOnClickListener(v -> {
                 mViewModel.setUrl(serverModels.get(0).getCode());
+                serverSelector.dismiss();
+                getInfo(position);
+            });
+            thirdServer.setOnClickListener(v -> {
+                mViewModel.setUrl(okru);
+                serverSelector.dismiss();
                 getInfo(position);
             });
         });
@@ -150,4 +203,5 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         transaction.addToBackStack("TAG2");
         transaction.commit();
     }
+
 }

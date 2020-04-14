@@ -9,12 +9,10 @@ import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -31,7 +29,6 @@ public class WebView_VideoPlayer extends Fragment {
     private WebView webView;
     private ProgressBar progressBar;
     private MainViewModel mainViewModel;
-    private Bitmap animeBanner;
 
     public WebView_VideoPlayer() {
         // Required empty public constructor
@@ -81,7 +78,6 @@ public class WebView_VideoPlayer extends Fragment {
 
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
 
-                Toast.makeText(getContext(), "ERROR LOADING WEB", Toast.LENGTH_SHORT).show();
             }
 
             public void onPageFinished(WebView view, String url) {
@@ -105,6 +101,7 @@ public class WebView_VideoPlayer extends Fragment {
         webView.getSettings().setAppCacheEnabled(true);
         webView.setWebChromeClient(new WebChromeClientCustomPoster());
         webView.setBackgroundColor(Color.BLACK);
+
         webView.loadUrl(url);
     }
 

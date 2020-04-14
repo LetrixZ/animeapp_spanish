@@ -1,4 +1,4 @@
-package com.letrix.animeapp;
+package com.letrix.animeapp.viewholders;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -6,13 +6,15 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-class ItemViewHolder extends RecyclerView.ViewHolder {
+import com.letrix.animeapp.R;
 
-    TextView animeTitle, animeEpisode;
-    ImageView animeImage;
-    View rootView;
+public class ItemViewHolder extends RecyclerView.ViewHolder {
 
-    ItemViewHolder(View view) {
+    public TextView animeTitle, animeEpisode;
+    public ImageView animeImage;
+    public View rootView;
+
+    public ItemViewHolder(View view) {
         super(view);
 
         rootView = view;

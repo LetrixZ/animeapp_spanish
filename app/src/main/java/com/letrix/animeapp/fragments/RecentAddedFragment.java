@@ -1,5 +1,6 @@
 package com.letrix.animeapp.fragments;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,24 +9,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.letrix.animeapp.AnimeSection;
+import com.letrix.animeapp.HomeFragment;
 import com.letrix.animeapp.R;
+import com.letrix.animeapp.adapters.SlidePagerAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
-import com.letrix.animeapp.models.AnimeModel;
-
-import java.util.ArrayList;
+import com.letrix.animeapp.utils.AnimeSection;
 
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
@@ -48,7 +46,6 @@ public class RecentAddedFragment extends Fragment implements AnimeSection.ClickL
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -57,20 +54,18 @@ public class RecentAddedFragment extends Fragment implements AnimeSection.ClickL
         mRecyclerView.setAdapter(null);
         mRecyclerView.setLayoutManager(null);
         initRecycler();
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = (ViewGroup) inflater.inflate(R.layout.fragment_recent_anime, container, false);
+        rootView = (ViewGroup) inflater.inflate(R.layout.fragment_common, container, false);
 
         mViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
 
-        progressBar = rootView.findViewById(R.id.progressbar);
-        mRecyclerView = rootView.findViewById(R.id.recentRecyclerView);
+        progressBar = rootView.findViewById(R.id.progressBar);
+        mRecyclerView = rootView.findViewById(R.id.recyclerView);
 
         mRecyclerView.setAdapter(null);
         mRecyclerView.setLayoutManager(null);
@@ -80,6 +75,7 @@ public class RecentAddedFragment extends Fragment implements AnimeSection.ClickL
     }
 
     private void initRecycler() {
+        progressBar.setVisibility(View.VISIBLE);
         mRecyclerView.setHasFixedSize(true);
         gridLayoutManager = new GridLayoutManager(getActivity(), 3);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -90,48 +86,37 @@ public class RecentAddedFragment extends Fragment implements AnimeSection.ClickL
         });
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
-        mViewModel.getTvList().observe(getViewLifecycleOwner(), new Observer<ArrayList<AnimeModel>>() {
-            @Override
-            public void onChanged(ArrayList<AnimeModel> animeModels) {
-                sectionedAdapter = new SectionedRecyclerViewAdapter();
-                AnimeSection tvSeries = new AnimeSection(AnimeSection.SERIES, "Series", RecentAddedFragment.this, animeModels);
-                sectionedAdapter.addSection(tvSeries);
-                mRecyclerView.setAdapter(sectionedAdapter);
-                progressBar.setVisibility(View.GONE);
+        mViewModel.getTVList(1).observe(getViewLifecycleOwner(), animeModels -> {
+            sectionedAdapter = new SectionedRecyclerViewAdapter();
+            AnimeSection tvSeries = new AnimeSection(AnimeSection.SERIES, "Series", RecentAddedFragment.this, animeModels);
+            sectionedAdapter.addSection(tvSeries);
+            mRecyclerView.setAdapter(sectionedAdapter);
+            progressBar.setVisibility(View.GONE);
 
-                mViewModel.getMovieList().observe(getViewLifecycleOwner(), new Observer<ArrayList<AnimeModel>>() {
-                    @Override
-                    public void onChanged(ArrayList<AnimeModel> animeModels) {
-                        AnimeSection movies = new AnimeSection(AnimeSection.MOVIES, "Películas", RecentAddedFragment.this, animeModels);
-                        sectionedAdapter.addSection(movies);
-                        sectionedAdapter.notifyDataSetChanged();
+            mViewModel.getMovieList(1).observe(getViewLifecycleOwner(), animeModels1 -> {
+                AnimeSection movies = new AnimeSection(AnimeSection.MOVIES, "Películas", RecentAddedFragment.this, animeModels1);
+                sectionedAdapter.addSection(movies);
+                sectionedAdapter.notifyDataSetChanged();
 
-                        mViewModel.getOvaList().observe(getViewLifecycleOwner(), new Observer<ArrayList<AnimeModel>>() {
-                            @Override
-                            public void onChanged(ArrayList<AnimeModel> animeModels) {
-                                AnimeSection ovas = new AnimeSection(AnimeSection.OVA, "OVAs", RecentAddedFragment.this, animeModels);
-                                sectionedAdapter.addSection(ovas);
-                                sectionedAdapter.notifyDataSetChanged();
-                            }
-                        });
-
-                    }
+                mViewModel.getOvaList(1).observe(getViewLifecycleOwner(), animeModels11 -> {
+                    AnimeSection ovas = new AnimeSection(AnimeSection.OVA, "OVAs", RecentAddedFragment.this, animeModels11);
+                    sectionedAdapter.addSection(ovas);
+                    sectionedAdapter.notifyDataSetChanged();
                 });
-
-            }
+            });
         });
     }
 
     @Override
     public void onItemRootViewClicked(final String title, final int itemAdapterPosition) {
         if (title.equals("Series")) {
-            mViewModel.setSelectedAnime(mViewModel.getTvList().getValue().get(itemAdapterPosition - 1));
+            mViewModel.setSelectedAnime(mViewModel.getTVList(1).getValue().get(itemAdapterPosition - 1));
         }
         if (title.equals("Películas")) {
-            mViewModel.setSelectedAnime(mViewModel.getMovieList().getValue().get(itemAdapterPosition - 27));
+            mViewModel.setSelectedAnime(mViewModel.getMovieList(1).getValue().get(itemAdapterPosition - 27));
         }
         if (title.equals("OVAs")) {
-            mViewModel.setSelectedAnime(mViewModel.getOvaList().getValue().get(itemAdapterPosition - 53));
+            mViewModel.setSelectedAnime(mViewModel.getOvaList(1).getValue().get(itemAdapterPosition - 53));
         }
 
         final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -143,7 +128,11 @@ public class RecentAddedFragment extends Fragment implements AnimeSection.ClickL
 
     @Override
     public void onFooterRootViewClicked(String title) {
-        Toast.makeText(getActivity(), title, Toast.LENGTH_SHORT).show();
+        for (int page = 0; page < SlidePagerAdapter.TABTITLES.length; page++) {
+            if (SlidePagerAdapter.TABTITLES[page].equals(title)) {
+                HomeFragment.selectPage(page);
+            }
+        }
     }
 
     @Override

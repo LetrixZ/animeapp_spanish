@@ -1,4 +1,4 @@
-package com.letrix.animeapp;
+package com.letrix.animeapp.viewholders;
 
 import android.view.View;
 import android.widget.TextView;
@@ -6,11 +6,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-class HeaderViewHolder extends RecyclerView.ViewHolder {
+import com.letrix.animeapp.R;
 
-    TextView tvTitle;
+public class HeaderViewHolder extends RecyclerView.ViewHolder {
 
-    HeaderViewHolder(@NonNull final View itemView) {
+    public TextView tvTitle;
+
+    public HeaderViewHolder(@NonNull final View itemView) {
         super(itemView);
 
         tvTitle = itemView.findViewById(R.id.viewType_text);

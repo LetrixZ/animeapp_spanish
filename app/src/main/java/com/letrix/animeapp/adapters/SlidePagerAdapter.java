@@ -5,12 +5,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
+import com.letrix.animeapp.fragments.CommonFragment;
+
 import java.util.List;
 
 public class SlidePagerAdapter extends FragmentStatePagerAdapter {
 
+    public static final String[] TABTITLES = new String[]{"Recientes", "En emisión", "Finalizados", "Series", "Películas", "OVAs", "Especiales"};
     private List<Fragment> fragmentList;
-    private String[] tabTitles = new String[]{"Recientes", "En emisión", "Finalizados"};
 
     public SlidePagerAdapter(FragmentManager fm, List<Fragment> fragmentList) {
         super(fm);
@@ -25,7 +27,7 @@ public class SlidePagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return tabTitles[position];
+        return TABTITLES[position];
     }
 
     @Override

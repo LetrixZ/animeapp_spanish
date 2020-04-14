@@ -2,6 +2,7 @@ package com.letrix.animeapp.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +14,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -24,14 +27,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.R;
+import com.letrix.animeapp.adapters.AnimeAdapter;
 import com.letrix.animeapp.adapters.SearchAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
 import com.letrix.animeapp.models.AnimeModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SearchFragment extends Fragment implements SearchAdapter.OnItemClickListener {
 
+    private static final String TAG="SearchFragment";
     private MainViewModel mViewModel;
     private EditText searchBox;
     private View view;
@@ -42,6 +48,9 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
     private ProgressBar progressBar;
     private RelativeLayout relativeLayout;
     private ArrayList<AnimeModel> searchList;
+    private Boolean isFavourite;
+
+    private AppCompatImageView favoriteButton;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -55,6 +64,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
             view = inflater.inflate(R.layout.fragment_search, container, false);
         }
 
+        View searchView = inflater.inflate(R.layout.recycler_search_item, null, false);
 
         return view;
     }
@@ -98,7 +108,6 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
                 return false;
             }
         });
-
     }
 
     private void performSearch() {
@@ -111,11 +120,21 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
                 searchList = animeModels;
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                final SearchAdapter dataAdapter = new SearchAdapter(animeModels, SearchFragment.this);
+                final SearchAdapter dataAdapter = new SearchAdapter(animeModels, mViewModel.getFavouriteList().getValue(), SearchFragment.this);
                 recyclerView.setAdapter(dataAdapter);
                 progressBar.setVisibility(View.GONE);
                 if (animeModels.size() == 0) {
                     relativeLayout.setVisibility(View.VISIBLE);
+                }
+                for (AnimeModel search : animeModels) {
+                    //Log.d(TAG, "onChanged: " + search.getTitle());
+                    for (AnimeModel favorites : mViewModel.getFavouriteList().getValue()) {
+                        if (favorites.getTitle().equals(search.getTitle())) {
+                            Log.d(TAG, "onChanged: " + favorites.getTitle());
+                            //SearchAdapter.setFavorite();
+
+                        }
+                    }
                 }
             }
         });
@@ -132,4 +151,15 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
         transaction.addToBackStack("TAG");
         transaction.commit();
     }
+
+    /*@Override
+    public void onFavoriteClick(int position) {
+        Toast.makeText(getActivity(), searchList.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+        for (AnimeModel favorites : mViewModel.getFavouriteList().getValue()) {
+            Log.d(TAG, "onFavoriteClick: " + searchList.get(position).getTitle());
+            if (searchList.get(position) == favorites)  {
+                Log.d(TAG, "onFavoriteClick: MATCHED!");
+            }
+        }
+    }*/
 }

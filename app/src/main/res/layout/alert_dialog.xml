@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_marginHorizontal="32dp"
         android:layout_height="125dp"
+        android:layout_marginHorizontal="32dp"
         app:cardBackgroundColor="@color/dialog"
         app:cardCornerRadius="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -28,10 +29,10 @@
                 android:layout_alignParentEnd="true"
                 android:fontFamily="sans-serif"
                 android:padding="12dp"
-                android:text="Seleccione un servidor"
+                android:text="@string/server_select"
                 android:textAlignment="center"
                 android:textColor="@color/main_text"
-                android:textSize="24sp"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -49,7 +50,7 @@
             <LinearLayout
                 android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="45dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -64,10 +65,10 @@
                     android:focusable="true"
                     android:gravity="center"
                     android:paddingBottom="2dp"
-                    android:text="Mega"
                     android:textAlignment="center"
                     android:textColor="@color/colorAccent"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:visibility="visible" />
 
                 <View
                     android:layout_width="0.5dp"
@@ -84,10 +85,31 @@
                     android:focusable="true"
                     android:gravity="center"
                     android:paddingBottom="2dp"
-                    android:text="Natsuki"
                     android:textAlignment="center"
                     android:textColor="@color/colorAccent"
                     android:textSize="18sp" />
+
+                <View
+                    android:id="@+id/secondSeparator"
+                    android:layout_width="0.5dp"
+                    android:layout_height="45dp"
+                    android:background="@color/main_text"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/third_server"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".5"
+                    android:background="?selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingBottom="2dp"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="18sp"
+                    android:visibility="gone" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

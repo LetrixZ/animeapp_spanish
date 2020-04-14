@@ -11,16 +11,20 @@ public interface RequestInterface {
     Call<JSONResponse> requestSeriesList(@Path("sorting") String sortingOrder, @Path("status") String status, @Path("page") int page);
 
     // TV
-    @GET("TV/{sorting}/1")
-    Call<JSONResponse> requestRecentList(@Path("sorting") String sortingOrder);
+    @GET("TV/{sorting}/{page}")
+    Call<JSONResponse> requestRecentList(@Path("sorting") String sortingOrder, @Path("page") int page);
 
-    // Películas
-    @GET("Movies/{sorting}/1")
-    Call<JSONResponse> requestMovieList(@Path("sorting") String sortingOrder);
+    // Specials
+    @GET("Special/{sorting}/{page}")
+    Call<JSONResponse> requestSpecialsList(@Path("sorting") String sortingOrder, @Path("page") int page);
+
+    // Movies
+    @GET("Movies/{sorting}/{page}")
+    Call<JSONResponse> requestMovieList(@Path("sorting") String sortingOrder, @Path("page") int page);
 
     // OVAs
-    @GET("Ova/{sorting}/1")
-    Call<JSONResponse> requestOvaList(@Path("sorting") String sortingOrder);
+    @GET("Ova/{sorting}/{page}")
+    Call<JSONResponse> requestOvaList(@Path("sorting") String sortingOrder, @Path("page") int page);
 
     // Get Server
     @GET("GetAnimeServers/{number_id}/{title}")

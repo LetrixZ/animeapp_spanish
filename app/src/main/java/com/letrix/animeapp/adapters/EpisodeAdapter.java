@@ -18,10 +18,12 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
     private AnimeModel anime;
     private View view;
     private OnItemClickListener mOnItemClickListener;
+    private TextView noEpisodesText;
 
-    public EpisodeAdapter(AnimeModel anime, OnItemClickListener onItemClickListener) {
+    public EpisodeAdapter(AnimeModel anime, OnItemClickListener onItemClickListener, TextView noEpisodesText) {
         this.anime = anime;
         this.mOnItemClickListener = onItemClickListener;
+        this.noEpisodesText = noEpisodesText;
     }
 
     @NonNull
@@ -40,7 +42,13 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return anime.getEpisodes().size() - 1;
+        if (anime.getEpisodes() != null) {
+            noEpisodesText.setVisibility(View.GONE);
+            return anime.getEpisodes().size() - 1;
+        } else {
+            noEpisodesText.setVisibility(View.VISIBLE);
+            return 0;
+        }
     }
 
     public interface OnItemClickListener {

@@ -2,8 +2,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingVertical="12dp"
-    android:background="?selectableItemBackground">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="?selectableItemBackground"
+    android:paddingVertical="12dp">
 
     <TextView
         android:id="@+id/text_view_layout"
@@ -11,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="12dp"
         android:gravity="center"
+        tools:text="Series"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
         android:textColor="@color/custom_tab"

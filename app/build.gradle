@@ -9,7 +9,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0"
+        versionName '1.2'
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,6 +41,7 @@ dependencies {
 
     // LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     //Card View & RecyclerView
     implementation "androidx.cardview:cardview:1.0.0"
@@ -50,10 +51,6 @@ dependencies {
     //For Network Request
     implementation 'com.squareup.retrofit2:retrofit:2.8.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
-    implementation 'com.squareup.retrofit2:adapter-rxjava:2.8.1'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
 
     //Expandable TextView
     implementation 'com.ms-square:expandableTextView:0.1.4'
@@ -66,4 +63,11 @@ dependencies {
     //TabLayout
     implementation 'com.ogaclejapan.smarttablayout:library:2.0.0@aar'
     implementation 'com.ogaclejapan.smarttablayout:utils-v4:2.0.0@aar'
+
+    // Paging
+    def paging_version = "2.1.2"
+    implementation "androidx.paging:paging-runtime:$paging_version"
+    testImplementation "androidx.paging:paging-common:$paging_version"
+    implementation "androidx.paging:paging-rxjava2:$paging_version"
+
 }

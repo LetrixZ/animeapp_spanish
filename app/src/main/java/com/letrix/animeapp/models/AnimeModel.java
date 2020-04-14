@@ -15,52 +15,6 @@ public class AnimeModel {
     private List<String> genres;
     private List<Episodes> episodes;
 
-    public class Episodes {
-        private String nextEpisodeDate;
-        private float episode;
-        private String id;
-        private String imagePreview;
-
-        public Episodes(String nextEpisodeDate, float episode, String id, String imagePreview) {
-            this.nextEpisodeDate = nextEpisodeDate;
-            this.episode = episode;
-            this.id = id;
-            this.imagePreview = imagePreview;
-        }
-
-        public String getNextEpisodeDate() {
-            return nextEpisodeDate;
-        }
-
-        public void setNextEpisodeDate(String nextEpisodeDate) {
-            this.nextEpisodeDate = nextEpisodeDate;
-        }
-
-        public float getEpisode() {
-            return episode;
-        }
-
-        public void setEpisode(int episode) {
-            this.episode = episode;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getImagePreview() {
-            return imagePreview;
-        }
-
-        public void setImagePreview(String imagePreview) {
-            this.imagePreview = imagePreview;
-        }
-    }
-
     public AnimeModel(String id, String title, String poster, String banner, String synopsis, String debut, String type, String rating, List<String> genres, List<Episodes> episodes) {
         this.id = id;
         this.title = title;
@@ -152,5 +106,51 @@ public class AnimeModel {
 
     public void setEpisodes(List<Episodes> episodes) {
         this.episodes = episodes;
+    }
+
+    public class Episodes {
+        private String nextEpisodeDate;
+        private float episode;
+        private String id;
+        private String imagePreview;
+
+        public Episodes(String nextEpisodeDate, float episode, String id, String imagePreview) {
+            this.nextEpisodeDate = nextEpisodeDate;
+            this.episode = episode;
+            this.id = id;
+            this.imagePreview = imagePreview;
+        }
+
+        public String getNextEpisodeDate() {
+            return nextEpisodeDate;
+        }
+
+        public void setNextEpisodeDate(String nextEpisodeDate) {
+            this.nextEpisodeDate = nextEpisodeDate;
+        }
+
+        public float getEpisode() {
+            return episode;
+        }
+
+        public void setEpisode(int episode) {
+            this.episode = episode;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getImagePreview() {
+            return imagePreview;
+        }
+
+        public void setImagePreview(String imagePreview) {
+            this.imagePreview = imagePreview;
+        }
     }
 }

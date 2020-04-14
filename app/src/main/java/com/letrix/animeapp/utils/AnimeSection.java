@@ -1,4 +1,4 @@
-package com.letrix.animeapp;
+package com.letrix.animeapp.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,7 +8,11 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.letrix.animeapp.R;
 import com.letrix.animeapp.models.AnimeModel;
+import com.letrix.animeapp.viewholders.FooterViewHolder;
+import com.letrix.animeapp.viewholders.HeaderViewHolder;
+import com.letrix.animeapp.viewholders.ItemViewHolder;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

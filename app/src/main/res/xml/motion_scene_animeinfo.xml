@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:motion="http://schemas.android.com/tools">
     <Transition
+        app:autoTransition="none"
         app:constraintSetEnd="@+id/end"
         app:constraintSetStart="@+id/start"
-        app:autoTransition="none"
         app:duration="1500">
         <OnSwipe
             app:dragDirection="dragUp"
@@ -21,22 +21,22 @@
             android:id="@+id/topView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/white"
             app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@android:color/white" />
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <Constraint
             android:id="@+id/animeInfoRoot"
 
-            android:background="@android:color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
+            android:background="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/topView"
@@ -52,6 +52,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/animeInfoRoot" />
+
+        <Constraint
+            android:id="@+id/noEpisodes"
+            app:layout_constraintBottom_toBottomOf="@+id/animeInfoRecyclerView"
+            app:layout_constraintEnd_toEndOf="@+id/animeInfoRecyclerView"
+            app:layout_constraintStart_toStartOf="@+id/animeInfoRecyclerView"
+            app:layout_constraintTop_toBottomOf="@+id/animeInfoSummary">
+            <PropertySet app:visibilityMode="ignore" />
+        </Constraint>
+
         <Constraint android:id="@+id/loading">
             <PropertySet
                 app:applyMotionScene="false"
@@ -71,11 +81,11 @@
             android:id="@+id/topView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/white"
             app:cardElevation="2dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@android:color/white">
+            app:layout_constraintTop_toTopOf="parent">
 
 
         </Constraint>
@@ -83,15 +93,15 @@
         <Constraint
             android:id="@+id/animeInfoRoot"
             android:layout_width="match_parent"
-            app:visibilityMode="ignore"
-            android:background="@android:color/white"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
+            android:background="@android:color/white"
             app:layout_constraintBottom_toBottomOf="@id/topView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:visibilityMode="ignore" />
 
 
         <Constraint
@@ -101,10 +111,19 @@
             android:layout_marginStart="30dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:background="@drawable/shadow_backgorund"
             app:layout_constraintBottom_toBottomOf="@id/topView"
-            android:background="@drawable/shadow_backgorund" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Constraint
+            android:id="@+id/noEpisodes"
+            app:layout_constraintBottom_toBottomOf="@+id/animeInfoRecyclerView"
+            app:layout_constraintEnd_toEndOf="@+id/animeInfoRecyclerView"
+            app:layout_constraintStart_toStartOf="@+id/animeInfoRecyclerView"
+            app:layout_constraintTop_toBottomOf="@+id/animeInfoSummary">
+            <PropertySet app:visibilityMode="ignore" />
+        </Constraint>
         <!--        <Constraint-->
         <!--            android:id="@id/loading"-->
         <!--            app:layout_constraintEnd_toEndOf="parent"-->
