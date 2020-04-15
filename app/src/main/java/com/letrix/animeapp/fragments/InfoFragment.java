@@ -3,6 +3,7 @@ package com.letrix.animeapp.fragments;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +45,8 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     private String okru;
     private AnimeModel selectedAnime;
     private boolean isFavourite;
+    private ProgressBar progressBar;
+    private GridLayoutManager gridLayoutManager;
 
     public InfoFragment() {
         // Required empty public constructor
@@ -54,6 +58,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
                              Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_info, container, false);
+        progressBar = view.findViewById(R.id.progressBar);
         mViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         favouriteButton = view.findViewById(R.id.favourite);
         mViewModel.getSelectedAnime().observe(getViewLifecycleOwner(), animeModel -> {
@@ -120,7 +125,12 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
 
         recyclerView = view.findViewById(R.id.animeInfoRecyclerView);
         recyclerView.setHasFixedSize(true);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 3);
+        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            gridLayoutManager = new GridLayoutManager(getActivity(), 4);
+        }
+        else {
+            gridLayoutManager = new GridLayoutManager(getActivity(), 3);
+        }
         recyclerView.setLayoutManager(gridLayoutManager);
         final EpisodeAdapter dataAdapter = new EpisodeAdapter(anime, InfoFragment.this, noEpisodeText);
         recyclerView.setAdapter(dataAdapter);
@@ -141,6 +151,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     @Override
     public void onItemClick(int position) {
         String[] episodeId = mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().split("/");
+        progressBar.setVisibility(View.VISIBLE);
         mViewModel.getServerList(episodeId[0], episodeId[1]).observe(getViewLifecycleOwner(), serverModels -> {
             mView = getLayoutInflater().inflate(R.layout.alert_dialog, null);
             megaText = mView.findViewById(R.id.mega_text);
@@ -161,6 +172,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
             }
             AlertDialog serverSelector = mBuilder.create();
             serverSelector.setView(mView);
+            progressBar.setVisibility(View.GONE);
             serverSelector.show();
             megaText.setOnClickListener(v -> {
                 for (ServerModel server : serverModels) {
@@ -188,14 +200,14 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
     private void getInfo(int position) {
         mViewModel.setImage(mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getImagePreview());
 
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
 
         final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         final FragmentTransaction transaction = fragmentManager.beginTransaction();

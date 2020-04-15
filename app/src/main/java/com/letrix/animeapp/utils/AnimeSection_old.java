@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.R;
@@ -13,37 +14,47 @@ import com.letrix.animeapp.viewholders.FooterViewHolder;
 import com.letrix.animeapp.viewholders.HeaderViewHolder;
 import com.letrix.animeapp.viewholders.ItemViewHolder;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import io.github.luizgrp.sectionedrecyclerviewadapter.Section;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters;
 
-public class AnimeSection extends Section {
+public class AnimeSection_old extends Section {
+    final public static int SERIES = 0;
+    final public static int MOVIES = 1;
+    final public static int OVA = 2;
+    final public static int ONGOING = 3;
+    final public static int FINISHED = 4;
 
-    private ArrayList<AnimeModel> animeList = new ArrayList<>();
-    private String title;
-    private ClickListener clickListener;
+    private final int type;
+    private final String title;
+    private final ClickListener clickListener;
+    private final ArrayList<AnimeModel> list;
 
-    public AnimeSection(ArrayList<AnimeModel> animeLists, String title, ClickListener clickListener) {
-        // call constructor with layout resources for this Section header and items
+    public AnimeSection_old(int type, @NonNull String title, @NonNull ClickListener clickListener, ArrayList<AnimeModel> list) {
         super(SectionParameters.builder()
                 .itemResourceId(R.layout.recycler_anime_home_item)
                 .headerResourceId(R.layout.recycler_anime_mini_header)
                 .footerResourceId(R.layout.recycler_footer)
+                /*.failedResourceId(R.layout.section_ex3_failed)
+                .loadingResourceId(R.layout.section_ex3_loading)*/
                 .build());
-        this.animeList = animeLists;
+
+        this.type = type;
         this.title = title;
         this.clickListener = clickListener;
+        this.list = list;
     }
+
 
     @Override
     public int getContentItemsTotal() {
-        return animeList.size(); // number of items of this section
+        return list.size();
     }
 
     @Override
     public RecyclerView.ViewHolder getItemViewHolder(View view) {
-        // return a custom instance of ViewHolder for the items of this section
         return new ItemViewHolder(view);
     }
 
@@ -51,46 +62,44 @@ public class AnimeSection extends Section {
     public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
         ItemViewHolder itemHolder = (ItemViewHolder) holder;
 
-        AnimeModel currentAnime = animeList.get(position);
-        itemHolder.animeTitle.setText(currentAnime.getTitle());
-        if (currentAnime.getEpisodes() != null) {
-            itemHolder.animeEpisode.setText("Episodio " + String.valueOf(currentAnime.getEpisodes().size() - 1));
-        } else {
-            itemHolder.animeEpisode.setText("Sin episodios");
-        }
-        byte[] decodedString = Base64.decode(currentAnime.getPoster(), Base64.DEFAULT);
+        AnimeModel anime = list.get(position);
+
+        itemHolder.animeTitle.setText(anime.getTitle());
+        DecimalFormat format = new DecimalFormat("#.#");
+        itemHolder.animeEpisode.setText("Episodio " + format.format(anime.getEpisodes().get(1).getEpisode()));
+        byte[] decodedString = Base64.decode(anime.getPoster(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         itemHolder.animeImage.setImageBitmap(decodedByte);
 
         itemHolder.rootView.setOnClickListener(v ->
-                clickListener.onItemRootViewClicked(title, itemHolder.getAdapterPosition()));
+                clickListener.onItemRootViewClicked(title, itemHolder.getAdapterPosition())
+        );
     }
 
     @Override
-    public RecyclerView.ViewHolder getHeaderViewHolder(View view) {
+    public RecyclerView.ViewHolder getHeaderViewHolder(final View view) {
         return new HeaderViewHolder(view);
     }
 
-    public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder) {
-        HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
+    @Override
+    public void onBindHeaderViewHolder(final RecyclerView.ViewHolder holder) {
+        final HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
 
         headerHolder.animeType.setText(title);
-        /*headerHolder.rootView.setOnClickListener(v -> {
-            clickListener.onHeaderRootViewclicked();
-        });*/
     }
 
     @Override
-    public RecyclerView.ViewHolder getFooterViewHolder(View view) {
+    public RecyclerView.ViewHolder getFooterViewHolder(final View view) {
         return new FooterViewHolder(view);
     }
 
     @Override
-    public void onBindFooterViewHolder(RecyclerView.ViewHolder holder) {
-        FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
-        footerViewHolder.loadMore.setText("Ver más " + title);
+    public void onBindFooterViewHolder(final RecyclerView.ViewHolder holder) {
+        final FooterViewHolder footerHolder = (FooterViewHolder) holder;
 
-        footerViewHolder.rootView.setOnClickListener(v ->
+        footerHolder.loadMore.setText("Ver más " + title);
+
+        footerHolder.rootView.setOnClickListener(v ->
                 clickListener.onFooterRootViewClicked(title)
         );
     }
@@ -102,5 +111,4 @@ public class AnimeSection extends Section {
         void onFooterRootViewClicked(final String title);
 
     }
-
 }

@@ -22,11 +22,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.letrix.animeapp.R;
 import com.letrix.animeapp.datamanager.MainViewModel;
 
+import im.delight.android.webview.AdvancedWebView;
+
 public class WebView_VideoPlayer extends Fragment {
 
     private View view;
 
-    private WebView webView;
+    private AdvancedWebView webView;
     private ProgressBar progressBar;
     private MainViewModel mainViewModel;
 
@@ -34,7 +36,6 @@ public class WebView_VideoPlayer extends Fragment {
         // Required empty public constructor
     }
 
-    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,12 +62,7 @@ public class WebView_VideoPlayer extends Fragment {
         webView = view.findViewById(R.id.webView);
         progressBar = view.findViewById(R.id.progressbar);
 
-        mainViewModel.getUrl().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                LoadWeb(s);
-            }
-        });
+        mainViewModel.getUrl().observe(getViewLifecycleOwner(), this::LoadWeb);
 
         webView.setWebViewClient(new WebViewClient() {
 
@@ -90,6 +86,7 @@ public class WebView_VideoPlayer extends Fragment {
         return view;
     }
 
+
     @SuppressLint("SetJavaScriptEnabled")
     private void LoadWeb(String url) {
 
@@ -101,7 +98,9 @@ public class WebView_VideoPlayer extends Fragment {
         webView.getSettings().setAppCacheEnabled(true);
         webView.setWebChromeClient(new WebChromeClientCustomPoster());
         webView.setBackgroundColor(Color.BLACK);
-
+        webView.setDesktopMode(false);
+        webView.getSettings().setSupportZoom(false);
+        webView.getSettings().setDisplayZoomControls(false);
         webView.loadUrl(url);
     }
 

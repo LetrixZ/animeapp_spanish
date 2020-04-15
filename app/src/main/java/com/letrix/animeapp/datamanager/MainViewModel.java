@@ -24,7 +24,7 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<ArrayList<AnimeModel>> ovaList;
     private MutableLiveData<ArrayList<AnimeModel>> movieList;
 
-    private MutableLiveData<ArrayList<AnimeModel>> searchList;
+    private MutableLiveData<ArrayList<AnimeModel>> searchList, genreList;
     private MutableLiveData<ArrayList<ServerModel>> serverList = new MutableLiveData<>();
     private MutableLiveData<AnimeModel> selectedAnime = new MutableLiveData<>();
     private MutableLiveData<String> url = new MutableLiveData<>();
@@ -434,6 +434,31 @@ public class MainViewModel extends ViewModel {
                 if (response.body() != null) {
                     Log.d(TAG, "onResponse: RESPONSE BODY @GET SUCCESSFUL / SEARCH");
                     searchList.setValue(response.body().getSearch());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JSONResponse> call, Throwable t) {
+                super.onFailure(call, t);
+                Log.d(TAG, "onFailure: API CALL FAILED / SEARCH, " + t);
+            }
+        });
+    }
+
+    public MutableLiveData<ArrayList<AnimeModel>> getGenreList(String genre, String sortOrder, int page) {
+        genreList = new MutableLiveData<>();
+        requestGenreList(genre, sortOrder, page);
+        return genreList;
+    }
+
+    private void requestGenreList(String genre, String sortOrder, int page) {
+        Client.getINSTANCE().getGenreList(genre, sortOrder, page).enqueue(new CallbackWithRetry<JSONResponse>() {
+            @Override
+            public void onResponse(Call<JSONResponse> call, Response<JSONResponse> response) {
+                Log.d(TAG, "onResponse: API CALL SUCCESSFUL / SEARCH");
+                if (response.body() != null) {
+                    Log.d(TAG, "onResponse: RESPONSE BODY @GET SUCCESSFUL / SEARCH");
+                    genreList.setValue(response.body().getAnimes());
                 }
             }
 

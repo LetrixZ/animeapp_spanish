@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<MotionScene xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:motion="http://schemas.android.com/tools">
     <Transition
         app:constraintSetEnd="@+id/end"
         app:constraintSetStart="@+id/start"
-        app:duration="0">
+        app:duration="1500">
         <OnSwipe
+            motion:onTouchUp="stop"
             app:dragDirection="dragUp"
+            app:touchAnchorId="@+id/recyclerView"
             app:moveWhenScrollAtTop="true"
-            app:touchAnchorId="@+id/pager"
-            app:touchAnchorSide="top"
-            motion:onTouchUp="stop" />
+            app:touchAnchorSide="top" />
     </Transition>
 
     <ConstraintSet android:id="@+id/start">
@@ -20,37 +20,41 @@
             android:id="@id/header"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:gravity="center_vertical"
             android:paddingLeft="20dp"
-            android:paddingTop="20dp"
             android:paddingRight="30dp"
+            android:paddingTop="20dp"
             android:paddingBottom="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
             <CustomAttribute
                 app:attributeName="textSize"
-                app:customFloatValue="@integer/full_header_size" />
+                app:customFloatValue="28" />
 
         </Constraint>
 
         <Constraint
-            android:id="@id/viewpagertab"
+            android:id="@+id/shadowLayout"
+            android:visibility="invisible"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            android:layout_height="1dp"
+            android:elevation="1dp"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header" />
 
         <Constraint
-            android:id="@+id/shadowLayout"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/white"
-            android:elevation="1dp"
-            android:orientation="vertical"
-            android:visibility="invisible"
+            android:id="@+id/progressBarGenre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header" />
+            app:layout_constraintTop_toTopOf="parent">
+            <PropertySet
+                app:visibilityMode="ignore"/>
+        </Constraint>
 
     </ConstraintSet>
 
@@ -58,36 +62,29 @@
     <ConstraintSet android:id="@+id/end">
 
         <Constraint
-            android:id="@id/viewpagertab"
-            app:layout_constraintTop_toBottomOf="@id/shadowLayout" />
-
-        <Constraint
             android:id="@id/header"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
             <CustomAttribute
                 app:attributeName="textSize"
-                app:customFloatValue="@integer/folded_header_size" />
+                app:customFloatValue="24" />
 
         </Constraint>
 
         <Constraint
             android:id="@+id/shadowLayout"
-            android:layout_width="match_parent"
-            android:layout_height="0.1dp"
-            android:background="@android:color/white"
-            android:elevation="2dp"
-            android:orientation="vertical"
             android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            android:layout_height="0.1dp"
+            android:elevation="2dp"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header" />
+
 
     </ConstraintSet>
 

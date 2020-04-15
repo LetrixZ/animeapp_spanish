@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="header_height">60dp</dimen>
     <dimen name="anime_info_item_spacing">6dp</dimen>
     <dimen name="anime_info_item_start_margin">20dp</dimen>
     <dimen name="episode_offset_left">8dp</dimen>
     <dimen name="episode_offset_right">20dp</dimen>
     <dimen name="episode_offset_top">5dp</dimen>
     <dimen name="episode_offset_bottom">5dp</dimen>
+    <dimen name="item_margin">10dp</dimen>
+    <dimen name="second_text">14sp</dimen>
+    <dimen name="main_text">15sp</dimen>
+    <dimen name="genre_selector_width">370dp</dimen>
+    <dimen name="header_size">32sp</dimen>
 </resources>

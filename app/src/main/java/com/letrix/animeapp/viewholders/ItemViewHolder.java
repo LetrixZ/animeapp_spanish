@@ -18,8 +18,8 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
         super(view);
 
         rootView = view;
-        animeTitle = view.findViewById(R.id.animeTitleHome);
-        animeEpisode = view.findViewById(R.id.lastEpisodeHome);
-        animeImage = view.findViewById(R.id.animeImageHome);
+        animeTitle = view.findViewById(R.id.animeTitle);
+        animeEpisode = view.findViewById(R.id.lastEpisode);
+        animeImage = view.findViewById(R.id.animeImage);
     }
 }

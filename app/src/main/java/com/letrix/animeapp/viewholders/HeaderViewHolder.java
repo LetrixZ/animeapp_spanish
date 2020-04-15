@@ -10,11 +10,12 @@ import com.letrix.animeapp.R;
 
 public class HeaderViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView tvTitle;
+    public TextView animeType;
+    public View rootView;
 
     public HeaderViewHolder(@NonNull final View itemView) {
         super(itemView);
-
-        tvTitle = itemView.findViewById(R.id.viewType_text);
+        rootView = itemView;
+        animeType = itemView.findViewById(R.id.animeType);
     }
 }

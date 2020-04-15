@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="second_text">14sp</dimen>
+    <dimen name="main_text">16sp</dimen>
+    <dimen name="genre_selector_width">600dp</dimen>
+    <dimen name="header_size">32sp</dimen>
+</resources>

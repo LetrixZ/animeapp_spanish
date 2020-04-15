@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,9 +21,11 @@ import com.letrix.animeapp.R;
 import com.letrix.animeapp.models.AnimeModel;
 import com.letrix.animeapp.utils.DiffUtilCallback;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
-public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int VIEWTYPE_PROGRESS = 1;
     private static final int VIEWTYPE_ANIMELIST = 2;
@@ -32,9 +35,9 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private RecyclerView recyclerView;
     private Context context;
     private int pageNumber;
-    private OnItemClickListener mOnItemClickListener;
+    private GenreAdapter.OnItemClickListener mOnItemClickListener;
 
-    public AnimeAdapter(Context context, GridLayoutManager gridLayoutManager, RecyclerView recyclerView, int pageNumber, OnItemClickListener onItemClickListener) {
+    public GenreAdapter(Context context, GridLayoutManager gridLayoutManager, RecyclerView recyclerView, int pageNumber, GenreAdapter.OnItemClickListener onItemClickListener) {
         this.pageNumber = pageNumber;
         this.context = context;
         this.gridLayoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
@@ -70,34 +73,30 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEWTYPE_ANIMELIST) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_anime_home_item, parent, false);
-            return new ItemViewHolder(v, mOnItemClickListener);
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_genrelist_item, parent, false);
+            return new GenreAdapter.ItemViewHolder(v, mOnItemClickListener);
         } else {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.loading, parent, false);
-            return new ProgressHolder(v);
+            return new GenreAdapter.ProgressHolder(v);
         }
     }
 
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof ItemViewHolder) {
+        if (holder instanceof GenreAdapter.ItemViewHolder) {
             AnimeModel currentItem = dataSource.get(position);
-            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+            GenreAdapter.ItemViewHolder itemViewHolder = (GenreAdapter.ItemViewHolder) holder;
             itemViewHolder.animeTitle.setText(currentItem.getTitle());
-            if (currentItem.getEpisodes() != null) {
-                itemViewHolder.lastEpisode.setText("Episodio " + String.valueOf(currentItem.getEpisodes().size() - 1));
-            } else {
-                itemViewHolder.lastEpisode.setText("Sin episodios");
-            }
+            itemViewHolder.animeType.setText(currentItem.getType());
             byte[] decodedString = Base64.decode(currentItem.getPoster(), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             itemViewHolder.animeImage.setImageBitmap(decodedByte);
         } else {
             if (isLoading) {
-                ((ProgressHolder) holder).progressBar.setVisibility(View.VISIBLE);
+                ((GenreAdapter.ProgressHolder) holder).progressBar.setVisibility(View.VISIBLE);
             } else {
-                ((ProgressHolder) holder).progressBar.setVisibility(View.GONE);
+                ((GenreAdapter.ProgressHolder) holder).progressBar.setVisibility(View.GONE);
             }
         }
     }
@@ -139,14 +138,14 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView animeImage;
-        TextView animeTitle, lastEpisode;
-        OnItemClickListener onItemClickListener;
+        TextView animeTitle, animeType;
+        GenreAdapter.OnItemClickListener onItemClickListener;
 
-        ItemViewHolder(@NonNull View itemView, OnItemClickListener onItemClickListener) {
+        ItemViewHolder(@NonNull View itemView, GenreAdapter.OnItemClickListener onItemClickListener) {
             super(itemView);
             animeImage = itemView.findViewById(R.id.animeImage);
             animeTitle = itemView.findViewById(R.id.animeTitle);
-            lastEpisode = itemView.findViewById(R.id.lastEpisode);
+            animeType = itemView.findViewById(R.id.animeType);
             this.onItemClickListener = onItemClickListener;
 
             itemView.setOnClickListener(this);
@@ -157,5 +156,4 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             onItemClickListener.onItemClick(getAdapterPosition());
         }
     }
-
 }

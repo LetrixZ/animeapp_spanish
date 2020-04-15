@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Client {
     private static final String BASE_URL = "https://animeflv.chrismichael.now.sh/api/v1/";
-    //private static final String BASE_URL = "http://192.168.1.40:8080/";
+    //private static final String BASE_URL = "http://192.168.1.40:8081/";
     private static Client INSTANCE;
     private RequestInterface requestInterface;
 
@@ -60,6 +60,10 @@ public class Client {
 
     Call<JSONResponse> getSearchList(String searchTerm) {
         return requestInterface.requestSearchList(searchTerm);
+    }
+
+    Call<JSONResponse> getGenreList(String genre, String sortOrder, int page) {
+        return requestInterface.requestGenreList(genre, sortOrder, page);
     }
 }
 

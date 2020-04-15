@@ -8,7 +8,6 @@
     android:background="@color/app_background"
     app:layoutDescription="@xml/motion_scene_animeinfo">
 
-
     <com.ms.square.android.expandabletextview.ExpandableTextView xmlns:expandableTextView="http://schemas.android.com/apk/res-auto"
         android:id="@+id/animeInfoSummary"
         android:layout_width="match_parent"
@@ -286,5 +285,11 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

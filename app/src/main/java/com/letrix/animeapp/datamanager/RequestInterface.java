@@ -34,4 +34,7 @@ public interface RequestInterface {
     @GET("Search/{searchTerm}")
     Call<JSONResponse> requestSearchList(@Path("searchTerm") String searchTerm);
 
+    // Genre
+    @GET("Genres/{genre}/{sortOrder}/{page}")
+    Call<JSONResponse> requestGenreList(@Path("genre") String genre, @Path("sortOrder") String sortOrder, @Path("page") int page);
 }

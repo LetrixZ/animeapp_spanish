@@ -1,7 +1,9 @@
 package com.letrix.animeapp.fragments;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.letrix.animeapp.HomeFragment;
 import com.letrix.animeapp.R;
 import com.letrix.animeapp.adapters.AnimeAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
@@ -72,13 +75,6 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
         }
         mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         TYPE = getArguments().getInt("TYPE");
-        /*mainViewModel.getBackedData().observe(requireActivity(), backedData -> {
-            TYPE = getArguments().getInt("TYPE");
-            dataSource = backedData.get(TYPE).getAnimeList();
-            pageNumber = backedData.get(TYPE).getPageNumber();
-            Log.d(TAG, "onCreate: GETTING DATA! " + TYPE_MAP.get(TYPE));
-            Log.d(TAG, "onCreate: page: " + pageNumber);
-        });*/
         if (mainViewModel.getBackedData(TYPE).getAnimeList() != null) {
             if (mainViewModel.getBackedData(TYPE).getAnimeList().size() > dataSource.size()) {
                 dataSource = mainViewModel.getBackedData(TYPE).getAnimeList();
@@ -124,7 +120,11 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
         recyclerView = view.findViewById(R.id.recyclerView);
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView.setHasFixedSize(true);
-        gridLayoutManager = new GridLayoutManager(getActivity(), 3);
+        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            gridLayoutManager = new GridLayoutManager(getActivity(), 4);
+        } else {
+            gridLayoutManager = new GridLayoutManager(getActivity(), 3);
+        }
         recyclerView.setLayoutManager(gridLayoutManager);
 
         if (dataSource != null) {
@@ -135,7 +135,6 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
             Log.d(TAG, "onCreateView: " + TYPE_MAP.get(TYPE));
             //initData();
         }
-
         return view;
     }
 
@@ -281,6 +280,24 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
                 mainViewModel.addBackedData(new BackedData(TYPE_MAP.get(TYPE), dataSource, pageNumber), TYPE);
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    HomeFragment.selectPage(1);
+
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
 }

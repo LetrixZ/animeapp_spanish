@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_gravity="center_horizontal"
     android:background="?selectableItemBackground"
     android:clickable="true"
@@ -25,8 +26,8 @@
 
         <ImageView
             android:id="@+id/animeImage"
-            android:layout_width="114.4dp"
-            android:layout_height="162.8dp"
+            android:layout_width="119.6dp"
+            android:layout_height="170.2dp"
             android:scaleType="centerCrop"
             android:src="@mipmap/ic_launcher" />
     </androidx.cardview.widget.CardView>
@@ -40,9 +41,8 @@
         android:gravity="center"
         android:maxLines="2"
         android:minLines="2"
-        android:paddingHorizontal="8dp"
         android:paddingVertical="4dp"
-        android:text="Boku no Hero Academia"
+        tools:text="Boku no Hero Academia"
         android:textAlignment="center"
         android:textColor="@color/main_text"
         android:textSize="@dimen/main_text"
@@ -51,14 +51,14 @@
         app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
     <TextView
-        android:id="@+id/lastEpisode"
+        android:id="@+id/animeType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:maxLines="1"
         android:minLines="1"
         android:paddingBottom="16dp"
-        android:text="Episode 17"
+        android:text="Serie"
         android:textColor="@color/text_default"
         android:textSize="@dimen/second_text"
         app:layout_constraintEnd_toEndOf="parent"
