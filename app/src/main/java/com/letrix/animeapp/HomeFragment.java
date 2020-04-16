@@ -16,6 +16,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.github.javiersantos.appupdater.AppUpdater;
+import com.github.javiersantos.appupdater.enums.UpdateFrom;
 import com.letrix.animeapp.adapters.SlidePagerAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
 import com.letrix.animeapp.fragments.CommonFragment;
@@ -48,6 +50,7 @@ public class HomeFragment extends Fragment {
     public static void selectPage(int page) {
         pager.setCurrentItem(page);
     }
+
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -97,6 +100,12 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AppUpdater appUpdater = new AppUpdater(getActivity())
+                .setUpdateFrom(UpdateFrom.GITHUB)
+                .setGitHubUserAndRepo("LetrixZ", "animeapp_spanish");
+        appUpdater.start();
+
 
         list = new ArrayList<>();
         list.add(new GenreSelectorFragment());
