@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -19,6 +18,7 @@ import com.letrix.animeapp.models.AnimeModel;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends FragmentActivity {
@@ -31,7 +31,8 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        mainViewModel.restoreFavourite(loadData());
+        mainViewModel.restoreFavourite(loadFavorites());
+        mainViewModel.restoreWatched(loadWatched());
 
         if (savedInstanceState == null) {
             FragmentManager fManager = getSupportFragmentManager();
@@ -42,7 +43,7 @@ public class MainActivity extends FragmentActivity {
 
     }
 
-    private ArrayList<AnimeModel> loadData() {
+    private ArrayList<AnimeModel> loadFavorites() {
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString("favourite list", null);
@@ -56,7 +57,7 @@ public class MainActivity extends FragmentActivity {
         return favouriteList;
     }
 
-    private void saveData(List<AnimeModel> animeModels) {
+    private void saveFavorites(List<AnimeModel> animeModels) {
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
@@ -65,15 +66,39 @@ public class MainActivity extends FragmentActivity {
         editor.apply();
     }
 
+    private HashMap<String, Long> loadWatched() {
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("watched list", null);
+        Type type = new TypeToken<HashMap<String, Long>>() {
+        }.getType();
+        HashMap<String, Long> watchedList = gson.fromJson(json, type);
+
+        if (watchedList == null) {
+            watchedList = new HashMap<>();
+        }
+        return watchedList;
+    }
+
+    private void saveWatched(HashMap<String, Long> watched) {
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(watched);
+        editor.putString("watched list", json);
+        editor.apply();
+    }
+
     @Override
     public void onStop() {
         super.onStop();
-        saveData(mainViewModel.getFavouriteList().getValue());
+        saveFavorites(mainViewModel.getFavouriteList().getValue());
+        saveWatched(mainViewModel.getWatchedEpisodesMap());
         Log.d("info", "data saved");
         mainViewModel.getFavouriteList().observe(this, new Observer<List<AnimeModel>>() {
             @Override
             public void onChanged(List<AnimeModel> animeModels) {
-                saveData(animeModels);
+                saveFavorites(animeModels);
                 Log.d("info", "data saved");
             }
         });

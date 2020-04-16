@@ -35,23 +35,29 @@ import com.letrix.animeapp.models.AnimeModel;
 import com.letrix.animeapp.models.ServerModel;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+
 public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClickListener {
 
     private static final String TAG = "InfoFragment";
     private MainViewModel mViewModel;
     private View view, mView, separator;
     private AppCompatImageView backButton, favouriteButton;
-    private TextView noEpisodeText, megaText, secondServer, thirdServer;
+    private TextView noEpisodeText, megaText, secondServer, thirdServer, titleText;
     private String okru;
     private AnimeModel selectedAnime;
     private boolean isFavourite;
     private ProgressBar progressBar;
     private GridLayoutManager gridLayoutManager;
+    private List<String> watchedEpisodes = new ArrayList<>();
 
     public InfoFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -88,7 +94,6 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
             }
         });
 
-
         return view;
     }
 
@@ -106,7 +111,6 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         ImageView animeImage;
         ChipGroup chipGroup;
         RecyclerView recyclerView;
-
         chipGroup = view.findViewById(R.id.flowLayout);
         animeImage = view.findViewById(R.id.animeInfoImage);
         animeStatus = view.findViewById(R.id.animeInfoStatus);
@@ -132,7 +136,12 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
             gridLayoutManager = new GridLayoutManager(getActivity(), 3);
         }
         recyclerView.setLayoutManager(gridLayoutManager);
-        final EpisodeAdapter dataAdapter = new EpisodeAdapter(anime, InfoFragment.this, noEpisodeText);
+        if (mViewModel.getWatchedEpisodesMap() != null) {
+            for (Map.Entry<String, Long> entry : mViewModel.getWatchedEpisodesMap().entrySet()) {
+                watchedEpisodes.add(entry.getKey());
+            }
+        }
+        final EpisodeAdapter dataAdapter = new EpisodeAdapter(anime, InfoFragment.this, noEpisodeText, watchedEpisodes, getActivity());
         recyclerView.setAdapter(dataAdapter);
 
         for (String item : anime.getGenres()) {
@@ -144,16 +153,18 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
             lChip.setTextColor(getResources().getColor(R.color.main_text));
             chipGroup.addView(lChip, chipGroup.getChildCount() - 1);
         }
-
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onItemClick(int position) {
+        AtomicBoolean watched = new AtomicBoolean(false);
+        AtomicLong time = new AtomicLong();
         String[] episodeId = mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().split("/");
         progressBar.setVisibility(View.VISIBLE);
         mViewModel.getServerList(episodeId[0], episodeId[1]).observe(getViewLifecycleOwner(), serverModels -> {
             mView = getLayoutInflater().inflate(R.layout.alert_dialog, null);
+            titleText = mView.findViewById(R.id.title);
             megaText = mView.findViewById(R.id.mega_text);
             secondServer = mView.findViewById(R.id.second_server);
             thirdServer = mView.findViewById(R.id.third_server);
@@ -170,6 +181,21 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
                     break;
                 }
             }
+
+            if (mViewModel.getWatchedEpisodesMap() != null) {
+                for (Map.Entry<String, Long> entry : mViewModel.getWatchedEpisodesMap().entrySet()) {
+                    if (mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().equals(entry.getKey())) {
+                        long hours = entry.getValue() / 3600;
+                        long minutes = (entry.getValue() % 3600) / 60;
+                        long seconds = (entry.getValue() % 60);
+                        time.set(entry.getValue());
+                        @SuppressLint("DefaultLocale") String timeString = String.format("%02dh:%02dm:%02ds", hours, minutes, seconds);
+                        titleText.setText("Seleccione un servidor\n" + timeString);
+                        watched.set(true);
+                    }
+                }
+            }
+
             AlertDialog serverSelector = mBuilder.create();
             serverSelector.setView(mView);
             progressBar.setVisibility(View.GONE);
@@ -177,26 +203,34 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
             megaText.setOnClickListener(v -> {
                 for (ServerModel server : serverModels) {
                     if (server.getServer().equals("mega")) {
-                        mViewModel.setUrl(server.getCode());
+                        if (watched.get()) {
+                            mViewModel.setUrl(server.getCode() + "!" + (time.get() - 15) + "s", position + 1);
+                            Log.d(TAG, "onItemClick: " + server.getCode() + "!" + time.get() + "s");
+                        } else {
+                            mViewModel.setUrl(server.getCode(), position + 1);
+                        }
                         serverSelector.dismiss();
-                        getInfo(position);
+                        watchEpisode(position);
                     }
                 }
             });
             secondServer.setOnClickListener(v -> {
-                mViewModel.setUrl(serverModels.get(0).getCode());
+                mViewModel.setUrl(serverModels.get(0).getCode(), position + 1);
                 serverSelector.dismiss();
-                getInfo(position);
+                watchEpisode(position);
             });
             thirdServer.setOnClickListener(v -> {
-                mViewModel.setUrl(okru);
+                if (watched.get()) {
+                    mViewModel.setUrl(okru + "?fromTime=" + (time.get() - 15), position + 1);
+                } else {
+                    mViewModel.setUrl(okru, position + 1);
+                }
                 serverSelector.dismiss();
-                getInfo(position);
+                watchEpisode(position);
             });
         });
     }
 
-    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     public void onResume() {
         super.onResume();
@@ -204,11 +238,10 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
-    private void getInfo(int position) {
+    private void watchEpisode(int position) {
         mViewModel.setImage(mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getImagePreview());
 
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
-
         final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         final FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_navigation_host, new WebView_VideoPlayer());

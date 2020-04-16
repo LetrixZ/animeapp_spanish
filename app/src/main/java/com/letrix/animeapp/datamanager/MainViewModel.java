@@ -12,7 +12,9 @@ import com.letrix.animeapp.models.ServerModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -20,16 +22,11 @@ import retrofit2.Response;
 public class MainViewModel extends ViewModel {
     private static final String TAG = "MainViewModel";
 
-    private MutableLiveData<ArrayList<AnimeModel>> tvList;
-    private MutableLiveData<ArrayList<AnimeModel>> ovaList;
-    private MutableLiveData<ArrayList<AnimeModel>> movieList;
+    private MutableLiveData<ArrayList<AnimeModel>> tvList, ovaList, movieList;
 
     private MutableLiveData<ArrayList<AnimeModel>> searchList, genreList;
     private MutableLiveData<ArrayList<ServerModel>> serverList = new MutableLiveData<>();
     private MutableLiveData<AnimeModel> selectedAnime = new MutableLiveData<>();
-    private MutableLiveData<String> url = new MutableLiveData<>();
-    private MutableLiveData<String> image = new MutableLiveData<>();
-    private MutableLiveData<Integer> code = new MutableLiveData<>();
 
     private ArrayList<BackedData> backedData = new ArrayList<>(Collections.nCopies(10, new BackedData(null, null, 0)));
     private MutableLiveData<List<BackedData>> backedDataLiveData = new MutableLiveData<>();
@@ -38,10 +35,10 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<List<AnimeModel>> favouriteLiveData = new MutableLiveData<>();
     private MutableLiveData<ArrayList<AnimeModel>> ongoingsList, finishedList, seriesList, moviesList, ovasList, specialsList;
 
+
     public void addBackedData(BackedData backedData, int TYPE) {
         Log.d(TAG, "addBackedData: RECEIVED: " + backedData.getAnimeList().size() + " " + TYPE );
         this.backedData.set(TYPE, backedData);
-        Log.d(TAG, "addBackedData: SAVED: " + this.backedData.get(TYPE).getAnimeList().get(0).getTitle());
         backedDataLiveData.setValue(this.backedData);
     }
 
@@ -74,6 +71,11 @@ public class MainViewModel extends ViewModel {
     //// EXTRAS ////
     ////////////////
 
+    private MutableLiveData<String> url = new MutableLiveData<>();
+    private MutableLiveData<Integer> episodePosition = new MutableLiveData<>();
+    private MutableLiveData<String> image = new MutableLiveData<>();
+    private MutableLiveData<Integer> code = new MutableLiveData<>();
+
     public MutableLiveData<String> getImage() {
         return image;
     }
@@ -86,8 +88,31 @@ public class MainViewModel extends ViewModel {
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url.setValue(url);
+    // Watched Time
+    private HashMap<String, Long> watchedEpisodesMap = new HashMap<>();
+
+    public MutableLiveData<Integer> getEpisodePosition() {
+        return episodePosition;
+    }
+
+    public void addWatchedEpisode(int position, long time) {
+        if (watchedEpisodesMap.get(selectedAnime.getValue().getEpisodes().get(position).getId()) != null) {
+            long previoustime = watchedEpisodesMap.get(selectedAnime.getValue().getEpisodes().get(position).getId());
+            watchedEpisodesMap.put(selectedAnime.getValue().getEpisodes().get(position).getId(), time + previoustime);
+        }
+        else {
+            watchedEpisodesMap.put(selectedAnime.getValue().getEpisodes().get(position).getId(), time);
+        }
+        for (Map.Entry<String, Long> entry : watchedEpisodesMap.entrySet()) {
+        }
+    }
+
+    public HashMap<String, Long> getWatchedEpisodesMap() {
+        return watchedEpisodesMap;
+    }
+
+    public void restoreWatched(HashMap<String, Long> watchedList) {
+        this.watchedEpisodesMap = watchedList;
     }
 
     public MutableLiveData<List<AnimeModel>> getFavouriteList() {
@@ -468,6 +493,11 @@ public class MainViewModel extends ViewModel {
                 Log.d(TAG, "onFailure: API CALL FAILED / SEARCH, " + t);
             }
         });
+    }
+
+    public void setUrl(String url, int position) {
+        this.episodePosition.setValue(position);
+        this.url.setValue(url);
     }
 
 }

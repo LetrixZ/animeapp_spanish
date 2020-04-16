@@ -27,6 +27,7 @@
 
     //AnimeInfo Episodes
     <color name="episode_background">#272727</color>
+    <color name="episode_background_watched">#434343</color>
     <color name="episode_watched_progress">@color/progress</color>
     <color name="episode_text">#DFDFDF</color>
 

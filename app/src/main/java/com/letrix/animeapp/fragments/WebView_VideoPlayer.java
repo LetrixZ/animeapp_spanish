@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,11 +29,15 @@ import im.delight.android.webview.AdvancedWebView;
 
 public class WebView_VideoPlayer extends Fragment {
 
+    private static final String TAG = "WebView_VideoPlayer";
+
     private View view;
 
     private AdvancedWebView webView;
     private ProgressBar progressBar;
     private MainViewModel mainViewModel;
+
+    private long startTime, endTime;
 
     public WebView_VideoPlayer() {
         // Required empty public constructor
@@ -63,6 +70,7 @@ public class WebView_VideoPlayer extends Fragment {
         progressBar = view.findViewById(R.id.progressbar);
 
         mainViewModel.getUrl().observe(getViewLifecycleOwner(), this::LoadWeb);
+        Log.d(TAG, "onCreateView: " + mainViewModel.getEpisodePosition().getValue());
 
         webView.setWebViewClient(new WebViewClient() {
 
@@ -70,6 +78,7 @@ public class WebView_VideoPlayer extends Fragment {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 progressBar.setVisibility(View.VISIBLE);
+                startTime = System.currentTimeMillis();
             }
 
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
@@ -106,11 +115,24 @@ public class WebView_VideoPlayer extends Fragment {
 
     private class WebChromeClientCustomPoster extends WebChromeClient {
 
-
         @Override
         public Bitmap getDefaultVideoPoster() {
             byte[] decodedString = Base64.decode(mainViewModel.getSelectedAnime().getValue().getPoster(), Base64.DEFAULT);
             return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        endTime = System.currentTimeMillis();
+        Log.d(TAG, "onDestroyView: " + (endTime - startTime)/1000);
+        int time = (int) ((endTime - startTime)/1000);
+        if (time > 60) {
+            mainViewModel.addWatchedEpisode(mainViewModel.getEpisodePosition().getValue(), ((endTime - startTime)/1000)-30);
+        }
+        else {
+            Log.d(TAG, "onDestroyView: NOT WATCHED");
         }
     }
 }
