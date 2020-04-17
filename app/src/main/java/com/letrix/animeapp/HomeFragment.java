@@ -21,6 +21,7 @@ import com.github.javiersantos.appupdater.enums.UpdateFrom;
 import com.letrix.animeapp.adapters.SlidePagerAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
 import com.letrix.animeapp.fragments.CommonFragment;
+import com.letrix.animeapp.fragments.ConfigFragment;
 import com.letrix.animeapp.fragments.FavouritesFragment;
 import com.letrix.animeapp.fragments.GenreSelectorFragment;
 import com.letrix.animeapp.fragments.RecentFragment;
@@ -81,7 +82,7 @@ public class HomeFragment extends Fragment {
         pagerAdapter = new SlidePagerAdapter(getChildFragmentManager(), list);
         pager.setAdapter(pagerAdapter);
         smartTabLayout.setViewPager(pager);
-        pager.setCurrentItem(1, true);
+        pager.setCurrentItem(2, true);
 
         if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             getActivity().getSupportFragmentManager().addOnBackStackChangedListener(
@@ -101,13 +102,17 @@ public class HomeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        AppUpdater appUpdater = new AppUpdater(getActivity())
-                .setUpdateFrom(UpdateFrom.GITHUB)
-                .setGitHubUserAndRepo("LetrixZ", "animeapp_spanish");
+        AppUpdater appUpdater = new AppUpdater(requireActivity())
+                .setUpdateFrom(UpdateFrom.XML)
+                .setUpdateJSON("https://pastebin.com/raw/SxL4ZTYh")
+                .setTitleOnUpdateAvailable("Nueva versión disponible")
+                .setButtonUpdate("Actualizar")
+                .setButtonDismiss("Más tarde")
+                .setButtonDoNotShowAgain("No mostrar de nuevo");
         appUpdater.start();
 
-
         list = new ArrayList<>();
+        list.add(new ConfigFragment());
         list.add(new GenreSelectorFragment());
         list.add(new RecentFragment());
         for (int i = 1; i <= 6; i++) {

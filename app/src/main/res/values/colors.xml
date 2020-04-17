@@ -8,8 +8,6 @@
     <color name="header">#212121</color>
     <color name="main_text">@color/header</color>
     <color name="text_default">#808080</color>
-    <color name="progress">#f3f3f3</color>
-    <color name="secondary_background">#EAEAEB</color>
 
     <color name="tab_selector_true">#FFFFFF</color>
     <color name="tab_selector_false">#000000</color>

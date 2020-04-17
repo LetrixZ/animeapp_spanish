@@ -106,6 +106,7 @@
                     tools:text="Mega" />
 
                 <View
+                    android:id="@+id/mega_natsuki_separator"
                     android:layout_width="0.5dp"
                     android:layout_height="45dp"
                     android:background="@color/main_text" />

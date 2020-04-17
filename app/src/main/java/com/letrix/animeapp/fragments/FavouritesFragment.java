@@ -20,7 +20,6 @@ import com.letrix.animeapp.models.AnimeModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class FavouritesFragment extends Fragment implements AnimeAdapter.OnItemClickListener {
 
@@ -69,7 +68,7 @@ public class FavouritesFragment extends Fragment implements AnimeAdapter.OnItemC
     @Override
     public void onItemClick(int position) {
         mainViewModel.setSelectedAnime(favoriteList.get(position));
-        final FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
+        final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         final FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_navigation_host, new InfoFragment());
         transaction.addToBackStack("TAG");

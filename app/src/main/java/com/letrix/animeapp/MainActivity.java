@@ -23,6 +23,7 @@ import java.util.List;
 public class MainActivity extends FragmentActivity {
 
     private MainViewModel mainViewModel;
+    public static Boolean saveFavorites = true, saveWatched = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class MainActivity extends FragmentActivity {
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         mainViewModel.restoreFavourite(loadFavorites());
         mainViewModel.restoreWatched(loadWatched());
+        mainViewModel.restoreFLV(loadEnableFLV());
 
         if (savedInstanceState == null) {
             FragmentManager fManager = getSupportFragmentManager();
@@ -88,11 +90,36 @@ public class MainActivity extends FragmentActivity {
         editor.apply();
     }
 
+    private void saveEnable(Boolean isFlvEnabled) {
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(isFlvEnabled);
+        editor.putString("flv", json);
+        editor.apply();
+    }
+
+    private Boolean loadEnableFLV() {
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("flv", null);
+        Type type = new TypeToken<Boolean>() {
+        }.getType();
+        Boolean enableFLV = gson.fromJson(json, type);
+
+        return enableFLV;
+    }
+
     @Override
     public void onStop() {
         super.onStop();
-        saveFavorites(mainViewModel.getFavouriteList().getValue());
-        saveWatched(mainViewModel.getWatchedEpisodesMap());
+        if (saveFavorites) {
+            saveFavorites(mainViewModel.getFavouriteList().getValue());
+        }
+        if (saveWatched) {
+            saveWatched(mainViewModel.getWatchedEpisodesMap());
+        }
+        saveEnable(mainViewModel.getEnableFLV());
         Log.d("info", "data saved");
         mainViewModel.getFavouriteList().observe(this, animeModels -> {
             saveFavorites(animeModels);

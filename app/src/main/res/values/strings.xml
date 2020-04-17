@@ -6,5 +6,13 @@
     <string name="episode_small">"EP %1$s"</string>
     <string name="noepisodes">Sin episodios</string>
     <string name="seemore">"Ver más %1$s"</string>
+    <string name="delete_data">Borrar todos los datos</string>
+    <string name="delete_data_info">esto incluye favoritos y episodios vistos</string>
+    <string name="delete_favorites">Borrar todos los favoritos</string>
+    <string name="delete_favorites_info">Esto solo incluye a aquellos contenidos que hayas marcado como favorito</string>
+    <string name="delete_watched">Borrar actividad de visualización</string>
+    <string name="delete_watched_info">Esto borrara toda actividad de visualización, incluido tiempo de reproducción y episodios vistos</string>
+    <string name="flvServers">Activar servidores de AnimeFLV</string>
+    <string name="flvServers_info">Si esta habilitada, se mostraran los servidores de AnimeFLV. Ten en cuenta que estos no permiten reanudar la reproducción desde dónde la dejaste y son de inferior calidad</string>
 
 </resources>

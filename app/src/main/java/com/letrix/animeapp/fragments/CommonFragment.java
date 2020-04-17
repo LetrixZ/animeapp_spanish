@@ -289,7 +289,7 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
         getView().requestFocus();
         getView().setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                HomeFragment.selectPage(1);
+                HomeFragment.selectPage(2);
 
                 return true;
             }

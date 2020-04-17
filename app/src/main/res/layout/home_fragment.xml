@@ -89,7 +89,7 @@
         app:stl_indicatorInFront="false"
         app:stl_indicatorInterpolation="linear"
         app:stl_indicatorThickness="32dp"
-        app:stl_indicatorWidth="110dp"
+        app:stl_indicatorWidth="auto"
         app:stl_indicatorWithoutPadding="true"
         app:stl_overlineColor="#4D000000"
         app:stl_overlineThickness="0dp"

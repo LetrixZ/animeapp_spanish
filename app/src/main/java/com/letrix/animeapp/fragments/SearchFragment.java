@@ -1,5 +1,6 @@
 package com.letrix.animeapp.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -58,7 +59,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
             view = inflater.inflate(R.layout.fragment_search, container, false);
         }
 
-        View searchView = inflater.inflate(R.layout.recycler_search_item, null, false);
+        @SuppressLint("InflateParams") View searchView = inflater.inflate(R.layout.recycler_search_item, null, false);
 
         return view;
     }

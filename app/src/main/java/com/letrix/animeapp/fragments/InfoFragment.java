@@ -47,7 +47,8 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
 
     private static final String TAG = "InfoFragment";
     private MainViewModel mViewModel;
-    private View view, mView, separator, desuSeparator;
+    private static Boolean enableFLV = true;
+    private View view, mView, separator, desuSeparator, mega_natsuki_separator, flv_jk_separator;
     private AppCompatImageView backButton, favouriteButton;
     private TextView noEpisodeText, megaText, secondServer, thirdServer, titleText, desuServer;
     private String okru;
@@ -56,6 +57,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     private ProgressBar progressBar;
     private GridLayoutManager gridLayoutManager;
     private List<String> watchedEpisodes = new ArrayList<>();
+    private LinearLayout secondRow;
 
     public InfoFragment() {
         // Required empty public constructor
@@ -105,6 +107,10 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         backButton.setOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
         noEpisodeText = view.findViewById(R.id.noEpisodes);
         noEpisodeText.setVisibility(View.GONE);
+
+        if (mViewModel.getEnableFLV() != null) {
+            enableFLV = mViewModel.getEnableFLV();
+        }
     }
 
     private void infoAdapter(AnimeModel anime) {
@@ -148,7 +154,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
 
         for (String item : anime.getGenres()) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
-            Chip lChip = (Chip) inflater.inflate(R.layout.chip_style, null, false);
+            @SuppressLint("InflateParams") Chip lChip = (Chip) inflater.inflate(R.layout.chip_style, null, false);
             item = item.replace("-", " ");
             item = item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
             lChip.setText(item);
@@ -169,42 +175,101 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         animeId = animeId.toLowerCase();
         String finalAnimeId = animeId;
         mViewModel.getAnimeVideo(animeId, (int) selectedAnime.getEpisodes().get(position + 1).getEpisode()).observe(getViewLifecycleOwner(), new Observer<String>() {
+            @SuppressLint("InflateParams")
             @Override
             public void onChanged(String s) {
                 Log.d(TAG, finalAnimeId + "/" + (int) selectedAnime.getEpisodes().get(position + 1).getEpisode());
                 Log.d(TAG, "onChanged: " + s);
+                if (enableFLV) {
+                    mViewModel.getServerList(episodeId[0], episodeId[1]).observe(getViewLifecycleOwner(), serverModels -> {
+                        mView = getLayoutInflater().inflate(R.layout.episode_alert_dialog, null);
+                        titleText = mView.findViewById(R.id.title);
+                        megaText = mView.findViewById(R.id.mega_text);
+                        desuServer = mView.findViewById(R.id.desu_server);
+                        secondServer = mView.findViewById(R.id.second_server);
+                        thirdServer = mView.findViewById(R.id.third_server);
+                        separator = mView.findViewById(R.id.secondSeparator);
+                        desuSeparator = mView.findViewById(R.id.view);
+                        secondRow = mView.findViewById(R.id.secondRow);
+                        mega_natsuki_separator = mView.findViewById(R.id.mega_natsuki_separator);
+                        flv_jk_separator = mView.findViewById(R.id.view2);
+                        LinearLayout firstRow = mView.findViewById(R.id.firstRow);
+                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity(), R.style.alert_dialog).setCancelable(true);
+                        megaText.setText("Mega");
+                        desuServer.setText("Desu");
+                        secondServer.setText(serverModels.get(0).getTitle());
 
-                mViewModel.getServerList(episodeId[0], episodeId[1]).observe(getViewLifecycleOwner(), serverModels -> {
-                    mView = getLayoutInflater().inflate(R.layout.episode_alert_dialog, null);
-                    titleText = mView.findViewById(R.id.title);
-                    megaText = mView.findViewById(R.id.mega_text);
-                    desuServer = mView.findViewById(R.id.desu_server);
-                    secondServer = mView.findViewById(R.id.second_server);
-                    thirdServer = mView.findViewById(R.id.third_server);
-                    separator = mView.findViewById(R.id.secondSeparator);
-                    desuSeparator = mView.findViewById(R.id.view);
-                    LinearLayout firstRow = mView.findViewById(R.id.firstRow);
-                    AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity(), R.style.alert_dialog).setCancelable(true);
-                    megaText.setText("Mega");
-                    desuServer.setText("Desu");
-                    secondServer.setText(serverModels.get(0).getTitle());
-
-                    if (s == null) {
-                        desuServer.setVisibility(View.GONE);
-                        desuSeparator.setVisibility(View.GONE);
-                        firstRow.setVisibility(View.GONE);
-                    }
-
-                    for (ServerModel server : serverModels) {
-                        if (server.getServer().equals("okru")) {
-                            thirdServer.setVisibility(View.VISIBLE);
-                            separator.setVisibility(View.VISIBLE);
-                            thirdServer.setText("Okru");
-                            okru = server.getCode();
-                            break;
+                        if (s == null) {
+                            desuServer.setVisibility(View.GONE);
+                            desuSeparator.setVisibility(View.GONE);
+                            firstRow.setVisibility(View.GONE);
                         }
-                    }
 
+                        for (ServerModel server : serverModels) {
+                            if (server.getServer().equals("okru")) {
+                                thirdServer.setVisibility(View.VISIBLE);
+                                separator.setVisibility(View.VISIBLE);
+                                thirdServer.setText("Okru");
+                                okru = server.getCode();
+                                break;
+                            }
+                        }
+
+                        if (mViewModel.getWatchedEpisodesMap() != null) {
+                            for (Map.Entry<String, Long> entry : mViewModel.getWatchedEpisodesMap().entrySet()) {
+                                if (mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().equals(entry.getKey()) && s != null) {
+                                    long hours = entry.getValue() / 3600;
+                                    long minutes = (entry.getValue() % 3600) / 60;
+                                    long seconds = (entry.getValue() % 60);
+                                    time.set(entry.getValue());
+                                    @SuppressLint("DefaultLocale") String timeString = String.format("%02dh:%02dm:%02ds", hours, minutes, seconds);
+                                    titleText.setText("Seleccione un servidor\n" + timeString);
+                                    watched.set(true);
+                                }
+                            }
+                        }
+
+                        /*if (!enableFLV) {
+                            megaText.setVisibility(View.GONE);
+                            thirdServer.setVisibility(View.GONE);
+                            secondServer.setVisibility(View.GONE);
+                            separator.setVisibility(View.GONE);
+                            mega_natsuki_separator.setVisibility(View.GONE);
+                            flv_jk_separator.setVisibility(View.GONE);
+                            secondRow.setVisibility(View.GONE);
+                        }*/
+
+                        AlertDialog serverSelector = mBuilder.create();
+                        serverSelector.setView(mView);
+                        progressBar.setVisibility(View.GONE);
+                        serverSelector.show();
+                        desuServer.setOnClickListener(v -> {
+                            mViewModel.setUrl(s, position + 1);
+                            serverSelector.dismiss();
+                            watchEpisode(position);
+                        });
+                        megaText.setOnClickListener(v -> {
+                            for (ServerModel server : serverModels) {
+                                if (server.getServer().equals("mega")) {
+                                    mViewModel.setUrl(server.getCode(), position + 1);
+                                    serverSelector.dismiss();
+                                    watchEpisode(position);
+                                }
+                            }
+                        });
+                        secondServer.setOnClickListener(v -> {
+                            mViewModel.setUrl(serverModels.get(0).getCode(), position + 1);
+                            serverSelector.dismiss();
+                            watchEpisode(position);
+                        });
+                        thirdServer.setOnClickListener(v -> {
+                            mViewModel.setUrl(okru, position + 1);
+                            serverSelector.dismiss();
+                            watchEpisode(position);
+                        });
+                    });
+
+                } else {
                     if (mViewModel.getWatchedEpisodesMap() != null) {
                         for (Map.Entry<String, Long> entry : mViewModel.getWatchedEpisodesMap().entrySet()) {
                             if (mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().equals(entry.getKey()) && s != null) {
@@ -213,42 +278,15 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
                                 long seconds = (entry.getValue() % 60);
                                 time.set(entry.getValue());
                                 @SuppressLint("DefaultLocale") String timeString = String.format("%02dh:%02dm:%02ds", hours, minutes, seconds);
-                                titleText.setText("Seleccione un servidor\n" + timeString);
+                                //titleText.setText("Seleccione un servidor\n" + timeString);
                                 watched.set(true);
                             }
                         }
                     }
 
-                    AlertDialog serverSelector = mBuilder.create();
-                    serverSelector.setView(mView);
-                    progressBar.setVisibility(View.GONE);
-                    serverSelector.show();
-                    desuServer.setOnClickListener(v -> {
-                        mViewModel.setUrl(s, position + 1);
-                        serverSelector.dismiss();
-                        watchEpisode(position);
-                    });
-                    megaText.setOnClickListener(v -> {
-                        for (ServerModel server : serverModels) {
-                            if (server.getServer().equals("mega")) {
-                                mViewModel.setUrl(server.getCode(), position + 1);
-                                serverSelector.dismiss();
-                                watchEpisode(position);
-                            }
-                        }
-                    });
-                    secondServer.setOnClickListener(v -> {
-                        mViewModel.setUrl(serverModels.get(0).getCode(), position + 1);
-                        serverSelector.dismiss();
-                        watchEpisode(position);
-                    });
-                    thirdServer.setOnClickListener(v -> {
-                        mViewModel.setUrl(okru, position + 1);
-                        serverSelector.dismiss();
-                        watchEpisode(position);
-                    });
-                });
-
+                    mViewModel.setUrl(s, position + 1);
+                    watchEpisode(position);
+                }
             }
         });
 

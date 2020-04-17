@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/favorites"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/deleteFavoritesText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="16dp"
+                android:text="@string/delete_favorites"
+                android:textColor="@color/main_text"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/deleteFavoritesText_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/deleteFavoritesText"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="160dp"
+                android:text="@string/delete_favorites_info"
+                android:textColor="@color/episode_text"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/deleteFavorites"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/app_background"
+            android:elevation="10dp"
+            android:text="Borrar"
+            android:textColor="@color/main_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/watched"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/favorites">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/deleteWatchedText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="16dp"
+                android:text="@string/delete_watched"
+                android:textColor="@color/main_text"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/deleteWatchedText_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/deleteWatchedText"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="120dp"
+                android:text="@string/delete_watched_info"
+                android:textColor="@color/episode_text"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/deleteWatched"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/app_background"
+            android:elevation="10dp"
+            android:text="Borrar"
+            android:textColor="@color/main_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/flv_servers"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/watched">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/flv_servers_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="16dp"
+                android:text="@string/flvServers"
+                android:textColor="@color/main_text"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/flv_servers_text_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/flv_servers_text"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="120dp"
+                android:text="@string/flvServers_info"
+                android:textColor="@color/episode_text"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <ToggleButton
+            android:id="@+id/toggleFlv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/app_background"
+            android:checked="true"
+            android:elevation="10dp"
+            android:textColor="@color/main_text"
+            android:textOff="No"
+            android:textOn="Sí"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

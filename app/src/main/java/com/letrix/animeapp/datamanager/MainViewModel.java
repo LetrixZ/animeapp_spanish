@@ -24,6 +24,8 @@ public class MainViewModel extends ViewModel {
 
     private MutableLiveData<ArrayList<AnimeModel>> tvList, ovaList, movieList;
 
+    private Boolean enableFLV = true;
+
     private MutableLiveData<ArrayList<AnimeModel>> searchList, genreList;
     private MutableLiveData<ArrayList<ServerModel>> serverList = new MutableLiveData<>();
     private MutableLiveData<AnimeModel> selectedAnime = new MutableLiveData<>();
@@ -39,6 +41,14 @@ public class MainViewModel extends ViewModel {
         Log.d(TAG, "addBackedData: RECEIVED: " + backedData.getAnimeList().size() + " " + TYPE );
         this.backedData.set(TYPE, backedData);
         backedDataLiveData.setValue(this.backedData);
+    }
+
+    public Boolean getEnableFLV() {
+        return enableFLV;
+    }
+
+    public void setEnableFLV(boolean value) {
+        enableFLV = value;
     }
 
     public BackedData getBackedData(int TYPE) {
@@ -134,6 +144,10 @@ public class MainViewModel extends ViewModel {
 
     public void restoreWatched(HashMap<String, Long> watchedList) {
         this.watchedEpisodesMap = watchedList;
+    }
+
+    public void restoreFLV(Boolean enableFLV) {
+        this.enableFLV = enableFLV;
     }
 
     public MutableLiveData<List<AnimeModel>> getFavouriteList() {

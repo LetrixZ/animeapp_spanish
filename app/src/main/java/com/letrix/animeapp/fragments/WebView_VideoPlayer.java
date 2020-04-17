@@ -164,7 +164,11 @@ public class WebView_VideoPlayer extends Fragment {
                     }
                 });
                 player.setPlayWhenReady(playWhenReady);
-                player.seekTo(currentWindow, (mainViewModel.getWatchedEpisodesMap().get(mainViewModel.getSelectedAnime().getValue().getEpisodes().get(mainViewModel.getEpisodePosition().getValue()).getId())) * 1000 - 30);
+                if (((mainViewModel.getWatchedEpisodesMap().get(mainViewModel.getSelectedAnime().getValue().getEpisodes().get(mainViewModel.getEpisodePosition().getValue()).getId()))) != null) {
+                    player.seekTo(currentWindow, (mainViewModel.getWatchedEpisodesMap().get(mainViewModel.getSelectedAnime().getValue().getEpisodes().get(mainViewModel.getEpisodePosition().getValue()).getId())) * 1000 - 30);
+                } else {
+                    player.seekTo(currentWindow, playbackPosition);
+                }
                 player.prepare(mediaSource, false, false);
                 isExoPlayer = true;
             }

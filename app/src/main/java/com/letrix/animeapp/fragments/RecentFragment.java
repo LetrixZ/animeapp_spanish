@@ -115,13 +115,13 @@ public class RecentFragment extends Fragment implements AnimeSection.ClickListen
     public void onFooterRootViewClicked(String title) {
         switch (title) {
             case "Series":
-                HomeFragment.selectPage(4);
-                break;
-            case "Películas":
                 HomeFragment.selectPage(5);
                 break;
-            case "OVAs":
+            case "Películas":
                 HomeFragment.selectPage(6);
+                break;
+            case "OVAs":
+                HomeFragment.selectPage(7);
                 break;
         }
     }
