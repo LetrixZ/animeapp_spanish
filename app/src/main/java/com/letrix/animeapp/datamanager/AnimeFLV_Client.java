@@ -6,24 +6,22 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class Client {
+public class AnimeFLV_Client {
     private static final String BASE_URL = "https://animeflv.chrismichael.now.sh/api/v1/";
-    //private static final String BASE_URL = "http://192.168.1.40:8081/";
-    private static Client INSTANCE;
-    private RequestInterface requestInterface;
+    private static AnimeFLV_Client INSTANCE;
+    private AnimeFLV_Interface animeFLVInterface;
 
-
-    private Client() {
+    private AnimeFLV_Client() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().create()))
                 .build();
-        requestInterface = retrofit.create(RequestInterface.class);
+        animeFLVInterface = retrofit.create(AnimeFLV_Interface.class);
     }
 
-    public static Client getINSTANCE() {
+    public static AnimeFLV_Client getINSTANCE() {
         if (null == INSTANCE) {
-            INSTANCE = new Client();
+            INSTANCE = new AnimeFLV_Client();
         }
         return INSTANCE;
     }
@@ -31,39 +29,39 @@ public class Client {
     // Series
 
     Call<JSONResponse> getOngoingsList(int page) {
-        return requestInterface.requestSeriesList("rating", "1", page);
+        return animeFLVInterface.requestSeriesList("rating", "1", page);
     }
 
     Call<JSONResponse> getFinishedList(int page) {
-        return requestInterface.requestSeriesList("rating", "2", page);
+        return animeFLVInterface.requestSeriesList("rating", "2", page);
     }
 
     Call<JSONResponse> getTVList(int page) {
-        return requestInterface.requestRecentList("default", page);
+        return animeFLVInterface.requestRecentList("default", page);
     }
 
     Call<JSONResponse> getSpecialsList(int page) {
-        return requestInterface.requestSpecialsList("default", page);
+        return animeFLVInterface.requestSpecialsList("default", page);
     }
 
     Call<JSONResponse> getMovieList(int page) {
-        return requestInterface.requestMovieList("default", page);
+        return animeFLVInterface.requestMovieList("default", page);
     }
 
     Call<JSONResponse> getOvaList(int page) {
-        return requestInterface.requestOvaList("default", page);
+        return animeFLVInterface.requestOvaList("default", page);
     }
 
     Call<JSONResponse> getServerList(String id, String title) {
-        return requestInterface.requestServers(id, title);
+        return animeFLVInterface.requestServers(id, title);
     }
 
     Call<JSONResponse> getSearchList(String searchTerm) {
-        return requestInterface.requestSearchList(searchTerm);
+        return animeFLVInterface.requestSearchList(searchTerm);
     }
 
     Call<JSONResponse> getGenreList(String genre, String sortOrder, int page) {
-        return requestInterface.requestGenreList(genre, sortOrder, page);
+        return animeFLVInterface.requestGenreList(genre, sortOrder, page);
     }
 }
 

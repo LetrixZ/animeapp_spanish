@@ -11,7 +11,7 @@ import com.letrix.animeapp.R;
 public class HeaderViewHolder extends RecyclerView.ViewHolder {
 
     public TextView animeType;
-    public View rootView;
+    private View rootView;
 
     public HeaderViewHolder(@NonNull final View itemView) {
         super(itemView);

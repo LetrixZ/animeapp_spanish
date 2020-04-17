@@ -260,7 +260,7 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
                 dataSource = mainViewModel.getBackedData(TYPE).getAnimeList();
                 Log.d(TAG, "onItemClick: DATASOURCE = NULL");
             }
-            final FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
+            final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             final FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.fragment_navigation_host, new InfoFragment());
             transaction.addToBackStack("TAG");
@@ -287,16 +287,13 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
         super.onResume();
         getView().setFocusableInTouchMode(true);
         getView().requestFocus();
-        getView().setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                    HomeFragment.selectPage(1);
+        getView().setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                HomeFragment.selectPage(1);
 
-                    return true;
-                }
-                return false;
+                return true;
             }
+            return false;
         });
     }
 

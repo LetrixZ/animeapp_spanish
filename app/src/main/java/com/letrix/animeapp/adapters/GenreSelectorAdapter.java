@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.R;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 public class GenreSelectorAdapter extends RecyclerView.Adapter<GenreSelectorAdapter.ViewHolder> {
@@ -57,7 +55,7 @@ public class GenreSelectorAdapter extends RecyclerView.Adapter<GenreSelectorAdap
         OnItemClickListener onItemClickListener;
         CardView cardView;
 
-        public ViewHolder(@NonNull View itemView, OnItemClickListener onItemClickListener) {
+        ViewHolder(@NonNull View itemView, OnItemClickListener onItemClickListener) {
             super(itemView);
             genreText = itemView.findViewById(R.id.genreText);
             this.onItemClickListener = onItemClickListener;

@@ -20,14 +20,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.R;
-import com.letrix.animeapp.adapters.AnimeAdapter;
 import com.letrix.animeapp.adapters.GenreAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
 import com.letrix.animeapp.models.AnimeModel;
 import com.letrix.animeapp.models.BackedData;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickListener {
 
@@ -181,7 +179,7 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
     @Override
     public void onItemClick(int position) {
         mainViewModel.setSelectedAnime(dataSource.get(position));
-        final FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
+        final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         final FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_navigation_host, new InfoFragment());
         transaction.addToBackStack("TAG");

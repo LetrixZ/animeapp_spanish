@@ -86,7 +86,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             itemViewHolder.animeTitle.setText(currentItem.getTitle());
             if (currentItem.getEpisodes() != null) {
-                itemViewHolder.lastEpisode.setText("Episodio " + String.valueOf(currentItem.getEpisodes().size() - 1));
+                itemViewHolder.lastEpisode.setText("Episodio " + (currentItem.getEpisodes().size() - 1));
             } else {
                 itemViewHolder.lastEpisode.setText("Sin episodios");
             }

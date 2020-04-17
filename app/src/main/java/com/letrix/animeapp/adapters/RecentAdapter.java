@@ -20,11 +20,11 @@ import com.letrix.animeapp.models.Common;
 
 import java.util.ArrayList;
 
-public class RecentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class RecentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    Context context;
-    ArrayList<AnimeModel> animeList = new ArrayList<>();
-    GridLayoutManager gridLayoutManager;
+    private Context context;
+    private ArrayList<AnimeModel> animeList;
+    private GridLayoutManager gridLayoutManager;
 
     public RecentAdapter(Context context, ArrayList<AnimeModel> animeList, GridLayoutManager gridLayoutManager) {
         this.context = context;
@@ -88,7 +88,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             AnimeModel currentAnime = animeList.get(position - 1);
             itemViewHolder.animeTitle.setText(currentAnime.getTitle());
             if (currentAnime.getEpisodes() != null) {
-                itemViewHolder.lastEpisode.setText("Episodio " + String.valueOf(currentAnime.getEpisodes().size() - 1));
+                itemViewHolder.lastEpisode.setText("Episodio " + (currentAnime.getEpisodes().size() - 1));
             } else {
                 itemViewHolder.lastEpisode.setText("Sin episodios");
             }
@@ -106,7 +106,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private class HeaderViewHolder extends RecyclerView.ViewHolder {
         TextView sectionName;
 
-        public HeaderViewHolder(@NonNull View itemView) {
+        HeaderViewHolder(@NonNull View itemView) {
             super(itemView);
             sectionName = itemView.findViewById(R.id.animeType);
         }
@@ -116,7 +116,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         TextView animeTitle, lastEpisode;
         ImageView animeImage;
 
-        public ItemViewHolder(@NonNull View itemView) {
+        ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             animeTitle = itemView.findViewById(R.id.animeTitle);
             lastEpisode = itemView.findViewById(R.id.lastEpisode);

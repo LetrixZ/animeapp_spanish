@@ -20,7 +20,7 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters;
 
 public class AnimeSection extends Section {
 
-    private ArrayList<AnimeModel> animeList = new ArrayList<>();
+    private ArrayList<AnimeModel> animeList;
     private String title;
     private ClickListener clickListener;
 
@@ -54,9 +54,9 @@ public class AnimeSection extends Section {
         AnimeModel currentAnime = animeList.get(position);
         itemHolder.animeTitle.setText(currentAnime.getTitle());
         if (currentAnime.getEpisodes() != null) {
-            itemHolder.animeEpisode.setText("Episodio " + String.valueOf(currentAnime.getEpisodes().size() - 1));
+            itemHolder.animeEpisode.setText(String.format(itemHolder.itemView.getContext().getString(R.string.episode), String.valueOf(currentAnime.getEpisodes().size() - 1)));
         } else {
-            itemHolder.animeEpisode.setText("Sin episodios");
+            itemHolder.animeEpisode.setText(itemHolder.itemView.getContext().getString(R.string.noepisodes));
         }
         byte[] decodedString = Base64.decode(currentAnime.getPoster(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -88,7 +88,7 @@ public class AnimeSection extends Section {
     @Override
     public void onBindFooterViewHolder(RecyclerView.ViewHolder holder) {
         FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
-        footerViewHolder.loadMore.setText("Ver más " + title);
+        footerViewHolder.loadMore.setText(String.format(holder.itemView.getContext().getString(R.string.seemore), title));
 
         footerViewHolder.rootView.setOnClickListener(v ->
                 clickListener.onFooterRootViewClicked(title)

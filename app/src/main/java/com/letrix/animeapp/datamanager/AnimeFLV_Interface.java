@@ -4,7 +4,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-public interface RequestInterface {
+interface AnimeFLV_Interface {
 
     // Series (Ongoings & Finished)
     @GET("AnimeByState/{status}/{sorting}/{page}")

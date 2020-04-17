@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,15 +20,13 @@ import com.letrix.animeapp.R;
 import com.letrix.animeapp.models.AnimeModel;
 import com.letrix.animeapp.utils.DiffUtilCallback;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int VIEWTYPE_PROGRESS = 1;
     private static final int VIEWTYPE_ANIMELIST = 2;
-    public Boolean isLoading = false;
+    private Boolean isLoading = false;
     private ArrayList<AnimeModel> dataSource = new ArrayList<>();
     private GridLayoutManager gridLayoutManager;
     private RecyclerView recyclerView;
@@ -127,16 +124,16 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         void onItemClick(int position);
     }
 
-    public class ProgressHolder extends RecyclerView.ViewHolder {
+    class ProgressHolder extends RecyclerView.ViewHolder {
         ProgressBar progressBar;
 
-        public ProgressHolder(View itemView) {
+        ProgressHolder(View itemView) {
             super(itemView);
             progressBar = itemView.findViewById(R.id.progressbar);
         }
     }
 
-    public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView animeImage;
         TextView animeTitle, animeType;
         GenreAdapter.OnItemClickListener onItemClickListener;

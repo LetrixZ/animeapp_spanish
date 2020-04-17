@@ -1,6 +1,6 @@
 package com.letrix.animeapp.models;
 
-public class WatchedEpisodes {
+class WatchedEpisodes {
 
     private String episodeId;
     private long watchedTime;

@@ -2,5 +2,9 @@
     <string name="app_name">AnimeMiru App</string>
 
     <string name="server_select">Seleccione un servidor</string>
+    <string name="episode">"Episodio %1$s"</string>
+    <string name="episode_small">"EP %1$s"</string>
+    <string name="noepisodes">Sin episodios</string>
+    <string name="seemore">"Ver más %1$s"</string>
 
 </resources>

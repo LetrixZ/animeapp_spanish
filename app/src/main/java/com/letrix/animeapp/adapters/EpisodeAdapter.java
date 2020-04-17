@@ -1,6 +1,5 @@
 package com.letrix.animeapp.adapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,7 +45,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
     public void onBindViewHolder(EpisodeAdapter.ViewHolder holder, int position) {
         final ViewHolder viewHolder = holder;
         DecimalFormat format = new DecimalFormat("0.#");
-        viewHolder.episodeNumber.setText("EP " + format.format(anime.getEpisodes().get(position + 1).getEpisode()));
+        viewHolder.episodeNumber.setText(String.format(viewHolder.itemView.getContext().getString(R.string.episode_small), format.format(anime.getEpisodes().get(position + 1).getEpisode())));
         if (episodeId != null) {
             for (String episode : episodeId) {
                 Log.d("EpisodeAdapter", "onBindViewHolder: TEST");
@@ -81,13 +80,13 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
         CardView cardView;
         OnItemClickListener onItemClickListener;
 
-        public ViewHolder(@NonNull View itemView, OnItemClickListener onItemClickListener) {
+        ViewHolder(@NonNull View itemView, OnItemClickListener onItemClickListener) {
             super(itemView);
             episodeNumber = itemView.findViewById(R.id.episodeNumber);
             cardView = itemView.findViewById(R.id.cardView);
             this.onItemClickListener = onItemClickListener;
 
-            itemView.setOnClickListener(this);
+            cardView.setOnClickListener(this);
         }
 
         @Override

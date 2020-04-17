@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +23,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,9 +47,9 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
 
     private static final String TAG = "InfoFragment";
     private MainViewModel mViewModel;
-    private View view, mView, separator;
+    private View view, mView, separator, desuSeparator;
     private AppCompatImageView backButton, favouriteButton;
-    private TextView noEpisodeText, megaText, secondServer, thirdServer, titleText;
+    private TextView noEpisodeText, megaText, secondServer, thirdServer, titleText, desuServer;
     private String okru;
     private AnimeModel selectedAnime;
     private boolean isFavourite;
@@ -130,7 +132,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         recyclerView = view.findViewById(R.id.animeInfoRecyclerView);
         recyclerView.setHasFixedSize(true);
         if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            gridLayoutManager = new GridLayoutManager(getActivity(), 4);
+            gridLayoutManager = new GridLayoutManager(getActivity(), 5);
         }
         else {
             gridLayoutManager = new GridLayoutManager(getActivity(), 3);
@@ -162,73 +164,94 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         AtomicLong time = new AtomicLong();
         String[] episodeId = mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().split("/");
         progressBar.setVisibility(View.VISIBLE);
-        mViewModel.getServerList(episodeId[0], episodeId[1]).observe(getViewLifecycleOwner(), serverModels -> {
-            mView = getLayoutInflater().inflate(R.layout.alert_dialog, null);
-            titleText = mView.findViewById(R.id.title);
-            megaText = mView.findViewById(R.id.mega_text);
-            secondServer = mView.findViewById(R.id.second_server);
-            thirdServer = mView.findViewById(R.id.third_server);
-            separator = mView.findViewById(R.id.secondSeparator);
-            AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity(), R.style.alert_dialog).setCancelable(true);
-            megaText.setText("Mega");
-            secondServer.setText(serverModels.get(0).getTitle());
-            for (ServerModel server : serverModels) {
-                if (server.getServer().equals("okru")) {
-                    thirdServer.setVisibility(View.VISIBLE);
-                    separator.setVisibility(View.VISIBLE);
-                    thirdServer.setText("Okru");
-                    okru = server.getCode();
-                    break;
-                }
-            }
+        String animeId = selectedAnime.getTitle().replaceAll("\\s", "-");
+        animeId = animeId.replaceAll("[.|:]", "");
+        animeId = animeId.toLowerCase();
+        String finalAnimeId = animeId;
+        mViewModel.getAnimeVideo(animeId, (int) selectedAnime.getEpisodes().get(position + 1).getEpisode()).observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                Log.d(TAG, finalAnimeId + "/" + (int) selectedAnime.getEpisodes().get(position + 1).getEpisode());
+                Log.d(TAG, "onChanged: " + s);
 
-            if (mViewModel.getWatchedEpisodesMap() != null) {
-                for (Map.Entry<String, Long> entry : mViewModel.getWatchedEpisodesMap().entrySet()) {
-                    if (mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().equals(entry.getKey())) {
-                        long hours = entry.getValue() / 3600;
-                        long minutes = (entry.getValue() % 3600) / 60;
-                        long seconds = (entry.getValue() % 60);
-                        time.set(entry.getValue());
-                        @SuppressLint("DefaultLocale") String timeString = String.format("%02dh:%02dm:%02ds", hours, minutes, seconds);
-                        titleText.setText("Seleccione un servidor\n" + timeString);
-                        watched.set(true);
+                mViewModel.getServerList(episodeId[0], episodeId[1]).observe(getViewLifecycleOwner(), serverModels -> {
+                    mView = getLayoutInflater().inflate(R.layout.episode_alert_dialog, null);
+                    titleText = mView.findViewById(R.id.title);
+                    megaText = mView.findViewById(R.id.mega_text);
+                    desuServer = mView.findViewById(R.id.desu_server);
+                    secondServer = mView.findViewById(R.id.second_server);
+                    thirdServer = mView.findViewById(R.id.third_server);
+                    separator = mView.findViewById(R.id.secondSeparator);
+                    desuSeparator = mView.findViewById(R.id.view);
+                    LinearLayout firstRow = mView.findViewById(R.id.firstRow);
+                    AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity(), R.style.alert_dialog).setCancelable(true);
+                    megaText.setText("Mega");
+                    desuServer.setText("Desu");
+                    secondServer.setText(serverModels.get(0).getTitle());
+
+                    if (s == null) {
+                        desuServer.setVisibility(View.GONE);
+                        desuSeparator.setVisibility(View.GONE);
+                        firstRow.setVisibility(View.GONE);
                     }
-                }
-            }
 
-            AlertDialog serverSelector = mBuilder.create();
-            serverSelector.setView(mView);
-            progressBar.setVisibility(View.GONE);
-            serverSelector.show();
-            megaText.setOnClickListener(v -> {
-                for (ServerModel server : serverModels) {
-                    if (server.getServer().equals("mega")) {
-                        if (watched.get()) {
-                            mViewModel.setUrl(server.getCode() + "!" + (time.get() - 15) + "s", position + 1);
-                            Log.d(TAG, "onItemClick: " + server.getCode() + "!" + time.get() + "s");
-                        } else {
-                            mViewModel.setUrl(server.getCode(), position + 1);
+                    for (ServerModel server : serverModels) {
+                        if (server.getServer().equals("okru")) {
+                            thirdServer.setVisibility(View.VISIBLE);
+                            separator.setVisibility(View.VISIBLE);
+                            thirdServer.setText("Okru");
+                            okru = server.getCode();
+                            break;
                         }
+                    }
+
+                    if (mViewModel.getWatchedEpisodesMap() != null) {
+                        for (Map.Entry<String, Long> entry : mViewModel.getWatchedEpisodesMap().entrySet()) {
+                            if (mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().equals(entry.getKey()) && s != null) {
+                                long hours = entry.getValue() / 3600;
+                                long minutes = (entry.getValue() % 3600) / 60;
+                                long seconds = (entry.getValue() % 60);
+                                time.set(entry.getValue());
+                                @SuppressLint("DefaultLocale") String timeString = String.format("%02dh:%02dm:%02ds", hours, minutes, seconds);
+                                titleText.setText("Seleccione un servidor\n" + timeString);
+                                watched.set(true);
+                            }
+                        }
+                    }
+
+                    AlertDialog serverSelector = mBuilder.create();
+                    serverSelector.setView(mView);
+                    progressBar.setVisibility(View.GONE);
+                    serverSelector.show();
+                    desuServer.setOnClickListener(v -> {
+                        mViewModel.setUrl(s, position + 1);
                         serverSelector.dismiss();
                         watchEpisode(position);
-                    }
-                }
-            });
-            secondServer.setOnClickListener(v -> {
-                mViewModel.setUrl(serverModels.get(0).getCode(), position + 1);
-                serverSelector.dismiss();
-                watchEpisode(position);
-            });
-            thirdServer.setOnClickListener(v -> {
-                if (watched.get()) {
-                    mViewModel.setUrl(okru + "?fromTime=" + (time.get() - 15), position + 1);
-                } else {
-                    mViewModel.setUrl(okru, position + 1);
-                }
-                serverSelector.dismiss();
-                watchEpisode(position);
-            });
+                    });
+                    megaText.setOnClickListener(v -> {
+                        for (ServerModel server : serverModels) {
+                            if (server.getServer().equals("mega")) {
+                                mViewModel.setUrl(server.getCode(), position + 1);
+                                serverSelector.dismiss();
+                                watchEpisode(position);
+                            }
+                        }
+                    });
+                    secondServer.setOnClickListener(v -> {
+                        mViewModel.setUrl(serverModels.get(0).getCode(), position + 1);
+                        serverSelector.dismiss();
+                        watchEpisode(position);
+                    });
+                    thirdServer.setOnClickListener(v -> {
+                        mViewModel.setUrl(okru, position + 1);
+                        serverSelector.dismiss();
+                        watchEpisode(position);
+                    });
+                });
+
+            }
         });
+
     }
 
     @Override
@@ -240,7 +263,6 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     @SuppressLint("SourceLockedOrientationActivity")
     private void watchEpisode(int position) {
         mViewModel.setImage(mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getImagePreview());
-
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
         final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         final FragmentTransaction transaction = fragmentManager.beginTransaction();

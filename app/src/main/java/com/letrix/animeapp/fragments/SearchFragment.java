@@ -3,7 +3,6 @@ package com.letrix.animeapp.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,27 +12,22 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.R;
-import com.letrix.animeapp.adapters.AnimeAdapter;
 import com.letrix.animeapp.adapters.SearchAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
 import com.letrix.animeapp.models.AnimeModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SearchFragment extends Fragment implements SearchAdapter.OnItemClickListener {
 
@@ -85,28 +79,22 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(searchBox, InputMethodManager.SHOW_IMPLICIT);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
-                getActivity().getSupportFragmentManager().popBackStack();
-            }
+        backButton.setOnClickListener(v -> {
+            InputMethodManager imm12 = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm12.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
+            getActivity().getSupportFragmentManager().popBackStack();
         });
 
-        searchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    searchTerm = String.valueOf(searchBox.getText());
-                    searchBox.clearFocus();
-                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
-                    performSearch();
-                    return true;
-                }
-                return false;
+        searchBox.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                searchTerm = String.valueOf(searchBox.getText());
+                searchBox.clearFocus();
+                InputMethodManager imm1 = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm1.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
+                performSearch();
+                return true;
             }
+            return false;
         });
     }
 
@@ -114,26 +102,23 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
         recyclerView.setAdapter(null);
         progressBar.setVisibility(View.VISIBLE);
         relativeLayout.setVisibility(View.GONE);
-        mViewModel.getSearchList(searchTerm).observe(getViewLifecycleOwner(), new Observer<ArrayList<AnimeModel>>() {
-            @Override
-            public void onChanged(ArrayList<AnimeModel> animeModels) {
-                searchList = animeModels;
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                final SearchAdapter dataAdapter = new SearchAdapter(animeModels, mViewModel.getFavouriteList().getValue(), SearchFragment.this);
-                recyclerView.setAdapter(dataAdapter);
-                progressBar.setVisibility(View.GONE);
-                if (animeModels.size() == 0) {
-                    relativeLayout.setVisibility(View.VISIBLE);
-                }
-                for (AnimeModel search : animeModels) {
-                    //Log.d(TAG, "onChanged: " + search.getTitle());
-                    for (AnimeModel favorites : mViewModel.getFavouriteList().getValue()) {
-                        if (favorites.getTitle().equals(search.getTitle())) {
-                            Log.d(TAG, "onChanged: " + favorites.getTitle());
-                            //SearchAdapter.setFavorite();
+        mViewModel.getSearchList(searchTerm).observe(getViewLifecycleOwner(), animeModels -> {
+            searchList = animeModels;
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            final SearchAdapter dataAdapter = new SearchAdapter(animeModels, mViewModel.getFavouriteList().getValue(), SearchFragment.this);
+            recyclerView.setAdapter(dataAdapter);
+            progressBar.setVisibility(View.GONE);
+            if (animeModels.size() == 0) {
+                relativeLayout.setVisibility(View.VISIBLE);
+            }
+            for (AnimeModel search : animeModels) {
+                //Log.d(TAG, "onChanged: " + search.getTitle());
+                for (AnimeModel favorites : mViewModel.getFavouriteList().getValue()) {
+                    if (favorites.getTitle().equals(search.getTitle())) {
+                        Log.d(TAG, "onChanged: " + favorites.getTitle());
+                        //SearchAdapter.setFavorite();
 
-                        }
                     }
                 }
             }

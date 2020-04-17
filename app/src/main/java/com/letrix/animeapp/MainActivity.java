@@ -8,7 +8,6 @@ import android.util.Log;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.gson.Gson;
@@ -95,12 +94,9 @@ public class MainActivity extends FragmentActivity {
         saveFavorites(mainViewModel.getFavouriteList().getValue());
         saveWatched(mainViewModel.getWatchedEpisodesMap());
         Log.d("info", "data saved");
-        mainViewModel.getFavouriteList().observe(this, new Observer<List<AnimeModel>>() {
-            @Override
-            public void onChanged(List<AnimeModel> animeModels) {
-                saveFavorites(animeModels);
-                Log.d("info", "data saved");
-            }
+        mainViewModel.getFavouriteList().observe(this, animeModels -> {
+            saveFavorites(animeModels);
+            Log.d("info", "data saved");
         });
     }
 

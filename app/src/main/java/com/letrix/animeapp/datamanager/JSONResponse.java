@@ -5,7 +5,7 @@ import com.letrix.animeapp.models.ServerModel;
 
 import java.util.ArrayList;
 
-public class JSONResponse {
+class JSONResponse {
     private ArrayList<AnimeModel> animes;
     private ArrayList<AnimeModel> tv;
     private ArrayList<AnimeModel> ova;

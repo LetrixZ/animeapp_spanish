@@ -7,7 +7,7 @@ import java.util.Objects;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public abstract class CallbackWithRetry<T> implements Callback<T> {
+abstract class CallbackWithRetry<T> implements Callback<T> {
 
     private static final int TOTAL_RETRIES = 3;
     private static final String TAG = CallbackWithRetry.class.getSimpleName();
