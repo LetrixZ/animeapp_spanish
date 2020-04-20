@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/plot_summary"
-            tools:text="asasasasaaaaaaaaaaaaaaaaaaaaaa" />
+            tools:text="En un mundo..." />
 
         <ImageButton
             android:id="@id/expand_collapse"
@@ -35,7 +35,8 @@
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            android:contentDescription="@string/expand_text" />
     </com.ms.square.android.expandabletextview.ExpandableTextView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -79,7 +80,6 @@
             android:textSize="22sp"
             app:layout_constraintBottom_toTopOf="@+id/typeLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@id/animeCardView"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
@@ -102,7 +102,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="Tipo: "
+                android:text="@string/type"
                 android:theme="@style/type_title" />
 
             <TextView
@@ -111,6 +111,64 @@
                 android:layout_height="wrap_content"
                 android:theme="@style/type_value"
                 tools:text="TV Series" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/statusLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/anime_info_item_start_margin"
+            android:layout_marginBottom="@dimen/anime_info_item_spacing"
+            android:orientation="horizontal"
+
+            app:layout_constraintBottom_toTopOf="@+id/nextEpisodeLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@id/animeCardView"
+            app:layout_constraintTop_toBottomOf="@+id/typeLayout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/status"
+                android:theme="@style/type_title" />
+
+            <TextView
+                android:id="@+id/animeInfoStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/type_value"
+                tools:text="En emisión" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nextEpisodeLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/anime_info_item_start_margin"
+            android:layout_marginBottom="@dimen/anime_info_item_spacing"
+            android:orientation="horizontal"
+
+            app:layout_constraintBottom_toTopOf="@+id/releasedLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@id/animeCardView"
+            app:layout_constraintTop_toBottomOf="@+id/statusLayout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/nextepisode"
+                android:theme="@style/type_title" />
+
+            <TextView
+                android:id="@+id/animeInfoNextEpisode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/type_value"
+                tools:text="2020-04-23" />
         </LinearLayout>
 
         <LinearLayout
@@ -125,52 +183,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@id/animeCardView"
-            app:layout_constraintTop_toBottomOf="@+id/statusLayout">
+            app:layout_constraintTop_toBottomOf="@+id/nextEpisodeLayout">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-
-                android:text="Puntaje: "
+                android:text="@string/rating"
                 android:theme="@style/type_title" />
 
             <TextView
                 android:id="@+id/animeInfoReleased"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:theme="@style/type_value"
                 tools:text="4.5 de 5" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/statusLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/anime_info_item_start_margin"
-            android:layout_marginBottom="@dimen/anime_info_item_spacing"
-            android:orientation="horizontal"
-
-            app:layout_constraintBottom_toTopOf="@+id/releasedLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@id/animeCardView"
-            app:layout_constraintTop_toBottomOf="@+id/typeLayout">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="Estado: "
-                android:theme="@style/type_title" />
-
-            <TextView
-                android:id="@+id/animeInfoStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/type_value"
-                tools:text="En emisión" />
         </LinearLayout>
 
         <com.google.android.material.chip.ChipGroup
@@ -188,7 +215,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/animeInfoRecyclerView"
         android:layout_width="0dp"
@@ -198,15 +224,17 @@
         android:paddingVertical="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/animeInfoSummary" />
+        app:layout_constraintTop_toBottomOf="@id/animeInfoSummary"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/noEpisodes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="No hay episodios disponibles"
+        android:text="@string/no_available"
         android:textColor="@color/episode_text"
         android:textSize="24sp"
         android:visibility="gone" />
@@ -243,26 +271,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/toolbarText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="10dp"
-                android:layout_toStartOf="@id/favourite"
-                android:layout_toEndOf="@id/back"
-                android:alpha="0"
-                android:ellipsize="end"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:textColor="@color/info_anime_title"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/favourite"
-                app:layout_constraintStart_toEndOf="@id/back"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/favourite"
                 android:layout_width="30dp"
@@ -286,8 +294,12 @@
 
     <ProgressBar
         android:id="@+id/progressBar"
-        android:visibility="gone"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/animeInfoRecyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/topView" />
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

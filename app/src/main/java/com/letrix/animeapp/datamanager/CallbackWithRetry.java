@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import timber.log.Timber;
 
 abstract class CallbackWithRetry<T> implements Callback<T> {
 
@@ -15,9 +16,9 @@ abstract class CallbackWithRetry<T> implements Callback<T> {
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        Log.e(TAG, Objects.requireNonNull(t.getLocalizedMessage()));
+        Timber.e(Objects.requireNonNull(t.getLocalizedMessage()));
         if (retryCount++ < TOTAL_RETRIES) {
-            Log.v(TAG, "Retrying... (" + retryCount + " out of " + TOTAL_RETRIES + ")");
+            Timber.tag(TAG).v("Retrying... (" + retryCount + " out of " + TOTAL_RETRIES + ")");
             retry(call);
         }
     }

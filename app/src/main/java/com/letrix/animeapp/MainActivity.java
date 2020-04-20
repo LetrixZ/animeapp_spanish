@@ -11,14 +11,20 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.letrix.animeapp.datamanager.MainViewModel;
 import com.letrix.animeapp.models.AnimeModel;
+import com.letrix.animeapp.models.EpisodeTime;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.List;
+import java.util.Map;
+
+import timber.log.Timber;
 
 public class MainActivity extends FragmentActivity {
 
@@ -30,10 +36,15 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
+
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         mainViewModel.restoreFavourite(loadFavorites());
-        mainViewModel.restoreWatched(loadWatched());
+        mainViewModel.restoreCurrentWatching(loadWatched(), loadWatchedNew());
         mainViewModel.restoreFLV(loadEnableFLV());
+        HashMap<AnimeModel, TreeMap<Integer, EpisodeTime>> temp = loadWatchedNew();
 
         if (savedInstanceState == null) {
             FragmentManager fManager = getSupportFragmentManager();
@@ -110,6 +121,33 @@ public class MainActivity extends FragmentActivity {
         return enableFLV;
     }
 
+    // NEW
+
+    private HashMap<AnimeModel, TreeMap<Integer, EpisodeTime>> loadWatchedNew() {
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
+        GsonBuilder gsonBuilder = new GsonBuilder().enableComplexMapKeySerialization();
+        Gson gson = gsonBuilder.create();
+        String json = sharedPreferences.getString("watched list new", null);
+        Type type = new TypeToken<HashMap<AnimeModel, TreeMap<Integer, EpisodeTime>>>() {
+        }.getType();
+        HashMap<AnimeModel, TreeMap<Integer, EpisodeTime>> watchedList = gson.fromJson(json, type);
+
+        if (watchedList == null) {
+            watchedList = new HashMap<>();
+        }
+        return watchedList;
+    }
+
+    private void saveWatchedNew(HashMap<AnimeModel, TreeMap<Integer, EpisodeTime>> watched) {
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        GsonBuilder gsonBuilder = new GsonBuilder().enableComplexMapKeySerialization();
+        Gson gson = gsonBuilder.create();
+        String json = gson.toJson(watched);
+        editor.putString("watched list new", json);
+        editor.apply();
+    }
+
     @Override
     public void onStop() {
         super.onStop();
@@ -118,13 +156,10 @@ public class MainActivity extends FragmentActivity {
         }
         if (saveWatched) {
             saveWatched(mainViewModel.getWatchedEpisodesMap());
+            saveWatchedNew(mainViewModel.getCurrentlyWatching());
         }
         saveEnable(mainViewModel.getEnableFLV());
-        Log.d("info", "data saved");
-        mainViewModel.getFavouriteList().observe(this, animeModels -> {
-            saveFavorites(animeModels);
-            Log.d("info", "data saved");
-        });
+        Timber.d("Data saved");
     }
 
 

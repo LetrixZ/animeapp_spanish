@@ -1,19 +1,20 @@
 package com.letrix.animeapp.models;
 
 import java.util.List;
+import java.util.Objects;
 
-public class AnimeModel {
+public final class AnimeModel {
 
-    private String id;
-    private String title;
-    private String poster;
-    private String banner;
-    private String synopsis;
-    private String debut;
-    private String type;
-    private String rating;
-    private List<String> genres;
-    private List<Episodes> episodes;
+    private final String id;
+    private final String title;
+    private final String poster;
+    private final String banner;
+    private final String synopsis;
+    private final String debut;
+    private final String type;
+    private final String rating;
+    private final List<String> genres;
+    private final List<Episodes> episodes;
 
     public AnimeModel(String id, String title, String poster, String banner, String synopsis, String debut, String type, String rating, List<String> genres, List<Episodes> episodes) {
         this.id = id;
@@ -28,91 +29,66 @@ public class AnimeModel {
         this.episodes = episodes;
     }
 
-    public String getId() {
-        return id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AnimeModel that = (AnimeModel) o;
+        return Objects.equals(title, that.title) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(genres, that.genres);
     }
 
-    public void setId(String id) {
-        this.id = id;
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, type, genres);
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getPoster() {
         return poster;
-    }
-
-    public void setPoster(String poster) {
-        this.poster = poster;
     }
 
     public String getBanner() {
         return banner;
     }
 
-    public void setBanner(String banner) {
-        this.banner = banner;
-    }
-
     public String getSynopsis() {
         return synopsis;
-    }
-
-    public void setSynopsis(String synopsis) {
-        this.synopsis = synopsis;
     }
 
     public String getDebut() {
         return debut;
     }
 
-    public void setDebut(String debut) {
-        this.debut = debut;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getRating() {
         return rating;
     }
 
-    public void setRating(String rating) {
-        this.rating = rating;
-    }
-
     public List<String> getGenres() {
         return genres;
-    }
-
-    public void setGenres(List<String> genres) {
-        this.genres = genres;
     }
 
     public List<Episodes> getEpisodes() {
         return episodes;
     }
 
-    public void setEpisodes(List<Episodes> episodes) {
-        this.episodes = episodes;
-    }
-
-    public class Episodes {
-        private String nextEpisodeDate;
-        private float episode;
-        private String id;
-        private String imagePreview;
+    public final class Episodes {
+        private final String nextEpisodeDate;
+        private final Float episode;
+        private final String id;
+        private final String imagePreview;
 
         public Episodes(String nextEpisodeDate, float episode, String id, String imagePreview) {
             this.nextEpisodeDate = nextEpisodeDate;
@@ -125,32 +101,32 @@ public class AnimeModel {
             return nextEpisodeDate;
         }
 
-        public void setNextEpisodeDate(String nextEpisodeDate) {
-            this.nextEpisodeDate = nextEpisodeDate;
-        }
-
         public float getEpisode() {
             return episode;
-        }
-
-        public void setEpisode(int episode) {
-            this.episode = episode;
         }
 
         public String getId() {
             return id;
         }
 
-        public void setId(String id) {
-            this.id = id;
-        }
-
         public String getImagePreview() {
             return imagePreview;
         }
 
-        public void setImagePreview(String imagePreview) {
-            this.imagePreview = imagePreview;
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Episodes episodes = (Episodes) o;
+            return Objects.equals(nextEpisodeDate, episodes.nextEpisodeDate) &&
+                    Objects.equals(episode, episodes.episode) &&
+                    Objects.equals(id, episodes.id) &&
+                    Objects.equals(imagePreview, episodes.imagePreview);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(nextEpisodeDate, episode, id, imagePreview);
         }
     }
 }

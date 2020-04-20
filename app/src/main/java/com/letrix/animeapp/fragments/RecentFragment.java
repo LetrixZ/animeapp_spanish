@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,23 +15,34 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.HomeFragment;
 import com.letrix.animeapp.R;
+import com.letrix.animeapp.adapters.WatchedAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
+import com.letrix.animeapp.models.AnimeModel;
+import com.letrix.animeapp.models.EpisodeTime;
 import com.letrix.animeapp.utils.AnimeSection;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
+import timber.log.Timber;
 
-public class RecentFragment extends Fragment implements AnimeSection.ClickListener {
+public class RecentFragment extends Fragment implements AnimeSection.ClickListener, WatchedAdapter.OnItemClickListener {
 
-    private View rootView;
     private MainViewModel mainViewModel;
     private SectionedRecyclerViewAdapter sectionedAdapter;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
-    private GridLayoutManager gridLayoutManager;
+    private boolean tv = true, movies = true;
+    private ArrayList<Map.Entry<AnimeModel, ArrayList<EpisodeTime>>> watchedAnimeList = new ArrayList<>();
 
     public RecentFragment() {
     }
@@ -38,14 +50,59 @@ public class RecentFragment extends Fragment implements AnimeSection.ClickListen
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_common, container, false);
-
+        View rootView = inflater.inflate(R.layout.fragment_recent, container, false);
+        TextView watchedAnimeText = rootView.findViewById(R.id.animeType);
         recyclerView = rootView.findViewById(R.id.recyclerView);
+        RecyclerView watchedRecyclerView = rootView.findViewById(R.id.watchedRecyclerView);
         progressBar = rootView.findViewById(R.id.progressBar);
+        watchedRecyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false);
+        watchedRecyclerView.setLayoutManager(layoutManager);
 
         mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
-        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            gridLayoutManager = new GridLayoutManager(getActivity(), 4);
+
+        recyclerView.setNestedScrollingEnabled(false);
+        watchedRecyclerView.setNestedScrollingEnabled(false);
+        // Checking if there is any watched anime
+        Timber.d("Checking if there is any watched anime");
+        if (mainViewModel.getCurrentlyWatching().size() != 0) {
+            // There are watched animes, so checking what those are
+            ArrayList<EpisodeTime> tempEpisodeList = new ArrayList<>();
+            HashMap<AnimeModel, ArrayList<EpisodeTime>> tempList = new HashMap<>();
+            Timber.d("There are watched animes, so checking what those are");
+            for (Map.Entry<AnimeModel, TreeMap<Integer, EpisodeTime>> entry : mainViewModel.getCurrentlyWatching().entrySet()) {
+                tempEpisodeList = new ArrayList<>();
+                Timber.d("Anime title: %s", entry.getKey().getTitle());
+                // Checking what is the latest watched episode
+                Timber.d("Episodes watched: %s", entry.getValue());
+                for (Map.Entry<Integer, EpisodeTime> value : entry.getValue().entrySet()) {
+                    tempEpisodeList.add(value.getValue());
+                }
+                tempList.put(entry.getKey(), tempEpisodeList);
+            }
+            for (EpisodeTime episodeTime : tempEpisodeList) {
+                Timber.d("Anime: " + episodeTime.getAnimeTitle() + ", episodio " + episodeTime.getEpisodeNumber());
+            }
+            Set<Map.Entry<AnimeModel, ArrayList<EpisodeTime>>> anime = tempList.entrySet();
+            watchedAnimeList = new ArrayList<>(anime);
+            // Init RecyclerView
+            WatchedAdapter adapter = new WatchedAdapter(watchedAnimeList, this, this);
+            watchedRecyclerView.setAdapter(adapter);
+            if (adapter.getItemCount() != 0) {
+                watchedRecyclerView.setVisibility(View.VISIBLE);
+                watchedAnimeText.setVisibility(View.VISIBLE);
+                watchedAnimeText.setText(R.string.watching);
+            }
+            else {
+                watchedRecyclerView.setVisibility(View.GONE);
+                watchedAnimeText.setVisibility(View.GONE);
+            }
+        }
+
+        GridLayoutManager gridLayoutManager;
+        if (requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            gridLayoutManager = new GridLayoutManager(requireActivity(), 4);
             gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
@@ -54,7 +111,7 @@ public class RecentFragment extends Fragment implements AnimeSection.ClickListen
             });
         }
         else {
-            gridLayoutManager = new GridLayoutManager(getActivity(), 3);
+            gridLayoutManager = new GridLayoutManager(requireActivity(), 3);
             gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
@@ -66,29 +123,37 @@ public class RecentFragment extends Fragment implements AnimeSection.ClickListen
         sectionedAdapter = new SectionedRecyclerViewAdapter();
         progressBar.setVisibility(View.VISIBLE);
         mainViewModel.getTVList(1).observe(getViewLifecycleOwner(), animeModels -> {
-            sectionedAdapter.addSection("TV", new AnimeSection(animeModels, "Series", RecentFragment.this));
-            if (animeModels == null || animeModels.size() < 1) {
-                sectionedAdapter.removeSection("TV");
-            }
-            recyclerView.setAdapter(sectionedAdapter);
-            progressBar.setVisibility(View.GONE);
             mainViewModel.getMovieList(1).observe(getViewLifecycleOwner(), animeModels1 -> {
-                sectionedAdapter.addSection("Movies", new AnimeSection(animeModels1, "Películas", RecentFragment.this));
-                if (animeModels1 == null || animeModels1.size() < 1) {
-                    sectionedAdapter.removeSection("Movies");
-                }
-                sectionedAdapter.notifyItemRangeChanged(24, 24);
                 mainViewModel.getOvaList(1).observe(getViewLifecycleOwner(), animeModels2 -> {
+                    sectionedAdapter.addSection("TV", new AnimeSection(animeModels, "Series", RecentFragment.this));
+                    if (animeModels == null || animeModels.size() < 1) {
+                        sectionedAdapter.removeSection("TV");
+                        tv = false;
+                    }
+                    sectionedAdapter.addSection("Movies", new AnimeSection(animeModels1, "Películas", RecentFragment.this));
+                    if (animeModels1 == null || animeModels1.size() < 1) {
+                        sectionedAdapter.removeSection("Movies");
+                        movies = false;
+                    }
+                    sectionedAdapter.notifyItemRangeChanged(24, 24);
                     sectionedAdapter.addSection("OVA", new AnimeSection(animeModels2, "OVAs", RecentFragment.this));
                     if (animeModels2 == null || animeModels2.size() < 1) {
                         sectionedAdapter.removeSection("OVA");
                     }
                     sectionedAdapter.notifyItemRangeChanged(48, 24);
+                    recyclerView.setAdapter(sectionedAdapter);
+                    progressBar.setVisibility(View.GONE);
                 });
             });
         });
 
         return rootView;
+    }
+
+    public void setCompleted(int position) {
+        Timber.d("%s completada!", watchedAnimeList.get(position).getKey().getTitle());
+        mainViewModel.getCurrentlyWatching().remove(watchedAnimeList.get(position).getKey());
+        Timber.d(String.valueOf(mainViewModel.getCurrentlyWatching().remove(watchedAnimeList.get(position).getKey())));
     }
 
     @Override
@@ -98,10 +163,20 @@ public class RecentFragment extends Fragment implements AnimeSection.ClickListen
                 mainViewModel.setSelectedAnime(mainViewModel.getTVList(1).getValue().get(itemAdapterPosition - 1));
                 break;
             case "Películas":
-                mainViewModel.setSelectedAnime(mainViewModel.getMovieList(1).getValue().get(itemAdapterPosition - 27));
+                if (tv) {
+                    mainViewModel.setSelectedAnime(mainViewModel.getMovieList(1).getValue().get(itemAdapterPosition - 27));
+                } else {
+                    mainViewModel.setSelectedAnime(mainViewModel.getMovieList(1).getValue().get(itemAdapterPosition - 1));
+                }
                 break;
             case "OVAs":
-                mainViewModel.setSelectedAnime(mainViewModel.getOvaList(1).getValue().get(itemAdapterPosition - 53));
+                if (tv && movies) {
+                    mainViewModel.setSelectedAnime(mainViewModel.getOvaList(1).getValue().get(itemAdapterPosition - 53));
+                } else if (tv || movies) {
+                    mainViewModel.setSelectedAnime(mainViewModel.getOvaList(1).getValue().get(itemAdapterPosition - 27));
+                } else {
+                    mainViewModel.setSelectedAnime(mainViewModel.getOvaList(1).getValue().get(itemAdapterPosition - 1));
+                }
                 break;
         }
         final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
@@ -124,5 +199,15 @@ public class RecentFragment extends Fragment implements AnimeSection.ClickListen
                 HomeFragment.selectPage(7);
                 break;
         }
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        mainViewModel.setSelectedAnime(watchedAnimeList.get(position).getKey());
+        final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        final FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragment_navigation_host, new InfoFragment());
+        transaction.addToBackStack("TAG");
+        transaction.commit();
     }
 }

@@ -41,7 +41,7 @@ public class FavouritesFragment extends Fragment implements AnimeAdapter.OnItemC
         backButton = view.findViewById(R.id.back);
         recyclerView = view.findViewById(R.id.favouritesRecyclerView);
         recyclerView.setHasFixedSize(true);
-        gridLayoutManager = new GridLayoutManager(getActivity(), 3);
+        gridLayoutManager = new GridLayoutManager(requireActivity(), 3);
         recyclerView.setLayoutManager(gridLayoutManager);
 
         mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
@@ -53,13 +53,13 @@ public class FavouritesFragment extends Fragment implements AnimeAdapter.OnItemC
             }
         });
 
-        backButton.setOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
+        backButton.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
 
         return view;
     }
 
     private void initRecycler(List<AnimeModel> animeList) {
-        adapter = new AnimeAdapter(getActivity(), gridLayoutManager, recyclerView, 0, FavouritesFragment.this);
+        adapter = new AnimeAdapter(requireActivity(), gridLayoutManager, recyclerView, 0, FavouritesFragment.this);
         recyclerView.setAdapter(adapter);
         ArrayList<AnimeModel> insertList = new ArrayList<>(animeList);
         adapter.insertData(insertList);

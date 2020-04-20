@@ -74,13 +74,13 @@ class RecentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
             switch (position) {
                 case 0:
-                    headerViewHolder.sectionName.setText("Series");
+                    headerViewHolder.sectionName.setText(R.string.series);
                     break;
                 case 25:
-                    headerViewHolder.sectionName.setText("Películas");
+                    headerViewHolder.sectionName.setText(R.string.movies);
                     break;
                 case 48:
-                    headerViewHolder.sectionName.setText("OVAs");
+                    headerViewHolder.sectionName.setText(R.string.ovas);
                     break;
             }
         } else if (holder instanceof ItemViewHolder) {
@@ -88,9 +88,9 @@ class RecentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             AnimeModel currentAnime = animeList.get(position - 1);
             itemViewHolder.animeTitle.setText(currentAnime.getTitle());
             if (currentAnime.getEpisodes() != null) {
-                itemViewHolder.lastEpisode.setText("Episodio " + (currentAnime.getEpisodes().size() - 1));
+                itemViewHolder.lastEpisode.setText(String.format(itemViewHolder.itemView.getResources().getString(R.string.episode), String.valueOf(currentAnime.getEpisodes().size() - 1)));
             } else {
-                itemViewHolder.lastEpisode.setText("Sin episodios");
+                itemViewHolder.lastEpisode.setText(R.string.no_episodes);
             }
             byte[] decodedString = Base64.decode(currentAnime.getPoster(), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);

@@ -1,9 +1,0 @@
-{
-  "latestVersion": "1.4.6",
-  "url": "https://github.com/LetrixZ/animeapp_spanish/releases",
-  "releaseNotes": [
-    "Versión 1.4.6",
-    "- Agregado panel de configuración, por favor, revisar",
-    "- Hotfix: error que se producia al querer ver episodios no vistos anteriormente con el servidor Desu",
-  ]
-}

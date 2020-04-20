@@ -27,6 +27,8 @@ import com.letrix.animeapp.models.BackedData;
 
 import java.util.ArrayList;
 
+import timber.log.Timber;
+
 public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickListener {
 
     private static final String TAG = "GenreFragment";
@@ -52,7 +54,7 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         searchTerm = getArguments().getString("genre");
-        Log.d(TAG, "onCreate: " + searchTerm);
+        Timber.d("onCreate: %s", searchTerm);
         mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
 
         if (mainViewModel.getBackedData(7).getAnimeList() != null && mainViewModel.getBackedData(7).getPageName().equals(searchTerm)) {
@@ -104,10 +106,10 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
         genre = genre.substring(0, 1).toUpperCase() + genre.substring(1).toLowerCase();
         genreTitle.setText(genre);
         recyclerView.setHasFixedSize(true);
-        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            gridLayoutManager = new GridLayoutManager(getActivity(), 6);
+        if (requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            gridLayoutManager = new GridLayoutManager(requireActivity(), 6);
         } else {
-            gridLayoutManager = new GridLayoutManager(getActivity(), 3);
+            gridLayoutManager = new GridLayoutManager(requireActivity(), 3);
         }
         recyclerView.setLayoutManager(gridLayoutManager);
 
@@ -122,8 +124,8 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
             mainViewModel.getGenreList(searchTerm, "default", 1).observe(getViewLifecycleOwner(), this::insertData);
         }
         else {
-            Log.d(TAG, "initData: USING OLD DATA");
-            adapter = new GenreAdapter(getActivity(), gridLayoutManager, recyclerView, pageNumber, this::onItemClick);
+            Timber.d("initData: USING OLD DATA");
+            adapter = new GenreAdapter(requireActivity(), gridLayoutManager, recyclerView, pageNumber, this::onItemClick);
             recyclerView.setAdapter(adapter);
             ArrayList<AnimeModel> insertList = new ArrayList<>(dataSource);
             adapter.insertData(insertList);
@@ -132,12 +134,12 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
     }
 
     private void insertData(ArrayList<AnimeModel> animeModels) {
-        Log.d(TAG, "initData: REQUESTING NEW DATA");
-        Log.d(TAG, "insertData: HIDING ProgressBar");
+        Timber.tag(TAG).d("initData: REQUESTING NEW DATA");
+        Timber.d("insertData: HIDING ProgressBar");
         progressBar.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.GONE);
         dataSource = animeModels;
-        adapter = new GenreAdapter(getActivity(), gridLayoutManager, recyclerView, pageNumber, this::onItemClick);
+        adapter = new GenreAdapter(requireActivity(), gridLayoutManager, recyclerView, pageNumber, this::onItemClick);
         recyclerView.setAdapter(adapter);
         ArrayList<AnimeModel> insertList = new ArrayList<>(dataSource);
         adapter.insertData(insertList);
@@ -154,7 +156,7 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
         mainViewModel.getCode().observe(getViewLifecycleOwner(), integer -> {
             code = integer;
             if (integer != 200) {
-                Toast.makeText(getActivity(), "404, ¡No pudimos obtener más anime :C!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity(), "404, ¡No pudimos obtener más anime :C!", Toast.LENGTH_SHORT).show();
                 adapter.hideProgressBar();
             }
         });
@@ -162,7 +164,7 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
         if (animeModels.size() == 24) {
             dataSource.addAll(animeModels);
             adapter.updateData(dataSource);
-            Log.d(TAG, "performPagination: " + animeModels.size());
+            Timber.d("performPagination: " + animeModels.size());
             if (paginationLimit <= 10) {
                 paginationLimit++;
             }
@@ -170,8 +172,8 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
             paginationLimit = 0;
             dataSource.addAll(animeModels);
             adapter.updateData(dataSource);
-            Log.d(TAG, "performPagination: " + animeModels.size());
-            Toast.makeText(getActivity(), "¡No hay más animes!", Toast.LENGTH_SHORT).show();
+            Timber.d("performPagination: " + animeModels.size());
+            Toast.makeText(requireActivity(), "¡No hay más animes!", Toast.LENGTH_SHORT).show();
         }
         adapter.hideProgressBar();
     }

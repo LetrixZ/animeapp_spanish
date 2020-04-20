@@ -62,9 +62,8 @@ public class GenreSelectorFragment extends Fragment implements GenreSelectorAdap
         GenreFragment genreFragment = new GenreFragment();
         Bundle b = new Bundle();
         b.putString("genre", genreList.get(position));
-        Log.d(TAG, "onItemClickGenre: " + genreList.get(position));
         genreFragment.setArguments(b);
-        final FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        final FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_navigation_host, genreFragment, "genre");
         ft.addToBackStack("genre");
         ft.commit();

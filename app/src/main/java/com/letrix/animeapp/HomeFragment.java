@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,7 +53,6 @@ public class HomeFragment extends Fragment {
         pager.setCurrentItem(page);
     }
 
-
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment {
         motionLayout = view.findViewById(R.id.homeMotionLayout);
 
         searchButton.setOnClickListener(v -> {
-            final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             final FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.fragment_navigation_host, new SearchFragment());
             transaction.addToBackStack("TAG");
@@ -69,7 +69,7 @@ public class HomeFragment extends Fragment {
         });
 
         favouritesButton.setOnClickListener(v -> {
-            final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             final FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.fragment_navigation_host, new FavouritesFragment());
             transaction.addToBackStack("TAG");
@@ -84,12 +84,11 @@ public class HomeFragment extends Fragment {
         smartTabLayout.setViewPager(pager);
         pager.setCurrentItem(2, true);
 
-        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            getActivity().getSupportFragmentManager().addOnBackStackChangedListener(
+        if (requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            requireActivity().getSupportFragmentManager().addOnBackStackChangedListener(
                     () -> motionLayout.transitionToEnd());
         }
     }
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {

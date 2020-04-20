@@ -77,13 +77,13 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
 
         searchBox.requestFocus();
 
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(searchBox, InputMethodManager.SHOW_IMPLICIT);
 
         backButton.setOnClickListener(v -> {
-            InputMethodManager imm12 = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm12 = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm12.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
-            getActivity().getSupportFragmentManager().popBackStack();
+            requireActivity().getSupportFragmentManager().popBackStack();
         });
 
         searchBox.setOnEditorActionListener((v, actionId, event) -> {
@@ -106,22 +106,12 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
         mViewModel.getSearchList(searchTerm).observe(getViewLifecycleOwner(), animeModels -> {
             searchList = animeModels;
             recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
             final SearchAdapter dataAdapter = new SearchAdapter(animeModels, mViewModel.getFavouriteList().getValue(), SearchFragment.this);
             recyclerView.setAdapter(dataAdapter);
             progressBar.setVisibility(View.GONE);
             if (animeModels.size() == 0) {
                 relativeLayout.setVisibility(View.VISIBLE);
-            }
-            for (AnimeModel search : animeModels) {
-                //Log.d(TAG, "onChanged: " + search.getTitle());
-                for (AnimeModel favorites : mViewModel.getFavouriteList().getValue()) {
-                    if (favorites.getTitle().equals(search.getTitle())) {
-                        Log.d(TAG, "onChanged: " + favorites.getTitle());
-                        //SearchAdapter.setFavorite();
-
-                    }
-                }
             }
         });
     }
@@ -131,7 +121,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
 
         mViewModel.setSelectedAnime(searchList.get(position));
 
-        final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         final FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_navigation_host, new InfoFragment());
         transaction.addToBackStack("TAG");
@@ -140,7 +130,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
 
     /*@Override
     public void onFavoriteClick(int position) {
-        Toast.makeText(getActivity(), searchList.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireActivity(), searchList.get(position).getTitle(), Toast.LENGTH_SHORT).show();
         for (AnimeModel favorites : mViewModel.getFavouriteList().getValue()) {
             Log.d(TAG, "onFavoriteClick: " + searchList.get(position).getTitle());
             if (searchList.get(position) == favorites)  {

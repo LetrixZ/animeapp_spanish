@@ -19,7 +19,7 @@
         android:paddingTop="20dp"
         android:paddingRight="20dp"
         android:paddingBottom="10dp"
-        android:text="Descubre"
+        android:text="@string/browse"
         android:textColor="@color/header"
         android:textSize="@dimen/header_size" />
 
@@ -96,7 +96,6 @@
         app:stl_titleOffset="24dp"
         app:stl_underlineColor="#4D000000"
         app:stl_underlineThickness="0dp" />
-
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager"

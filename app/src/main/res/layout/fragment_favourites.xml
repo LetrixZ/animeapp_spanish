@@ -41,7 +41,7 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:text="Favoritos"
+            android:text="@string/favorites"
             android:textColor="@color/main_text"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"

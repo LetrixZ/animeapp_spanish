@@ -86,9 +86,9 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             itemViewHolder.animeTitle.setText(currentItem.getTitle());
             if (currentItem.getEpisodes() != null) {
-                itemViewHolder.lastEpisode.setText("Episodio " + (currentItem.getEpisodes().size() - 1));
+                itemViewHolder.lastEpisode.setText(String.format(itemViewHolder.itemView.getResources().getString(R.string.episode), String.valueOf(currentItem.getEpisodes().size() - 1)));
             } else {
-                itemViewHolder.lastEpisode.setText("Sin episodios");
+                itemViewHolder.lastEpisode.setText(R.string.no_episodes);
             }
             byte[] decodedString = Base64.decode(currentItem.getPoster(), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);

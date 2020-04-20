@@ -1,5 +1,6 @@
 package com.letrix.animeapp.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.jakewharton.processphoenix.ProcessPhoenix;
 import com.letrix.animeapp.HomeFragment;
 import com.letrix.animeapp.MainActivity;
 import com.letrix.animeapp.R;
@@ -29,6 +31,7 @@ public class ConfigFragment extends Fragment {
     public ConfigFragment() {
     }
 
+    @SuppressLint("ApplySharedPref")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,19 +44,21 @@ public class ConfigFragment extends Fragment {
         toggleFlv = view.findViewById(R.id.toggleFlv);
 
         deleteFavorites.setOnClickListener(v -> {
-            Toast.makeText(getActivity(), "Borrando favoritos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireActivity(), "Borrando favoritos", Toast.LENGTH_SHORT).show();
             SharedPreferences settings = requireActivity().getSharedPreferences("shared preferences", requireActivity().MODE_PRIVATE);
-            settings.edit().remove("favourite list").apply();
-            MainActivity.saveFavorites = false;
-            requireActivity().recreate();
+            SharedPreferences.Editor editor = settings.edit();
+            editor.remove("favourite list");
+            editor.commit();
+            mainViewModel.clearFavorites();
         });
 
         deleteWatched.setOnClickListener(v -> {
-            Toast.makeText(getActivity(), "Borrando vistos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireActivity(), "Borrando vistos", Toast.LENGTH_SHORT).show();
             SharedPreferences settings = requireActivity().getSharedPreferences("shared preferences", requireActivity().MODE_PRIVATE);
-            settings.edit().remove("watched list").apply();
-            MainActivity.saveWatched = false;
-            requireActivity().recreate();
+            settings.edit().remove("watched list").commit();
+            settings.edit().remove("watched list new").commit();
+            mainViewModel.clearCurrentlyWatching();
+            //ProcessPhoenix.triggerRebirth(requireActivity());
         });
 
         if (mainViewModel.getEnableFLV() != null) {

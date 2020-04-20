@@ -14,5 +14,29 @@
     <string name="delete_watched_info">Esto borrara toda actividad de visualización, incluido tiempo de reproducción y episodios vistos</string>
     <string name="flvServers">Activar servidores de AnimeFLV</string>
     <string name="flvServers_info">Si esta habilitada, se mostraran los servidores de AnimeFLV. Ten en cuenta que estos no permiten reanudar la reproducción desde dónde la dejaste y son de inferior calidad</string>
+    <string name="desu_server">Desu</string>
+    <string name="status">"Estado: "</string>
+    <string name="type">"Tipo: "</string>
+    <string name="rating">"Puntaje: "</string>
+    <string name="nextepisode">"Próximo epiosodio: "</string>
+    <string name="not_available_desu">No disponible en Desu</string>
+    <string name="completed">Completada</string>
+    <string name="expand_text">Expandir texto</string>
+    <string name="back">Volver atrás</string>
+    <string name="anime_cover">Carátula de Anime</string>
+    <string name="delete">Borrar</string>
+    <string name="no">No</string>
+    <string name="yes">Sí</string>
+    <string name="favorites">Favoritos</string>
+    <string name="no_available">No hay episodios disponibles</string>
+    <string name="search">Buscar</string>
+    <string name="not_found404">¡404!</string>
+    <string name="not_found">Anime no encontrado :C</string>
+    <string name="browse">Descubre</string>
+    <string name="no_episodes">Sin episodios</string>
+    <string name="series">Series</string>
+    <string name="movies">Películas</string>
+    <string name="ovas">OVAs</string>
+    <string name="watching">Seguir mirando</string>
 
 </resources>

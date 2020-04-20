@@ -17,6 +17,18 @@
     <ConstraintSet android:id="@+id/start">
 
         <Constraint
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <PropertySet
+                app:visibilityMode="ignore"/>
+        </Constraint>
+
+        <Constraint
             android:id="@id/header"
             android:layout_width="match_parent"
             android:layout_height="80dp"
@@ -56,6 +68,18 @@
 
 
     <ConstraintSet android:id="@+id/end">
+
+        <Constraint
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <PropertySet
+                app:visibilityMode="ignore"/>
+        </Constraint>
 
         <Constraint
             android:id="@id/viewpagertab"

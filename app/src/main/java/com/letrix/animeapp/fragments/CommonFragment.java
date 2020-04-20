@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import timber.log.Timber;
+
 public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClickListener {
 
     private static int TYPE = 1;
@@ -120,19 +122,19 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
         recyclerView = view.findViewById(R.id.recyclerView);
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView.setHasFixedSize(true);
-        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            gridLayoutManager = new GridLayoutManager(getActivity(), 4);
+        if (requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            gridLayoutManager = new GridLayoutManager(requireActivity(), 4);
         } else {
-            gridLayoutManager = new GridLayoutManager(getActivity(), 3);
+            gridLayoutManager = new GridLayoutManager(requireActivity(), 3);
         }
         recyclerView.setLayoutManager(gridLayoutManager);
 
         if (dataSource != null) {
-            Log.d(TAG, "onViewCreated: DataSource != null");
+            Timber.d("onViewCreated: DataSource != null");
             initData();
         } else {
-            Log.d(TAG, "onViewCreated: DataSource == null");
-            Log.d(TAG, "onCreateView: " + TYPE_MAP.get(TYPE));
+            Timber.d("onViewCreated: DataSource == null");
+            Timber.d("onCreateView: %s", TYPE_MAP.get(TYPE));
             //initData();
         }
         return view;
@@ -167,8 +169,8 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
 
             }
         } else {
-            Log.d(TAG, "initData: USING OLD DATA");
-            adapter = new AnimeAdapter(getActivity(), gridLayoutManager, recyclerView, pageNumber, CommonFragment.this);
+            Timber.d("initData: USING OLD DATA");
+            adapter = new AnimeAdapter(requireActivity(), gridLayoutManager, recyclerView, pageNumber, CommonFragment.this);
             recyclerView.setAdapter(adapter);
             ArrayList<AnimeModel> insertList = new ArrayList<>(dataSource);
             adapter.insertData(insertList);
@@ -176,9 +178,9 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
     }
 
     private void insertData(ArrayList<AnimeModel> animeModels) {
-        Log.d(TAG, "initData: REQUESTING NEW DATA");
+        Timber.d("initData: REQUESTING NEW DATA");
         dataSource = animeModels;
-        adapter = new AnimeAdapter(getActivity(), gridLayoutManager, recyclerView, pageNumber, CommonFragment.this);
+        adapter = new AnimeAdapter(requireActivity(), gridLayoutManager, recyclerView, pageNumber, CommonFragment.this);
         recyclerView.setAdapter(adapter);
         progressBar.setVisibility(View.GONE);
         blockClick = false;
@@ -226,7 +228,7 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
         mainViewModel.getCode().observe(getViewLifecycleOwner(), integer -> {
             code = integer;
             if (integer != 200) {
-                Toast.makeText(getActivity(), "404, ¡No pudimos obtener más anime :C!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity(), "404, ¡No pudimos obtener más anime :C!", Toast.LENGTH_SHORT).show();
                 adapter.hideProgressBar();
             }
         });
@@ -234,7 +236,7 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
         if (animeModels.size() == 24) {
             dataSource.addAll(animeModels);
             adapter.updateData(dataSource);
-            Log.d(TAG, "performPagination: " + animeModels.size());
+            Timber.d("performPagination: %s", animeModels.size());
             if (paginationLimit < 8) {
                 paginationLimit++;
             }
@@ -242,8 +244,8 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
             paginationLimit = 0;
             dataSource.addAll(animeModels);
             adapter.updateData(dataSource);
-            Log.d(TAG, "performPagination: " + animeModels.size());
-            Toast.makeText(getActivity(), "¡No hay más animes!", Toast.LENGTH_SHORT).show();
+            Timber.d("performPagination: %s", animeModels.size());
+            Toast.makeText(requireActivity(), "¡No hay más animes!", Toast.LENGTH_SHORT).show();
         }
         adapter.hideProgressBar();
     }
@@ -252,13 +254,13 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
     public void onItemClick(int position) {
         if (!adapter.isLoading || !blockClick) {
             TYPE = getArguments().getInt("TYPE");
-            Log.d(TAG, "onItemClick: " + TYPE);
-            Log.d(TAG, "onItemClick: " + position);
+            Timber.d("onItemClick: %s", TYPE);
+            Timber.d("onItemClick: %s", position);
             if (dataSource != null) {
                 mainViewModel.setSelectedAnime(dataSource.get(position));
             } else {
                 dataSource = mainViewModel.getBackedData(TYPE).getAnimeList();
-                Log.d(TAG, "onItemClick: DATASOURCE = NULL");
+                Timber.d("onItemClick: DATASOURCE = NULL");
             }
             final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             final FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -275,8 +277,8 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
             if (dataSource.size() > 1) {
                 assert getArguments() != null;
                 TYPE = getArguments().getInt("TYPE");
-                Log.d(TAG, "onDestroy: Backing up data");
-                Log.d(TAG, "onDestroy: " + dataSource.size() + " " + pageNumber);
+                Timber.d("onDestroy: Backing up data");
+                Timber.d("onDestroy: " + dataSource.size() + " " + pageNumber);
                 mainViewModel.addBackedData(new BackedData(TYPE_MAP.get(TYPE), dataSource, pageNumber), TYPE);
             }
         }

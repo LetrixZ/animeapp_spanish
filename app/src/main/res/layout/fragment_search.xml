@@ -35,6 +35,7 @@
                 android:scaleX="1.2"
                 android:scaleY="1.2"
                 android:src="@drawable/ic_arrow"
+                android:contentDescription="@string/back"
                 android:tint="@color/header" />
 
             <EditText
@@ -46,7 +47,7 @@
                 android:layout_marginEnd="20dp"
                 android:autofillHints="One Piece"
                 android:background="@drawable/search_edit_text_background"
-                android:hint="Buscar"
+                android:hint="@string/search"
                 android:imeOptions="actionSearch"
                 android:inputType="textCapWords"
                 android:paddingStart="20dp"
@@ -86,7 +87,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
-            android:text="¡404!"
+            android:text="@string/not_found404"
             android:textSize="148sp" />
 
         <TextView
@@ -96,7 +97,7 @@
             android:fontFamily="sans-serif-light"
             android:gravity="center"
             android:maxLines="1"
-            android:text="Anime no encontrado :C"
+            android:text="@string/not_found"
             android:textSize="32sp" />
     </RelativeLayout>
 

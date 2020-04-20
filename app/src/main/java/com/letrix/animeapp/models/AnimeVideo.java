@@ -6,6 +6,16 @@ public class AnimeVideo {
 
     @SerializedName("video")
     private String video;
+    @SerializedName("message")
+    private Message message;
+
+    public Message getMessage() {
+        return message;
+    }
+
+    public void setMessage(Message message) {
+        this.message = message;
+    }
 
     public String getVideo() {
         return video;

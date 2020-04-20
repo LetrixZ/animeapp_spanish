@@ -22,15 +22,13 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
     private AnimeModel anime;
     private View view;
     private OnItemClickListener mOnItemClickListener;
-    private TextView noEpisodesText;
-    private List<String> episodeId;
+    private List<Integer> episodeNumber;
     private Context context;
 
-    public EpisodeAdapter(AnimeModel anime, OnItemClickListener onItemClickListener, TextView noEpisodesText, List<String> episodeId, Context context) {
+    public EpisodeAdapter(AnimeModel anime, OnItemClickListener onItemClickListener, List<Integer> episodeNumber, Context context) {
         this.anime = anime;
         this.mOnItemClickListener = onItemClickListener;
-        this.noEpisodesText = noEpisodesText;
-        this.episodeId = episodeId;
+        this.episodeNumber = episodeNumber;
         this.context = context;
     }
 
@@ -46,28 +44,18 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
         final ViewHolder viewHolder = holder;
         DecimalFormat format = new DecimalFormat("0.#");
         viewHolder.episodeNumber.setText(String.format(viewHolder.itemView.getContext().getString(R.string.episode_small), format.format(anime.getEpisodes().get(position + 1).getEpisode())));
-        if (episodeId != null) {
-            for (String episode : episodeId) {
-                Log.d("EpisodeAdapter", "onBindViewHolder: TEST");
-                if (anime.getEpisodes().get(position + 1).getId().equals(episode)) {
+        if (episodeNumber != null) {
+            for (Integer episode : episodeNumber) {
+                if (anime.getEpisodes().get(position + 1).getEpisode() == episode) {
                     viewHolder.cardView.setCardBackgroundColor(context.getResources().getColor(R.color.episode_background_watched));
                 }
             }
-        }
-        else {
-            Log.d("EpisodeAdapter", "onBindViewHolder: NULL");
         }
     }
 
     @Override
     public int getItemCount() {
-        if (anime.getEpisodes() != null) {
-            noEpisodesText.setVisibility(View.GONE);
-            return anime.getEpisodes().size() - 1;
-        } else {
-            noEpisodesText.setVisibility(View.VISIBLE);
-            return 0;
-        }
+        return anime.getEpisodes().size() - 1;
     }
 
     public interface OnItemClickListener {

@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,6 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,30 +32,32 @@ import com.letrix.animeapp.R;
 import com.letrix.animeapp.adapters.EpisodeAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
 import com.letrix.animeapp.models.AnimeModel;
+import com.letrix.animeapp.models.EpisodeTime;
 import com.letrix.animeapp.models.ServerModel;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
+import timber.log.Timber;
+
+@SuppressWarnings("ALL")
 public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClickListener {
 
     private static final String TAG = "InfoFragment";
-    private MainViewModel mViewModel;
     private static Boolean enableFLV = true;
-    private View view, mView, separator, desuSeparator, mega_natsuki_separator, flv_jk_separator;
+    private MainViewModel mainViewModel;
+    private View rootView;
     private AppCompatImageView backButton, favouriteButton;
-    private TextView noEpisodeText, megaText, secondServer, thirdServer, titleText, desuServer;
-    private String okru;
     private AnimeModel selectedAnime;
     private boolean isFavourite;
     private ProgressBar progressBar;
     private GridLayoutManager gridLayoutManager;
-    private List<String> watchedEpisodes = new ArrayList<>();
-    private LinearLayout secondRow;
+    private List<Integer> watchedEpisodes = new ArrayList<>();
+
+    private TextView noEpisodeText;
 
     public InfoFragment() {
         // Required empty public constructor
@@ -67,15 +67,22 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.fragment_info, container, false);
-        progressBar = view.findViewById(R.id.progressBar);
-        mViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
-        favouriteButton = view.findViewById(R.id.favourite);
-        mViewModel.getSelectedAnime().observe(getViewLifecycleOwner(), animeModel -> {
+        rootView = inflater.inflate(R.layout.fragment_info, container, false);
+        progressBar = rootView.findViewById(R.id.progressBar);
+        mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+
+        backButton = rootView.findViewById(R.id.back);
+        backButton.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
+        noEpisodeText = rootView.findViewById(R.id.noEpisodes);
+        noEpisodeText.setVisibility(View.GONE);
+
+        // Favorite
+        favouriteButton = rootView.findViewById(R.id.favourite);
+        mainViewModel.getSelectedAnime().observe(getViewLifecycleOwner(), animeModel -> {
             selectedAnime = animeModel;
             infoAdapter(animeModel);
-            if (mViewModel.getFavouriteList() != null) {
-                for (AnimeModel anime : mViewModel.getFavouriteList().getValue()) {
+            if (mainViewModel.getFavouriteList() != null) {
+                for (AnimeModel anime : mainViewModel.getFavouriteList().getValue()) {
                     if (anime.getTitle().equals(animeModel.getTitle())) {
                         favouriteButton.setImageResource(R.drawable.ic_favorite);
                         isFavourite = true;
@@ -83,49 +90,51 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
                 }
             }
         });
-
         favouriteButton.setOnClickListener(v -> {
             if (!isFavourite) {
                 favouriteButton.setImageResource(R.drawable.ic_favorite);
-                mViewModel.addFavourite(selectedAnime);
+                mainViewModel.addFavourite(selectedAnime);
                 isFavourite = true;
-                Toast.makeText(getActivity(), selectedAnime.getTitle() + " añadido a favoritos", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity(), selectedAnime.getTitle() + " añadido a favoritos", Toast.LENGTH_SHORT).show();
             } else {
                 favouriteButton.setImageResource(R.drawable.ic_unfavorite);
-                mViewModel.removeFavourite(selectedAnime);
+                mainViewModel.removeFavourite(selectedAnime);
                 isFavourite = false;
-                Toast.makeText(getActivity(), selectedAnime.getTitle() + " eliminado de favoritos", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity(), selectedAnime.getTitle() + " eliminado de favoritos", Toast.LENGTH_SHORT).show();
             }
         });
 
-        return view;
+        return rootView;
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        backButton = view.findViewById(R.id.back);
-        backButton.setOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
-        noEpisodeText = view.findViewById(R.id.noEpisodes);
-        noEpisodeText.setVisibility(View.GONE);
-
-        if (mViewModel.getEnableFLV() != null) {
-            enableFLV = mViewModel.getEnableFLV();
+        enableFLV = true;
+        if (mainViewModel.getEnableFLV() != null) {
+            enableFLV = mainViewModel.getEnableFLV();
         }
     }
 
     private void infoAdapter(AnimeModel anime) {
-        TextView animeTitle, animeRating, animeStatus, animeType;
+        TextView animeTitle, animeRating, animeStatus, animeType, animeNextEpisode;
         ExpandableTextView animeSynopsis;
         ImageView animeImage;
         ChipGroup chipGroup;
         RecyclerView recyclerView;
-        chipGroup = view.findViewById(R.id.flowLayout);
-        animeImage = view.findViewById(R.id.animeInfoImage);
-        animeStatus = view.findViewById(R.id.animeInfoStatus);
-        animeType = view.findViewById(R.id.animeInfoType);
-        animeRating = view.findViewById(R.id.animeInfoReleased);
-        animeSynopsis = view.findViewById(R.id.animeInfoSummary);
-        animeTitle = view.findViewById(R.id.animeInfoTitle);
+        LinearLayout nextEpisodeLayout;
+
+        // Views
+        chipGroup = rootView.findViewById(R.id.flowLayout);
+        animeImage = rootView.findViewById(R.id.animeInfoImage);
+        animeStatus = rootView.findViewById(R.id.animeInfoStatus);
+        animeType = rootView.findViewById(R.id.animeInfoType);
+        animeRating = rootView.findViewById(R.id.animeInfoReleased);
+        animeSynopsis = rootView.findViewById(R.id.animeInfoSummary);
+        animeTitle = rootView.findViewById(R.id.animeInfoTitle);
+        animeNextEpisode = rootView.findViewById(R.id.animeInfoNextEpisode);
+        nextEpisodeLayout = rootView.findViewById(R.id.nextEpisodeLayout);
+
+        // Set
         byte[] decodedString = Base64.decode(anime.getPoster(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         animeImage.setImageBitmap(decodedByte);
@@ -134,26 +143,15 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         animeType.setText(anime.getType());
         animeSynopsis.setText(anime.getSynopsis());
         animeRating.setText(anime.getRating());
+        if (anime.getEpisodes().get(0).getNextEpisodeDate() != null) {
+            animeNextEpisode.setText(anime.getEpisodes().get(0).getNextEpisodeDate());
+        } else {
+            nextEpisodeLayout.setVisibility(View.GONE);
+        }
 
-        recyclerView = view.findViewById(R.id.animeInfoRecyclerView);
-        recyclerView.setHasFixedSize(true);
-        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            gridLayoutManager = new GridLayoutManager(getActivity(), 5);
-        }
-        else {
-            gridLayoutManager = new GridLayoutManager(getActivity(), 3);
-        }
-        recyclerView.setLayoutManager(gridLayoutManager);
-        if (mViewModel.getWatchedEpisodesMap() != null) {
-            for (Map.Entry<String, Long> entry : mViewModel.getWatchedEpisodesMap().entrySet()) {
-                watchedEpisodes.add(entry.getKey());
-            }
-        }
-        final EpisodeAdapter dataAdapter = new EpisodeAdapter(anime, InfoFragment.this, noEpisodeText, watchedEpisodes, getActivity());
-        recyclerView.setAdapter(dataAdapter);
-
+        // Genre Chips //
         for (String item : anime.getGenres()) {
-            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            LayoutInflater inflater = LayoutInflater.from(requireActivity());
             @SuppressLint("InflateParams") Chip lChip = (Chip) inflater.inflate(R.layout.chip_style, null, false);
             item = item.replace("-", " ");
             item = item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
@@ -161,152 +159,183 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
             lChip.setTextColor(getResources().getColor(R.color.main_text));
             chipGroup.addView(lChip, chipGroup.getChildCount() - 1);
         }
-    }
 
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void onItemClick(int position) {
-        AtomicBoolean watched = new AtomicBoolean(false);
-        AtomicLong time = new AtomicLong();
-        String[] episodeId = mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().split("/");
-        progressBar.setVisibility(View.VISIBLE);
-        String animeId = selectedAnime.getTitle().replaceAll("\\s", "-");
-        animeId = animeId.replaceAll("[.|:]", "");
-        animeId = animeId.toLowerCase();
-        String finalAnimeId = animeId;
-        mViewModel.getAnimeVideo(animeId, (int) selectedAnime.getEpisodes().get(position + 1).getEpisode()).observe(getViewLifecycleOwner(), new Observer<String>() {
-            @SuppressLint("InflateParams")
-            @Override
-            public void onChanged(String s) {
-                Log.d(TAG, finalAnimeId + "/" + (int) selectedAnime.getEpisodes().get(position + 1).getEpisode());
-                Log.d(TAG, "onChanged: " + s);
-                if (enableFLV) {
-                    mViewModel.getServerList(episodeId[0], episodeId[1]).observe(getViewLifecycleOwner(), serverModels -> {
-                        mView = getLayoutInflater().inflate(R.layout.episode_alert_dialog, null);
-                        titleText = mView.findViewById(R.id.title);
-                        megaText = mView.findViewById(R.id.mega_text);
-                        desuServer = mView.findViewById(R.id.desu_server);
-                        secondServer = mView.findViewById(R.id.second_server);
-                        thirdServer = mView.findViewById(R.id.third_server);
-                        separator = mView.findViewById(R.id.secondSeparator);
-                        desuSeparator = mView.findViewById(R.id.view);
-                        secondRow = mView.findViewById(R.id.secondRow);
-                        mega_natsuki_separator = mView.findViewById(R.id.mega_natsuki_separator);
-                        flv_jk_separator = mView.findViewById(R.id.view2);
-                        LinearLayout firstRow = mView.findViewById(R.id.firstRow);
-                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity(), R.style.alert_dialog).setCancelable(true);
-                        megaText.setText("Mega");
-                        desuServer.setText("Desu");
-                        secondServer.setText(serverModels.get(0).getTitle());
+        // Episodes //
+        recyclerView = rootView.findViewById(R.id.animeInfoRecyclerView);
+        recyclerView.setHasFixedSize(true);
+        if (requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            gridLayoutManager = new GridLayoutManager(requireActivity(), 5);
+        } else {
+            gridLayoutManager = new GridLayoutManager(requireActivity(), 3);
+        }
+        recyclerView.setLayoutManager(gridLayoutManager);
 
-                        if (s == null) {
-                            desuServer.setVisibility(View.GONE);
-                            desuSeparator.setVisibility(View.GONE);
-                            firstRow.setVisibility(View.GONE);
-                        }
-
-                        for (ServerModel server : serverModels) {
-                            if (server.getServer().equals("okru")) {
-                                thirdServer.setVisibility(View.VISIBLE);
-                                separator.setVisibility(View.VISIBLE);
-                                thirdServer.setText("Okru");
-                                okru = server.getCode();
-                                break;
-                            }
-                        }
-
-                        if (mViewModel.getWatchedEpisodesMap() != null) {
-                            for (Map.Entry<String, Long> entry : mViewModel.getWatchedEpisodesMap().entrySet()) {
-                                if (mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().equals(entry.getKey()) && s != null) {
-                                    long hours = entry.getValue() / 3600;
-                                    long minutes = (entry.getValue() % 3600) / 60;
-                                    long seconds = (entry.getValue() % 60);
-                                    time.set(entry.getValue());
-                                    @SuppressLint("DefaultLocale") String timeString = String.format("%02dh:%02dm:%02ds", hours, minutes, seconds);
-                                    titleText.setText("Seleccione un servidor\n" + timeString);
-                                    watched.set(true);
-                                }
-                            }
-                        }
-
-                        /*if (!enableFLV) {
-                            megaText.setVisibility(View.GONE);
-                            thirdServer.setVisibility(View.GONE);
-                            secondServer.setVisibility(View.GONE);
-                            separator.setVisibility(View.GONE);
-                            mega_natsuki_separator.setVisibility(View.GONE);
-                            flv_jk_separator.setVisibility(View.GONE);
-                            secondRow.setVisibility(View.GONE);
-                        }*/
-
-                        AlertDialog serverSelector = mBuilder.create();
-                        serverSelector.setView(mView);
-                        progressBar.setVisibility(View.GONE);
-                        serverSelector.show();
-                        desuServer.setOnClickListener(v -> {
-                            mViewModel.setUrl(s, position + 1);
-                            serverSelector.dismiss();
-                            watchEpisode(position);
-                        });
-                        megaText.setOnClickListener(v -> {
-                            for (ServerModel server : serverModels) {
-                                if (server.getServer().equals("mega")) {
-                                    mViewModel.setUrl(server.getCode(), position + 1);
-                                    serverSelector.dismiss();
-                                    watchEpisode(position);
-                                }
-                            }
-                        });
-                        secondServer.setOnClickListener(v -> {
-                            mViewModel.setUrl(serverModels.get(0).getCode(), position + 1);
-                            serverSelector.dismiss();
-                            watchEpisode(position);
-                        });
-                        thirdServer.setOnClickListener(v -> {
-                            mViewModel.setUrl(okru, position + 1);
-                            serverSelector.dismiss();
-                            watchEpisode(position);
-                        });
-                    });
-
-                } else {
-                    if (mViewModel.getWatchedEpisodesMap() != null) {
-                        for (Map.Entry<String, Long> entry : mViewModel.getWatchedEpisodesMap().entrySet()) {
-                            if (mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getId().equals(entry.getKey()) && s != null) {
-                                long hours = entry.getValue() / 3600;
-                                long minutes = (entry.getValue() % 3600) / 60;
-                                long seconds = (entry.getValue() % 60);
-                                time.set(entry.getValue());
-                                @SuppressLint("DefaultLocale") String timeString = String.format("%02dh:%02dm:%02ds", hours, minutes, seconds);
-                                //titleText.setText("Seleccione un servidor\n" + timeString);
-                                watched.set(true);
-                            }
-                        }
-                    }
-
-                    mViewModel.setUrl(s, position + 1);
-                    watchEpisode(position);
-                }
+        if (mainViewModel.checkWatched(selectedAnime)) {
+            for (Map.Entry<Integer, EpisodeTime> entry : mainViewModel.getCurrentlyWatching().get(selectedAnime).entrySet()) {
+                watchedEpisodes.add(entry.getKey());
             }
-        });
+        }
 
+        if (selectedAnime.getEpisodes() == null) {
+            noEpisodeText.setVisibility(View.VISIBLE);
+        } else {
+            final EpisodeAdapter dataAdapter = new EpisodeAdapter(anime, InfoFragment.this, watchedEpisodes, requireActivity());
+            recyclerView.setAdapter(dataAdapter);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
+        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        AnimeModel currentAnime = mainViewModel.getSelectedAnime().getValue();
+        AnimeModel.Episodes currentEpisode = currentAnime.getEpisodes().get(position + 1);
+        initAlertDialog(currentAnime, currentEpisode);
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void initAlertDialog(AnimeModel currentAnime, AnimeModel.Episodes currentEpisode) {
+        this.progressBar.setVisibility(View.VISIBLE);
+
+        @SuppressLint("InflateParams") View dialogView = getLayoutInflater().inflate(R.layout.episode_alert_dialog, null);
+        View topSeparator, secondSeparator, firstSeparator;
+        TextView titleText, megaServer, natsukiServer, okruServer, desuServer;
+        LinearLayout desuRow, animeFlvVServers;
+        ProgressBar progressBar;
+
+        // Views
+        progressBar = dialogView.findViewById(R.id.progressBar);
+        topSeparator = dialogView.findViewById(R.id.topSeparator);
+        firstSeparator = dialogView.findViewById(R.id.firstSeparator);
+        secondSeparator = dialogView.findViewById(R.id.secondSeparator);
+        titleText = dialogView.findViewById(R.id.title);
+        megaServer = dialogView.findViewById(R.id.megaServer);
+        natsukiServer = dialogView.findViewById(R.id.natsukiServer);
+        okruServer = dialogView.findViewById(R.id.okruServer);
+        desuServer = dialogView.findViewById(R.id.desuServer);
+        desuRow = dialogView.findViewById(R.id.desuRow);
+        animeFlvVServers = dialogView.findViewById(R.id.animeFlvVServers);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(requireActivity(), R.style.alert_dialog).setCancelable(true);
+        AlertDialog serverSelector = mBuilder.create();
+        serverSelector.setView(dialogView);
+
+        // Title parse
+        String animeId = currentAnime.getTitle().replaceAll("\\s", "-");
+        animeId = animeId.replaceAll("[.|:|!|/|(|)|']", "");
+        animeId = animeId.toLowerCase();
+        if (animeId.length() > 0 && animeId.charAt(animeId.length() - 1) == '-') {
+            animeId = animeId.substring(0, animeId.length() - 1);
+        }
+        DecimalFormat format = new DecimalFormat("0.#");
+        if (!enableFLV) {
+            mainViewModel.getAnimeVideo(animeId, currentEpisode.getEpisode()).observe(getViewLifecycleOwner(), desuURL -> {
+                if (desuURL != null) {
+                    watchEpisodeDesu(desuURL, currentAnime, currentEpisode);
+                } else {
+                    desuServer.setText(R.string.not_available_desu);
+                    serverSelector.show();
+                }
+            });
+        } else {
+            mainViewModel.getAnimeVideo(animeId, currentEpisode.getEpisode()).observe(getViewLifecycleOwner(), desuURL -> {
+                // Desu
+                this.progressBar.setVisibility(View.GONE);
+                serverSelector.show();
+                if (desuURL != null) {
+                    if (mainViewModel.getCurrentlyWatching() != null && mainViewModel.getCurrentlyWatching().get(currentAnime) != null && mainViewModel.getCurrentlyWatching().get(currentAnime).get((int) currentEpisode.getEpisode()) != null) {
+                        int time = (int) (mainViewModel.getCurrentlyWatching().get(currentAnime).get((int) currentEpisode.getEpisode()).getEpisodePosition() / 1000);
+                        long hours = time / 3600;
+                        long minutes = (time % 3600) / 60;
+                        long seconds = (time % 60);
+                        @SuppressLint("DefaultLocale") String timeString = String.format("%02dh:%02dm:%02ds", hours, minutes, seconds);
+                        if (time != 0 && mainViewModel.getCurrentlyWatching().get(currentAnime).get((int) currentEpisode.getEpisode()).getProgressPosition() < 90) {
+                            Timber.d("initAlertDialog: %s", (mainViewModel.getCurrentlyWatching().get(currentAnime).get((int) currentEpisode.getEpisode()).getProgressPosition() < 90));
+                            desuServer.setText("Desu (" + timeString + ")");
+                        }
+                    }
+                    desuServer.setOnClickListener(v -> {
+                        serverSelector.dismiss();
+                        watchEpisodeDesu(desuURL, currentAnime, currentEpisode);
+                    });
+                } else {
+                    desuServer.setText(R.string.not_available_desu);
+                }
+                // AnimeFLV
+                String[] episodeId = currentEpisode.getId().split("/");
+                progressBar.setVisibility(View.VISIBLE);
+                firstSeparator.setVisibility(View.GONE);
+                secondSeparator.setVisibility(View.GONE);
+                mainViewModel.getServerList(episodeId[0], episodeId[1]).observe(getViewLifecycleOwner(), serverModels -> {
+                    firstSeparator.setVisibility(View.VISIBLE);
+                    secondSeparator.setVisibility(View.VISIBLE);
+                    String megaUrl = null, okruUrl = null;
+                    for (ServerModel server : serverModels) {
+                        if (server.getTitle().equals("MEGA")) {
+                            megaServer.setText(server.getTitle());
+                            megaUrl = server.getCode();
+                        }
+                        if (server.getTitle().equals("Okru")) {
+                            okruServer.setText(server.getTitle());
+                            okruUrl = server.getCode();
+                        }
+                    }
+                    natsukiServer.setText(serverModels.get(0).getTitle());
+                    natsukiServer.setOnClickListener(v -> {
+                        serverSelector.dismiss();
+                        watchEpisodeWeb(serverModels.get(0).getCode(), currentAnime, currentEpisode);
+                        });
+                    String finalMegaUrl = megaUrl;
+                    if (megaUrl == null) {
+                        megaServer.setVisibility(View.GONE);
+                        firstSeparator.setVisibility(View.GONE);
+                    } else {
+                        megaServer.setOnClickListener(v -> {
+                            serverSelector.dismiss();
+                            watchEpisodeWeb(finalMegaUrl, currentAnime, currentEpisode);
+                        });
+                    }
+                    String finalOkruUrl = okruUrl;
+                    if (okruUrl == null) {
+                        okruServer.setVisibility(View.GONE);
+                        secondSeparator.setVisibility(View.GONE);
+                    } else {
+                        okruServer.setOnClickListener(v -> {
+                            serverSelector.dismiss();
+                            watchEpisodeWeb(finalOkruUrl, currentAnime, currentEpisode);
+                        });
+                    }
+                    progressBar.setVisibility(View.GONE);
+                });
+            });
+        }
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
-    private void watchEpisode(int position) {
-        mViewModel.setImage(mViewModel.getSelectedAnime().getValue().getEpisodes().get(position + 1).getImagePreview());
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
-        final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+    private void watchEpisodeWeb(String videoUrl, AnimeModel currentAnime, AnimeModel.Episodes currentEpisode) {
+        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
+        final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         final FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.fragment_navigation_host, new WebView_VideoPlayer());
-        transaction.addToBackStack("TAG2");
+        transaction.replace(R.id.fragment_navigation_host, WebView_VideoPlayer.newInstance(videoUrl, currentAnime, currentEpisode));
+        transaction.addToBackStack("WebViewPlayer");
         transaction.commit();
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
+    private void watchEpisodeDesu(String videoUrl, AnimeModel currentAnime, AnimeModel.Episodes currentEpisode) {
+        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
+        final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        final FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragment_navigation_host, ExoPlayerFragment.newInstance(videoUrl, currentAnime, currentEpisode));
+        transaction.addToBackStack("ExoPlayer");
+        transaction.commit();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 }
