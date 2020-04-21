@@ -18,7 +18,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:textAlignment="center"
-        android:textColor="@color/main_text"
+        android:textColor="@color/mainText"
         android:textSize="18sp"
         tools:text="Ver más" />
 

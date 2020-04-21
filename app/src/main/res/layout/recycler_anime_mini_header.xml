@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-light"
-        android:textColor="@color/main_text"
+        android:textColor="@color/mainText"
         android:textSize="24sp"
         tools:text="Animes" />
 

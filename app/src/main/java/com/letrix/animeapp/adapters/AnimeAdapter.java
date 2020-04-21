@@ -93,6 +93,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             byte[] decodedString = Base64.decode(currentItem.getPoster(), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             itemViewHolder.animeImage.setImageBitmap(decodedByte);
+
         } else {
             if (isLoading) {
                 ((ProgressHolder) holder).progressBar.setVisibility(View.VISIBLE);
@@ -100,6 +101,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 ((ProgressHolder) holder).progressBar.setVisibility(View.GONE);
             }
         }
+
     }
 
     @Override

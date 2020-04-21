@@ -46,7 +46,7 @@
         android:paddingVertical="4dp"
         tools:text="Boku no Hero Academia"
         android:textAlignment="center"
-        android:textColor="@color/main_text"
+        android:textColor="@color/mainText"
         android:textSize="@dimen/main_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

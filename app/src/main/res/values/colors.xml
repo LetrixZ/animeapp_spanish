@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/app_background</color>
+    <color name="colorPrimary">@color/appBackground</color>
     <color name="colorPrimaryDark">@color/header</color>
     <color name="colorAccent">#2196F3</color>
 
-    <color name="app_background">#FFFFFF</color>
-    <color name="text_background">#80000000</color>
+    <color name="appBackground">#FFFFFF</color>
+    <color name="textBackground">#80000000</color>
     <color name="header">#212121</color>
-    <color name="main_text">@color/header</color>
+    <color name="mainText">#212121</color>
     <color name="text_default">#808080</color>
     <color name="progress">#f3f3f3</color>
     <color name="secondary_background">#EAEAEB</color>
@@ -28,7 +28,7 @@
     <color name="genre_items_bg">#DDDDDD</color>
 
     //AnimeInfo Episodes
-    <color name="episode_background">@color/app_background</color>
+    <color name="episode_background">@color/appBackground</color>
     <color name="episode_background_watched">#DADADA</color>
     <color name="episode_watched_progress">@color/progress</color>
     <color name="episode_text">#6C6C6C</color>

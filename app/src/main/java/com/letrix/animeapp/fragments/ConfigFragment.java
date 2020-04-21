@@ -1,6 +1,7 @@
 package com.letrix.animeapp.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -13,12 +14,11 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.jakewharton.processphoenix.ProcessPhoenix;
 import com.letrix.animeapp.HomeFragment;
-import com.letrix.animeapp.MainActivity;
 import com.letrix.animeapp.R;
 import com.letrix.animeapp.datamanager.MainViewModel;
 
@@ -26,6 +26,7 @@ public class ConfigFragment extends Fragment {
 
     private Button deleteFavorites, deleteWatched;
     private ToggleButton toggleFlv;
+    private Button toggleNight;
     private MainViewModel mainViewModel;
 
     public ConfigFragment() {
@@ -42,11 +43,14 @@ public class ConfigFragment extends Fragment {
         deleteFavorites = view.findViewById(R.id.deleteFavorites);
         deleteWatched = view.findViewById(R.id.deleteWatched);
         toggleFlv = view.findViewById(R.id.toggleFlv);
+        toggleNight = view.findViewById(R.id.toggleNight);
+
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Boolean nightMode = sharedPreferences.getBoolean("nightModeState", false);
 
         deleteFavorites.setOnClickListener(v -> {
             Toast.makeText(requireActivity(), "Borrando favoritos", Toast.LENGTH_SHORT).show();
-            SharedPreferences settings = requireActivity().getSharedPreferences("shared preferences", requireActivity().MODE_PRIVATE);
-            SharedPreferences.Editor editor = settings.edit();
             editor.remove("favourite list");
             editor.commit();
             mainViewModel.clearFavorites();
@@ -54,11 +58,9 @@ public class ConfigFragment extends Fragment {
 
         deleteWatched.setOnClickListener(v -> {
             Toast.makeText(requireActivity(), "Borrando vistos", Toast.LENGTH_SHORT).show();
-            SharedPreferences settings = requireActivity().getSharedPreferences("shared preferences", requireActivity().MODE_PRIVATE);
-            settings.edit().remove("watched list").commit();
-            settings.edit().remove("watched list new").commit();
+            editor.remove("watched list").commit();
+            editor.remove("watched list new").commit();
             mainViewModel.clearCurrentlyWatching();
-            //ProcessPhoenix.triggerRebirth(requireActivity());
         });
 
         if (mainViewModel.getEnableFLV() != null) {
@@ -68,6 +70,28 @@ public class ConfigFragment extends Fragment {
         toggleFlv.setOnCheckedChangeListener((buttonView, isChecked) -> {
             mainViewModel.setEnableFLV(isChecked);
         });
+
+        if (nightMode) {
+            toggleNight.setText(requireActivity().getResources().getString(R.string.yes));
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            toggleNight.setText(requireActivity().getResources().getString(R.string.no));
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
+        toggleNight.setOnClickListener((v ->  {
+            if (nightMode) {
+                editor.putBoolean("nightModeState", false);
+                editor.apply();
+                toggleNight.setText(requireActivity().getResources().getString(R.string.yes));
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            } else {
+                editor.putBoolean("nightModeState", true);
+                editor.apply();
+                toggleNight.setText(requireActivity().getResources().getString(R.string.no));
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            }
+        }));
 
         return view;
     }

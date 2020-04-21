@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background"
+    android:background="@color/appBackground"
     android:orientation="vertical"
     android:id="@+id/homeMotionLayout"
     app:layoutDescription="@xml/homescene">
@@ -59,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="300dp"
-        android:background="@color/app_background"
+        android:background="@color/appBackground"
         android:elevation="1dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"

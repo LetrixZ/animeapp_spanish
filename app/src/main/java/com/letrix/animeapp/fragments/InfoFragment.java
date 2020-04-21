@@ -125,7 +125,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
 
         // Views
         chipGroup = rootView.findViewById(R.id.flowLayout);
-        animeImage = rootView.findViewById(R.id.animeInfoImage);
+        animeImage = rootView.findViewById(R.id.animeImage);
         animeStatus = rootView.findViewById(R.id.animeInfoStatus);
         animeType = rootView.findViewById(R.id.animeInfoType);
         animeRating = rootView.findViewById(R.id.animeInfoReleased);
@@ -156,7 +156,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
             item = item.replace("-", " ");
             item = item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
             lChip.setText(item);
-            lChip.setTextColor(getResources().getColor(R.color.main_text));
+            lChip.setTextColor(getResources().getColor(R.color.mainText));
             chipGroup.addView(lChip, chipGroup.getChildCount() - 1);
         }
 

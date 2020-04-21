@@ -3,9 +3,8 @@ package com.letrix.animeapp;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 
-import androidx.fragment.app.FragmentActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -20,13 +19,12 @@ import com.letrix.animeapp.models.EpisodeTime;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.TreeMap;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
 import timber.log.Timber;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends AppCompatActivity {
 
     private MainViewModel mainViewModel;
     public static Boolean saveFavorites = true, saveWatched = true;

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/app_background</color>
-    <color name="colorPrimaryDark">@color/app_background</color>
+    <color name="colorPrimary">@color/appBackground</color>
+    <color name="colorPrimaryDark">@color/appBackground</color>
     <color name="colorAccent">#2196F3</color>
 
-    <color name="app_background">#0c0c0c</color>
+    <color name="mainText">@color/header</color>
+
+    <color name="appBackground">#0c0c0c</color>
+    <color name="textBackground">#80000000</color>
     <color name="header">#ffffff</color>
-    <color name="main_text">@color/header</color>
     <color name="text_default">#808080</color>
     <color name="progress">#161616</color>
     <color name="secondary_background">#212121</color>

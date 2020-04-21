@@ -32,7 +32,7 @@
                 android:padding="12dp"
                 android:text="@string/server_select"
                 android:textAlignment="center"
-                android:textColor="@color/main_text"
+                android:textColor="@color/mainText"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toTopOf="@id/desuRow"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -43,7 +43,7 @@
                 android:id="@+id/topSeparator"
                 android:layout_width="wrap_content"
                 android:layout_height="0.5dp"
-                android:background="@color/main_text"
+                android:background="@color/mainText"
                 app:layout_constraintBottom_toTopOf="@+id/desuRow"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -76,7 +76,7 @@
                 android:id="@+id/bottomSeparator"
                 android:layout_width="wrap_content"
                 android:layout_height="0.5dp"
-                android:background="@color/main_text"
+                android:background="@color/mainText"
                 app:layout_constraintBottom_toTopOf="@+id/animeFlvVServers"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -109,7 +109,7 @@
                     android:layout_width="0.5dp"
                     android:layout_height="45dp"
                     android:visibility="visible"
-                    android:background="@color/main_text" />
+                    android:background="@color/mainText" />
 
                 <TextView
                     android:id="@+id/natsukiServer"
@@ -130,7 +130,7 @@
                     android:id="@+id/secondSeparator"
                     android:layout_width="0.5dp"
                     android:layout_height="45dp"
-                    android:background="@color/main_text"
+                    android:background="@color/mainText"
                     android:visibility="visible" />
 
                 <TextView

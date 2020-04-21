@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background"
+    android:background="@color/appBackground"
     android:orientation="vertical"
     app:layoutDescription="@xml/genrescene">
 
@@ -18,7 +18,7 @@
         android:paddingTop="20dp"
         android:paddingRight="20dp"
         android:paddingBottom="0dp"
-        android:textColor="@color/main_text"
+        android:textColor="@color/mainText"
         tools:text="Acción" />
 
     <LinearLayout
@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="300dp"
-        android:background="@color/app_background"
+        android:background="@color/appBackground"
         android:elevation="1dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"

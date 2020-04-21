@@ -2,11 +2,13 @@ package com.letrix.animeapp.fragments;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 import timber.log.Timber;
@@ -45,6 +48,12 @@ public class RecentFragment extends Fragment implements AnimeSection.ClickListen
     private ArrayList<Map.Entry<AnimeModel, ArrayList<EpisodeTime>>> watchedAnimeList = new ArrayList<>();
 
     public RecentFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
     }
 
     @Nullable
@@ -93,8 +102,7 @@ public class RecentFragment extends Fragment implements AnimeSection.ClickListen
                 watchedRecyclerView.setVisibility(View.VISIBLE);
                 watchedAnimeText.setVisibility(View.VISIBLE);
                 watchedAnimeText.setText(R.string.watching);
-            }
-            else {
+            } else {
                 watchedRecyclerView.setVisibility(View.GONE);
                 watchedAnimeText.setVisibility(View.GONE);
             }
@@ -109,8 +117,7 @@ public class RecentFragment extends Fragment implements AnimeSection.ClickListen
                     return (position == 0 || position == 25 || position == 26 || position == 50 || position == 51 || position == 77) ? 4 : 1;
                 }
             });
-        }
-        else {
+        } else {
             gridLayoutManager = new GridLayoutManager(requireActivity(), 3);
             gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
@@ -209,5 +216,24 @@ public class RecentFragment extends Fragment implements AnimeSection.ClickListen
         transaction.replace(R.id.fragment_navigation_host, new InfoFragment());
         transaction.addToBackStack("TAG");
         transaction.commit();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        AtomicInteger tries = new AtomicInteger();
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                if (tries.get() == 1) {
+                    return false;
+                }
+                tries.getAndIncrement();
+                Toast.makeText(requireActivity(), "Pulsa de nuevo para salir", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            return false;
+        });
     }
 }
