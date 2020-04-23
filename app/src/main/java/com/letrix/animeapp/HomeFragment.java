@@ -112,7 +112,7 @@ public class HomeFragment extends Fragment {
                 .setTitleOnUpdateAvailable("Nueva versión disponible")
                 .setButtonUpdate("Actualizar")
                 .setButtonDismiss("Más tarde")
-                .setButtonDoNotShowAgain("No mostrar de nuevo");
+                .setButtonDoNotShowAgain(null);
         appUpdater.start();
 
         list = new ArrayList<>();
