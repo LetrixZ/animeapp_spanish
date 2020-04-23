@@ -103,14 +103,11 @@ public class GenreFragment extends Fragment {
         Bundle b = getArguments();
         if (b != null) {
             titleTransitionName = b.getString("genreTransitionName");
-            genreTransitionName = b.getString("cardTransitionName");
         }
 
         recyclerView = view.findViewById(R.id.recyclerView);
         progressBar = view.findViewById(R.id.progressBarGenre);
         genreTitle = view.findViewById(R.id.genreText);
-        genreCard = view.findViewById(R.id.cardView);
-        genreCard.setTransitionName(genreTransitionName);
         genreTitle.setTransitionName(titleTransitionName);
         String genre = searchTerm.replace("-", " ");
         genre = genre.substring(0, 1).toUpperCase() + genre.substring(1).toLowerCase();

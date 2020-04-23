@@ -16,8 +16,8 @@ android {
         applicationId "com.letrix.animeapp"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 2
-        versionName '1.5.1'
+        versionCode 3
+        versionName '1.6.1'
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -63,9 +63,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation 'com.jakewharton:process-phoenix:2.0.0'
-    implementation 'org.greenrobot:eventbus:3.2.0'
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    //implementation 'com.squareup.picasso:picasso:2.71828'
 
     implementation 'com.github.delight-im:Android-AdvancedWebView:v3.0.0'
     implementation 'com.github.javiersantos:AppUpdater:2.7'
@@ -100,11 +98,5 @@ dependencies {
     // ExoPlayer
     implementation 'com.google.android.exoplayer:exoplayer-core:2.10.8'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.10.8'
-
-    // Paging
-    //def paging_version = "2.1.2"
-    //implementation "androidx.paging:paging-runtime:$paging_version"
-    //testImplementation "androidx.paging:paging-common:$paging_version"
-    //implementation "androidx.paging:paging-rxjava2:$paging_version"
 
 }

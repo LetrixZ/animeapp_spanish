@@ -13,7 +13,7 @@ public class SlidePagerAdapter extends FragmentStatePagerAdapter {
     private List<Fragment> fragmentList;
 
     public SlidePagerAdapter(FragmentManager fm, List<Fragment> fragmentList) {
-        super(fm);
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.fragmentList = fragmentList;
     }
 

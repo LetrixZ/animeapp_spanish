@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -35,7 +36,6 @@ import com.letrix.animeapp.models.AnimeModel;
 import com.letrix.animeapp.models.EpisodeTime;
 import com.letrix.animeapp.models.ServerModel;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
-import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -62,7 +62,6 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     private TextView noEpisodeText;
 
     public InfoFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -116,6 +115,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
             infoAdapter(currentAnime, imageTransitionName, titleTransitionName);
         }
 
+
         return rootView;
     }
 
@@ -149,15 +149,17 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         // Set
         animeImage.setTransitionName(imageTransitionName);
         animeTitle.setTransitionName(titleTransitionName);
+        Timber.d(imageTransitionName);
+        Timber.d(titleTransitionName);
 
         if (anime.getPoster().length() > 80) {
             byte[] decodedString = Base64.decode(anime.getPoster(), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             animeImage.setImageBitmap(decodedByte);
         }
-        else {
+        /*else {
             Picasso.get().load(anime.getPoster()).into(animeImage);
-        }
+        }*/
         animeStatus.setText(anime.getDebut());
         animeTitle.setText(anime.getTitle());
         animeType.setText(anime.getType());
@@ -176,7 +178,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
             item = item.replace("-", " ");
             item = item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
             lChip.setText(item);
-            lChip.setTextColor(getResources().getColor(R.color.mainText));
+            lChip.setTextColor(ContextCompat.getColor(getContext(), R.color.mainText));
             chipGroup.addView(lChip, chipGroup.getChildCount() - 1);
         }
 
@@ -300,7 +302,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
                     natsukiServer.setOnClickListener(v -> {
                         serverSelector.dismiss();
                         watchEpisodeWeb(serverModels.get(0).getCode(), currentAnime, currentEpisode);
-                        });
+                    });
                     String finalMegaUrl = megaUrl;
                     if (megaUrl == null) {
                         megaServer.setVisibility(View.GONE);
@@ -345,11 +347,6 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         transaction.replace(R.id.fragment_navigation_host, ExoPlayerFragment.newInstance(videoUrl, currentAnime, currentEpisode));
         transaction.addToBackStack("ExoPlayer");
         transaction.commit();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
     }
 
     @Override

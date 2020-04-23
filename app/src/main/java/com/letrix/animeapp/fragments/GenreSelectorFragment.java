@@ -23,7 +23,7 @@ import com.xiaofeng.flowlayoutmanager.FlowLayoutManager;
 import java.util.Arrays;
 import java.util.List;
 
-public class GenreSelectorFragment extends Fragment implements GenreSelectorAdapter.OnItemClickListener {
+public class GenreSelectorFragment extends Fragment {
 
     private static final String TAG = "GenreSelectorFragment";
     private List<String> genreList = Arrays.asList("accion", "artes-marciales", "aventura", "carreras", "ciencia-ficcion", "comedia", "demencia", "demonios", "deportes", "drama", "ecchi", "escolares", "espacial", "fantasia", "harem", "historico", "infantil", "josei", "juegos", "magia", "mecha", "militar", "misterio", "musica", "parodia", "psicologico", "recuentos-de-la-vida", "romance", "samurai", "seinen", "shoujo", "shounen", "sobrenatural", "superpoderes", "suspenso", "terror", "vampiros", "yaoi", "yuri");
@@ -49,22 +49,10 @@ public class GenreSelectorFragment extends Fragment implements GenreSelectorAdap
         flowLayoutManager.removeItemPerLineLimit();
         flowLayoutManager.setAlignment(Alignment.LEFT);
         recyclerView.setLayoutManager(flowLayoutManager);
-        adapter = new GenreSelectorAdapter(genreList, this, this);
+        adapter = new GenreSelectorAdapter(genreList, this);
         recyclerView.setAdapter(adapter);
 
         return view;
-    }
-
-    @Override
-    public void onItemClickGenre(int position) {
-        /*GenreFragment genreFragment = new GenreFragment();
-        Bundle b = new Bundle();
-        b.putString("genre", genreList.get(position));
-        genreFragment.setArguments(b);
-        final FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_navigation_host, genreFragment, "genre");
-        ft.addToBackStack("genre");
-        ft.commit();*/
     }
 
     @Override

@@ -13,6 +13,7 @@ import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -30,6 +31,8 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 public class HomeFragment extends Fragment {
 
@@ -58,6 +61,7 @@ public class HomeFragment extends Fragment {
         searchButton = view.findViewById(R.id.searchButton);
         favouritesButton = view.findViewById(R.id.favorite);
         motionLayout = view.findViewById(R.id.homeMotionLayout);
+        mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
 
         searchButton.setOnClickListener(v -> {
             final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
@@ -87,15 +91,14 @@ public class HomeFragment extends Fragment {
         smartTabLayout.setViewPager(pager);
         pager.setCurrentItem(2, true);
 
-       /* requireActivity().getSupportFragmentManager().addOnBackStackChangedListener(
-                () -> motionLayout.transitionToEnd());*/
+        motionLayout.setProgress(mainViewModel.getLayoutState());
+
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.home_fragment, container, false);
-
         return view;
     }
 
@@ -124,6 +127,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Timber.d(String.valueOf(motionLayout.getProgress()));
+        mainViewModel.setLayoutState(motionLayout.getProgress());
         if (view != null) {
             ViewGroup parent = (ViewGroup) view.getParent();
             if (parent != null) {

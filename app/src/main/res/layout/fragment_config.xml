@@ -40,7 +40,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="160dp"
                 android:text="@string/delete_favorites_info"
-                android:textColor="@color/episode_text"
+                android:textColor="@color/secondaryText"
                 android:textSize="12sp" />
         </RelativeLayout>
 
@@ -93,7 +93,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="120dp"
                 android:text="@string/delete_watched_info"
-                android:textColor="@color/episode_text"
+                android:textColor="@color/secondaryText"
                 android:textSize="12sp" />
         </RelativeLayout>
 
@@ -146,7 +146,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="120dp"
                 android:text="@string/flv_servers_info"
-                android:textColor="@color/episode_text"
+                android:textColor="@color/secondaryText"
                 android:textSize="12sp" />
         </RelativeLayout>
 
@@ -201,7 +201,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="120dp"
                 android:text="@string/night_mode_info"
-                android:textColor="@color/episode_text"
+                android:textColor="@color/secondaryText"
                 android:textSize="12sp" />
         </RelativeLayout>
 

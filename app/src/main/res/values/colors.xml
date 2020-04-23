@@ -5,6 +5,7 @@
     <color name="colorAccent">#2196F3</color>
 
     <color name="mainText">#212121</color>
+    <color name="secondaryText">#6C6C6C</color>
 
     <color name="appBackground">#FFFFFF</color>
     <color name="textBackground">#80000000</color>

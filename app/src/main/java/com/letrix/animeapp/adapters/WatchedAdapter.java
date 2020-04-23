@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
-import timber.log.Timber;
-
 public class WatchedAdapter extends RecyclerView.Adapter<WatchedAdapter.ViewHolder> {
 
     private ArrayList<Map.Entry<AnimeModel, ArrayList<EpisodeTime>>> animeList;
@@ -93,12 +91,16 @@ public class WatchedAdapter extends RecyclerView.Adapter<WatchedAdapter.ViewHold
             holder.progressBar.setVisibility(View.GONE);
         }
 
-        holder.animeImage.setTransitionName("image_" + currentItem.getId());
-        holder.animeTitle.setTransitionName("title_" + currentItem.getId());
+        String animeId = currentItem.getTitle().replaceAll("\\s", "-");
+        animeId = animeId.replaceAll("[.|:|!|/|(|)|']", "");
+        animeId = animeId.toLowerCase();
 
+        holder.animeImage.setTransitionName("image-" + animeId + "-horizontal");
+        holder.animeTitle.setTransitionName("title-" + animeId + "-horizontal");
+
+        String finalAnimeId = animeId;
         holder.itemView.setOnClickListener(v -> {
-            fragment.animeInfo(currentItem, currentItem.getId(), v.findViewById(R.id.animeImage), v.findViewById(R.id.animeTitle));
-            Timber.d(currentItem.getTitle());
+            fragment.animeInfo(currentItem, finalAnimeId + "-horizontal", v.findViewById(R.id.animeImage), v.findViewById(R.id.animeTitle));
         });
     }
 

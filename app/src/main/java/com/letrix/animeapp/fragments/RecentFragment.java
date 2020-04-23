@@ -91,22 +91,16 @@ public class RecentFragment extends Fragment {
         return rootView;
     }
 
-    public void setCompleted(int position) {
-        Timber.d("%s completada!", watchedAnimeList.get(position).getKey().getTitle());
-        mainViewModel.getCurrentlyWatching().remove(watchedAnimeList.get(position).getKey());
-        Timber.d(String.valueOf(mainViewModel.getCurrentlyWatching().remove(watchedAnimeList.get(position).getKey())));
-    }
-
-    public void animeInfo(AnimeModel anime, String animeName, View animeImage, View animeTitle) {
+    public void animeInfo(AnimeModel anime, String id, View animeImage, View animeTitle) {
         if (requireActivity() instanceof MainActivity) {
             mainViewModel.setSelectedAnime(anime);
             InfoFragment animeInfo = new InfoFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("imageTransitionName", "image_" + animeName);
-            bundle.putString("titleTransitionName", "title_" + animeName);
+            bundle.putString("imageTransitionName", "image-" + id);
+            bundle.putString("titleTransitionName", "title-" + id);
             bundle.putSerializable("anime", anime);
             animeInfo.setArguments(bundle);
-            ((MainActivity) requireActivity()).showFragmentWithTransition(this, animeInfo, "animeInfo", animeImage, animeTitle, "image_" + animeName, "title_" + animeName);
+            ((MainActivity) requireActivity()).showFragmentWithTransition(this, animeInfo, "animeInfo", animeImage, animeTitle, "image-" + id, "title-" + id);
         }
     }
 

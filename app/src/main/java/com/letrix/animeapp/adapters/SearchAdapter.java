@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.letrix.animeapp.R;
 import com.letrix.animeapp.fragments.SearchFragment;
 import com.letrix.animeapp.models.AnimeModel;
-import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -54,9 +53,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             byte[] decodedString = Base64.decode(anime.getPoster(), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             viewHolder.animeImage.setImageBitmap(decodedByte);
-        } else {
+        } /*else {
             Picasso.get().load(anime.getPoster()).into(viewHolder.animeImage);
-        }
+        }*/
         viewHolder.animeType.setText(anime.getType());
         if (anime.getType().equals("Anime")) {
             viewHolder.animeType.setVisibility(View.GONE);

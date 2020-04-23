@@ -6,39 +6,26 @@
     android:layout_height="match_parent"
     android:background="@color/appBackground"
     android:orientation="vertical"
+    android:id="@+id/motionLayout"
     app:layoutDescription="@xml/genrescene">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginVertical="8dp"
-        app:cardBackgroundColor="@color/appBackground"
-        app:cardElevation="0dp"
+    <!--<TextView
+        android:id="@+id/genreText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fontFamily="sans-serif-medium"
+        android:paddingVertical="5dp"
+        android:paddingStart="10dp"
+        android:textColor="@color/mainText"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="RtlSymmetry"
+        tools:text="Acción" />-->
 
-        <TextView
-            android:id="@+id/genreText"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fontFamily="sans-serif-medium"
-            android:paddingVertical="5dp"
-            android:paddingStart="10dp"
-            android:textColor="@color/mainText"
-            android:textSize="28sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="RtlSymmetry"
-            tools:text="Acción" />
-
-    </androidx.cardview.widget.CardView>
-
-    <!--<TextView
+    <TextView
         android:id="@+id/genreText"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
@@ -49,7 +36,7 @@
         android:paddingRight="20dp"
         android:paddingBottom="0dp"
         android:textColor="@color/mainText"
-        tools:text="Acción" />-->
+        tools:text="Acción" />
 
     <LinearLayout
         android:id="@+id/shadowLayout"
@@ -79,7 +66,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardView" />
+        app:layout_constraintTop_toBottomOf="@id/genreText" />
 
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

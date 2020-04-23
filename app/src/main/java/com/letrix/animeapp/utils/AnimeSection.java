@@ -86,11 +86,16 @@ public class AnimeSection extends Section {
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         itemHolder.animeImage.setImageBitmap(decodedByte);
 
-        itemHolder.animeImage.setTransitionName("image_" + currentAnime.getTitle());
-        itemHolder.animeTitle.setTransitionName("title_" + currentAnime.getTitle());
+        String animeId = currentAnime.getTitle().replaceAll("\\s", "-");
+        animeId = animeId.replaceAll("[.|:|!|/|(|)|']", "");
+        animeId = animeId.toLowerCase();
 
+        itemHolder.animeImage.setTransitionName("image-" + animeId);
+        itemHolder.animeTitle.setTransitionName("title-" + animeId);
+
+        String finalAnimeId = animeId;
         itemHolder.rootView.setOnClickListener(v -> {
-            fragment.animeInfo(currentAnime, currentAnime.getTitle(), v.findViewById(R.id.animeImage), v.findViewById(R.id.animeTitle));
+            fragment.animeInfo(currentAnime, finalAnimeId + "-vertical", v.findViewById(R.id.animeImage), v.findViewById(R.id.animeTitle));
         });
     }
 

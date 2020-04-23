@@ -1,7 +1,6 @@
 package com.letrix.animeapp.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.R;
@@ -40,14 +40,14 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(EpisodeAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         final ViewHolder viewHolder = holder;
         DecimalFormat format = new DecimalFormat("0.#");
         viewHolder.episodeNumber.setText(String.format(viewHolder.itemView.getContext().getString(R.string.episode_small), format.format(anime.getEpisodes().get(position + 1).getEpisode())));
         if (episodeNumber != null) {
             for (Integer episode : episodeNumber) {
                 if (anime.getEpisodes().get(position + 1).getEpisode() == episode) {
-                    viewHolder.cardView.setCardBackgroundColor(context.getResources().getColor(R.color.episode_background_watched));
+                    viewHolder.cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.episode_background_watched));
                 }
             }
         }

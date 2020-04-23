@@ -178,18 +178,20 @@ public class MainActivity extends AppCompatActivity {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 current.setSharedElementReturnTransition(TransitionInflater.from(this).inflateTransition(R.transition.default_transition));
-                current.setExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.default_transition));
+                current.setExitTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.fade));
 
                 Transition titleExit = TransitionInflater.from(this).inflateTransition(R.transition.title_transition);
                 Transition image = TransitionInflater.from(this).inflateTransition(R.transition.default_transition).excludeTarget(sharedElementName2, true);
                 TransitionSet set = new TransitionSet();
                 set.addTransition(titleExit).addTransition(image);
                 newFragment.setSharedElementEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.default_transition));
-                newFragment.setSharedElementReturnTransition(set);
+                //newFragment.setSharedElementReturnTransition(set);
                 newFragment.setEnterTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.fade));
             }
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             if (sharedView2 != null) {
+                Timber.d(sharedView + " " + sharedElementName);
+                Timber.d(sharedView2 + " " + sharedElementName2);
                 fragmentTransaction.replace(R.id.fragment_navigation_host, newFragment, tag)
                         .addToBackStack(tag)
                         .addSharedElement(sharedView, sharedElementName)

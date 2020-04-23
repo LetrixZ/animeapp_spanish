@@ -26,6 +26,8 @@ import retrofit2.Response;
 public class MainViewModel extends ViewModel {
     private static final String TAG = "MainViewModel";
 
+    private float motionLayoutState = (float) 0;
+
     private MutableLiveData<ArrayList<AnimeModel>> ongoingsList, finishedList, seriesList, moviesList, ovasList, specialsList, searchList, genreList, tvList, ovaList, movieList;
     private MutableLiveData<ArrayList<ServerModel>> serverList = new MutableLiveData<>();
     private MutableLiveData<AnimeModel> selectedAnime = new MutableLiveData<>();
@@ -50,16 +52,16 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<String> image = new MutableLiveData<>();
     private MutableLiveData<Integer> code = new MutableLiveData<>();
 
-    /*public TreeMap<Integer, Long> addWatchedEpisode(AnimeModel anime, Integer episodeNumber, Long episodePosition) {
-        TreeMap<Integer, Long> episode = new TreeMap<>();
-    }*/
+    public float getLayoutState() {
+        return motionLayoutState;
+    }
+
+    public void setLayoutState(float state) {
+        motionLayoutState = state;
+    }
 
     public boolean checkWatched(AnimeModel selectedAnime) {
-        if (watchedAnimes.get(selectedAnime) != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return watchedAnimes.get(selectedAnime) != null;
     }
 
     public HashMap<AnimeModel, TreeMap<Integer, EpisodeTime>> getCurrentlyWatching() {
@@ -420,7 +422,9 @@ public class MainViewModel extends ViewModel {
                 Log.d(TAG, "onResponse: API CALL SUCCESSFUL / TV");
                 if (response.body() != null) {
                     Log.d(TAG, "onResponse: RESPONSE BODY @GET SUCCESSFUL / TV");
-                    response.body().getTv().subList(11, 23).clear();
+                    if (response.body().getTv().size() >= 23) {
+                        response.body().getTv().subList(11, 23).clear();
+                    }
                     tvList.setValue(response.body().getTv());
                 }
             }
