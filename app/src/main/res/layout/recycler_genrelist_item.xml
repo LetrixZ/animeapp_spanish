@@ -25,6 +25,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+            android:background="@color/appBackground"
             android:contentDescription="@string/anime_cover"
             android:id="@+id/animeImage"
             android:layout_width="119.6dp"

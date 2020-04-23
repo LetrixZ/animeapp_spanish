@@ -29,7 +29,7 @@
         </Constraint>
 
         <Constraint
-            android:id="@id/header"
+            android:id="@id/genreText"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:gravity="center_vertical"
@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header" />
+            app:layout_constraintTop_toBottomOf="@id/genreText" />
 
         <Constraint
             android:id="@+id/shadowLayout"
@@ -62,7 +62,7 @@
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header" />
+            app:layout_constraintTop_toBottomOf="@id/genreText" />
 
     </ConstraintSet>
 
@@ -86,7 +86,7 @@
             app:layout_constraintTop_toBottomOf="@id/shadowLayout" />
 
         <Constraint
-            android:id="@id/header"
+            android:id="@id/genreText"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:gravity="center_vertical"
@@ -111,7 +111,7 @@
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header" />
+            app:layout_constraintTop_toBottomOf="@id/genreText" />
 
     </ConstraintSet>
 

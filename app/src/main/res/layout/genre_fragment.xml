@@ -8,8 +8,38 @@
     android:orientation="vertical"
     app:layoutDescription="@xml/genrescene">
 
-    <TextView
-        android:id="@+id/header"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginVertical="8dp"
+        app:cardBackgroundColor="@color/appBackground"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/genreText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-medium"
+            android:paddingVertical="5dp"
+            android:paddingStart="10dp"
+            android:textColor="@color/mainText"
+            android:textSize="28sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="RtlSymmetry"
+            tools:text="Acción" />
+
+    </androidx.cardview.widget.CardView>
+
+    <!--<TextView
+        android:id="@+id/genreText"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:fontFamily="sans-serif-medium"
@@ -19,19 +49,19 @@
         android:paddingRight="20dp"
         android:paddingBottom="0dp"
         android:textColor="@color/mainText"
-        tools:text="Acción" />
+        tools:text="Acción" />-->
 
     <LinearLayout
         android:id="@+id/shadowLayout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="0dp"
         android:layout_marginTop="300dp"
         android:background="@color/appBackground"
         android:elevation="1dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header" />
+        app:layout_constraintTop_toBottomOf="@id/genreText" />
 
     <ProgressBar
         android:id="@+id/progressBarGenre"
@@ -49,7 +79,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header" />
+        app:layout_constraintTop_toBottomOf="@id/cardView" />
 
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

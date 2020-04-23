@@ -22,7 +22,6 @@ import java.util.TreeMap;
 
 import retrofit2.Call;
 import retrofit2.Response;
-import timber.log.Timber;
 
 public class MainViewModel extends ViewModel {
     private static final String TAG = "MainViewModel";
@@ -45,6 +44,15 @@ public class MainViewModel extends ViewModel {
     // Watched Time
     private HashMap<AnimeModel, TreeMap<Integer, EpisodeTime>> watchedAnimes = null;
     private HashMap<String, Long> watchedEpisodesMap = new HashMap<>();
+    private MutableLiveData<String> animeVideo;
+    private MutableLiveData<String> url = new MutableLiveData<>();
+    private MutableLiveData<Integer> episodePosition = new MutableLiveData<>();
+    private MutableLiveData<String> image = new MutableLiveData<>();
+    private MutableLiveData<Integer> code = new MutableLiveData<>();
+
+    /*public TreeMap<Integer, Long> addWatchedEpisode(AnimeModel anime, Integer episodeNumber, Long episodePosition) {
+        TreeMap<Integer, Long> episode = new TreeMap<>();
+    }*/
 
     public boolean checkWatched(AnimeModel selectedAnime) {
         if (watchedAnimes.get(selectedAnime) != null) {
@@ -103,10 +111,6 @@ public class MainViewModel extends ViewModel {
         }
     }
 
-    /*public TreeMap<Integer, Long> addWatchedEpisode(AnimeModel anime, Integer episodeNumber, Long episodePosition) {
-        TreeMap<Integer, Long> episode = new TreeMap<>();
-    }*/
-
     public HashMap<String, Long> getWatchedEpisodesMap() {
         return watchedEpisodesMap;
     }
@@ -117,7 +121,7 @@ public class MainViewModel extends ViewModel {
     }
 
     public void addBackedData(BackedData backedData, int TYPE) {
-        Log.d(TAG, "addBackedData: RECEIVED: " + backedData.getAnimeList().size() + " " + TYPE );
+        Log.d(TAG, "addBackedData: RECEIVED: " + backedData.getAnimeList().size() + " " + TYPE);
         this.backedData.set(TYPE, backedData);
         backedDataLiveData.setValue(this.backedData);
     }
@@ -125,6 +129,9 @@ public class MainViewModel extends ViewModel {
     public Boolean getEnableFLV() {
         return enableFLV;
     }
+
+    // JKAnime
+
     public void setEnableFLV(boolean value) {
         enableFLV = value;
     }
@@ -149,14 +156,12 @@ public class MainViewModel extends ViewModel {
         favouriteLiveData.setValue(this.favouriteList);
     }
 
+    // EXTRAS
+
     public void restoreFavourite(ArrayList<AnimeModel> animeList) {
         this.favouriteList = animeList;
         favouriteLiveData.setValue(this.favouriteList);
     }
-
-    // JKAnime
-
-    private MutableLiveData<String> animeVideo;
 
     public LiveData<String> getAnimeVideo(String name, float number) {
         animeVideo = new MutableLiveData<>();
@@ -195,13 +200,6 @@ public class MainViewModel extends ViewModel {
             }
         });
     }
-
-    // EXTRAS
-
-    private MutableLiveData<String> url = new MutableLiveData<>();
-    private MutableLiveData<Integer> episodePosition = new MutableLiveData<>();
-    private MutableLiveData<String> image = new MutableLiveData<>();
-    private MutableLiveData<Integer> code = new MutableLiveData<>();
 
     public MutableLiveData<String> getImage() {
         return image;
@@ -292,11 +290,6 @@ public class MainViewModel extends ViewModel {
         });
     }
 
-    public LiveData<ArrayList<AnimeModel>> getSeries(int page) {
-        seriesList = new MutableLiveData<>();
-        requestSeries(page);
-        return seriesList;
-    }
 
     private void requestMovies(int page) {
         Log.d(TAG, "MOVIES REQUESTED");
@@ -325,6 +318,33 @@ public class MainViewModel extends ViewModel {
         return ovasList;
     }
 
+    private void requestOvas(int page) {
+        Log.d(TAG, "OVAS REQUESTED");
+        AnimeFLV_Client.getINSTANCE().getOvaList(page).enqueue(new CallbackWithRetry<JSONResponse>() {
+            @Override
+            public void onResponse(Call<JSONResponse> call, Response<JSONResponse> response) {
+                Log.d(TAG, "onResponse: API CALL SUCCESSFUL / OVAS");
+                code.setValue(response.code());
+                if (response.body() != null && response.code() == 200) {
+                    Log.d(TAG, "onResponse: RESPONSE BODY @GET SUCCESSFUL / OVAS");
+                    ovasList.setValue(response.body().getOva());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JSONResponse> call, Throwable t) {
+                super.onFailure(call, t);
+                Log.d(TAG, "onFailure: API CALL FAILED / OVAS, " + t);
+            }
+        });
+    }
+
+    public LiveData<ArrayList<AnimeModel>> getSeries(int page) {
+        seriesList = new MutableLiveData<>();
+        requestSeries(page);
+        return seriesList;
+    }
+
     private void requestSeries(int page) {
         Log.d(TAG, "SERIES REQUESTED");
         AnimeFLV_Client.getINSTANCE().getTVList(page).enqueue(new CallbackWithRetry<JSONResponse>() {
@@ -347,47 +367,11 @@ public class MainViewModel extends ViewModel {
     }
 
     public LiveData<ArrayList<AnimeModel>> getSpecials(int page) {
-        specialsList = new MutableLiveData<>();
-        requestSpecials(page);
+        if (specialsList == null) {
+            specialsList = new MutableLiveData<>();
+            requestSpecials(page);
+        }
         return specialsList;
-    }
-
-    private void requestOvas(int page) {
-        Log.d(TAG, "OVAS REQUESTED");
-        AnimeFLV_Client.getINSTANCE().getOvaList(page).enqueue(new CallbackWithRetry<JSONResponse>() {
-            @Override
-            public void onResponse(Call<JSONResponse> call, Response<JSONResponse> response) {
-                Log.d(TAG, "onResponse: API CALL SUCCESSFUL / OVAS");
-                code.setValue(response.code());
-                if (response.body() != null && response.code() == 200) {
-                    Log.d(TAG, "onResponse: RESPONSE BODY @GET SUCCESSFUL / OVAS");
-                    ovasList.setValue(response.body().getOva());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JSONResponse> call, Throwable t) {
-                super.onFailure(call, t);
-                Log.d(TAG, "onFailure: API CALL FAILED / OVAS, " + t);
-            }
-        });
-    }
-
-    ////////////////
-    //// RECENT ////
-    ////////////////
-
-    // TV
-
-    public LiveData<ArrayList<AnimeModel>> getTVList(int page) {
-        if (tvList == null) {
-            tvList = new MutableLiveData<>();
-            requestTVList(page);
-        }
-        if (page > 1 && tvList.getValue().size() == 24 * (page - 1)) {
-            requestTVList(page);
-        }
-        return tvList;
     }
 
     private void requestSpecials(int page) {
@@ -411,17 +395,21 @@ public class MainViewModel extends ViewModel {
         });
     }
 
-    // Movies
 
-    public LiveData<ArrayList<AnimeModel>> getMovieList(int page) {
-        if (movieList == null) {
-            movieList = new MutableLiveData<>();
-            requestMovieList(page);
+    ////////////////
+    //// RECENT ////
+    ////////////////
+
+    // TV
+
+    public LiveData<ArrayList<AnimeModel>> getTVList(int page) {
+        if (tvList == null) {
+            tvList = new MutableLiveData<>();
+            requestTVList(page);
+            return tvList;
+        } else {
+            return tvList;
         }
-        if (page > 1 && movieList.getValue().size() == 24 * (page - 1)) {
-            requestMovieList(page);
-        }
-        return movieList;
     }
 
     private void requestTVList(int page) {
@@ -432,12 +420,8 @@ public class MainViewModel extends ViewModel {
                 Log.d(TAG, "onResponse: API CALL SUCCESSFUL / TV");
                 if (response.body() != null) {
                     Log.d(TAG, "onResponse: RESPONSE BODY @GET SUCCESSFUL / TV");
-                    if (tvList != null && page > 1) {
-                        tvList.getValue().addAll(response.body().getTv());
-                        Log.d(TAG, "onResponse: PAGE 2");
-                    } else {
-                        tvList.setValue(response.body().getTv());
-                    }
+                    response.body().getTv().subList(11, 23).clear();
+                    tvList.setValue(response.body().getTv());
                 }
             }
 
@@ -449,17 +433,14 @@ public class MainViewModel extends ViewModel {
         });
     }
 
-    // OVAs
+    // Movies
 
-    public LiveData<ArrayList<AnimeModel>> getOvaList(int page) {
-        if (ovaList == null) {
-            ovaList = new MutableLiveData<>();
-            requestOVAList(page);
+    public LiveData<ArrayList<AnimeModel>> getMovieList(int page) {
+        if (movieList == null) {
+            movieList = new MutableLiveData<>();
+            requestMovieList(page);
         }
-        if (page > 1 && ovaList.getValue().size() == 24 * (page - 1)) {
-            requestOVAList(page);
-        }
-        return ovaList;
+        return movieList;
     }
 
     private void requestMovieList(int page) {
@@ -470,12 +451,8 @@ public class MainViewModel extends ViewModel {
                 Log.d(TAG, "onResponse: API CALL SUCCESSFUL / MOVIE");
                 if (response.body() != null) {
                     Log.d(TAG, "onResponse: RESPONSE BODY @GET SUCCESSFUL / MOVIE");
-                    if (movieList != null && page > 1) {
-                        movieList.getValue().addAll(response.body().getMovies());
-                        Log.d(TAG, "onResponse: PAGE 2");
-                    } else {
-                        movieList.setValue(response.body().getMovies());
-                    }
+                    response.body().getMovies().subList(11, 23).clear();
+                    movieList.setValue(response.body().getMovies());
                 }
             }
 
@@ -483,6 +460,37 @@ public class MainViewModel extends ViewModel {
             public void onFailure(Call<JSONResponse> call, Throwable t) {
                 super.onFailure(call, t);
                 Log.d(TAG, "onFailure: API CALL FAILED / MOVIE, " + t);
+            }
+        });
+    }
+
+    // OVAs
+
+    public LiveData<ArrayList<AnimeModel>> getOvaList(int page) {
+        if (ovaList == null) {
+            ovaList = new MutableLiveData<>();
+            requestOVAList(page);
+        }
+        return ovaList;
+    }
+
+    private void requestOVAList(int page) {
+        Log.d(TAG, "requestFinishedList: OVA REQUESTED");
+        AnimeFLV_Client.getINSTANCE().getOvaList(page).enqueue(new CallbackWithRetry<JSONResponse>() {
+            @Override
+            public void onResponse(Call<JSONResponse> call, Response<JSONResponse> response) {
+                Log.d(TAG, "onResponse: API CALL SUCCESSFUL / OVA");
+                if (response.body() != null) {
+                    Log.d(TAG, "onResponse: RESPONSE BODY @GET SUCCESSFUL / OVA");
+                    response.body().getOva().subList(11, 23).clear();
+                    ovaList.setValue(response.body().getOva());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JSONResponse> call, Throwable t) {
+                super.onFailure(call, t);
+                Log.d(TAG, "onFailure: API CALL FAILED / OVA, " + t);
             }
         });
     }
@@ -507,31 +515,6 @@ public class MainViewModel extends ViewModel {
 
     public void setSelectedAnime(AnimeModel selectedAnime) {
         this.selectedAnime.setValue(selectedAnime);
-    }
-
-    private void requestOVAList(int page) {
-        Log.d(TAG, "requestFinishedList: OVA REQUESTED");
-        AnimeFLV_Client.getINSTANCE().getOvaList(page).enqueue(new CallbackWithRetry<JSONResponse>() {
-            @Override
-            public void onResponse(Call<JSONResponse> call, Response<JSONResponse> response) {
-                Log.d(TAG, "onResponse: API CALL SUCCESSFUL / OVA");
-                if (response.body() != null) {
-                    Log.d(TAG, "onResponse: RESPONSE BODY @GET SUCCESSFUL / OVA");
-                    if (ovaList != null && page > 1) {
-                        ovaList.getValue().addAll(response.body().getOva());
-                        Log.d(TAG, "onResponse: PAGE 2");
-                    } else {
-                        ovaList.setValue(response.body().getOva());
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JSONResponse> call, Throwable t) {
-                super.onFailure(call, t);
-                Log.d(TAG, "onFailure: API CALL FAILED / OVA, " + t);
-            }
-        });
     }
 
     private void requestServerList(String id, String title) {

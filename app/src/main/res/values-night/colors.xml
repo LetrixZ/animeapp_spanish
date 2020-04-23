@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">@color/appBackground</color>
     <color name="colorAccent">#2196F3</color>
 
-    <color name="mainText">@color/header</color>
+    <color name="mainText">#ffffff</color>
 
     <color name="appBackground">#0c0c0c</color>
     <color name="textBackground">#80000000</color>
@@ -26,11 +26,11 @@
     <color name="info_meta">@color/text_default</color>
     <color name="types_title">#8f8f8f</color>
     <color name="types_value">#595959</color>
+    <color name="genre_items_bg">#DDDDDD</color>
 
     //AnimeInfo Episodes
-    <color name="episode_background">#272727</color>
-    <color name="episode_background_watched">#434343</color>
-    <color name="episode_watched_progress">@color/progress</color>
+    <color name="episode_background">@color/colorAccent</color>
+    <color name="episode_background_watched">#606060</color>
     <color name="episode_text">#DFDFDF</color>
 
     <color name="dialog">#1B1B1B</color>

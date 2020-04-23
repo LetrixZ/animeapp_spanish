@@ -2,7 +2,6 @@ package com.letrix.animeapp.fragments;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +12,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.HomeFragment;
+import com.letrix.animeapp.MainActivity;
 import com.letrix.animeapp.R;
 import com.letrix.animeapp.adapters.AnimeAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
@@ -33,7 +31,7 @@ import java.util.Objects;
 
 import timber.log.Timber;
 
-public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClickListener {
+public class CommonFragment extends Fragment {
 
     private static int TYPE = 1;
     private RecyclerView recyclerView;
@@ -137,6 +135,7 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
             Timber.d("onCreateView: %s", TYPE_MAP.get(TYPE));
             //initData();
         }
+
         return view;
     }
 
@@ -146,7 +145,7 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
             blockClick = true;
             assert getArguments() != null;
             TYPE = getArguments().getInt("TYPE");
-            switch (TYPE_MAP.get(TYPE)) {
+            switch (Objects.requireNonNull(TYPE_MAP.get(TYPE))) {
                 case "FINISHED":
                     mainViewModel.getFinished(1).observe(getViewLifecycleOwner(), this::insertData);
                     break;
@@ -170,7 +169,7 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
             }
         } else {
             Timber.d("initData: USING OLD DATA");
-            adapter = new AnimeAdapter(requireActivity(), gridLayoutManager, recyclerView, pageNumber, CommonFragment.this);
+            adapter = new AnimeAdapter(gridLayoutManager, recyclerView, 0, this);
             recyclerView.setAdapter(adapter);
             ArrayList<AnimeModel> insertList = new ArrayList<>(dataSource);
             adapter.insertData(insertList);
@@ -180,7 +179,7 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
     private void insertData(ArrayList<AnimeModel> animeModels) {
         Timber.d("initData: REQUESTING NEW DATA");
         dataSource = animeModels;
-        adapter = new AnimeAdapter(requireActivity(), gridLayoutManager, recyclerView, pageNumber, CommonFragment.this);
+        adapter = new AnimeAdapter(gridLayoutManager, recyclerView, 0, this);
         recyclerView.setAdapter(adapter);
         progressBar.setVisibility(View.GONE);
         blockClick = false;
@@ -251,26 +250,6 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
     }
 
     @Override
-    public void onItemClick(int position) {
-        if (!adapter.isLoading || !blockClick) {
-            TYPE = getArguments().getInt("TYPE");
-            Timber.d("onItemClick: %s", TYPE);
-            Timber.d("onItemClick: %s", position);
-            if (dataSource != null) {
-                mainViewModel.setSelectedAnime(dataSource.get(position));
-            } else {
-                dataSource = mainViewModel.getBackedData(TYPE).getAnimeList();
-                Timber.d("onItemClick: DATASOURCE = NULL");
-            }
-            final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            final FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.fragment_navigation_host, new InfoFragment());
-            transaction.addToBackStack("TAG");
-            transaction.commit();
-        }
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (dataSource != null) {
@@ -292,11 +271,23 @@ public class CommonFragment extends Fragment implements AnimeAdapter.OnItemClick
         getView().setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
                 HomeFragment.selectPage(2);
-
                 return true;
             }
             return false;
         });
+    }
+
+    public void animeInfo(AnimeModel anime, String animeName, View animeImage, View animeTitle) {
+        if (requireActivity() instanceof MainActivity) {
+            mainViewModel.setSelectedAnime(anime);
+            InfoFragment animeInfo = new InfoFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("imageTransitionName", "image_" + animeName);
+            bundle.putString("titleTransitionName", "title_" + animeName);
+            bundle.putSerializable("anime", anime);
+            animeInfo.setArguments(bundle);
+            ((MainActivity)requireActivity()).showFragmentWithTransition(this, animeInfo, "animeInfo", animeImage, animeTitle, "image_" + animeName, "title_" + animeName);
+        }
     }
 
 }

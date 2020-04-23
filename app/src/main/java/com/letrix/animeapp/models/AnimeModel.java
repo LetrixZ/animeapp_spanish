@@ -1,9 +1,10 @@
 package com.letrix.animeapp.models;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public final class AnimeModel {
+public final class AnimeModel implements Serializable {
 
     private final String id;
     private final String title;

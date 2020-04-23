@@ -1,6 +1,5 @@
 package com.letrix.animeapp.adapters;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -17,6 +16,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.R;
+import com.letrix.animeapp.fragments.CommonFragment;
+import com.letrix.animeapp.fragments.FavouritesFragment;
 import com.letrix.animeapp.models.AnimeModel;
 import com.letrix.animeapp.utils.DiffUtilCallback;
 
@@ -30,16 +31,34 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private ArrayList<AnimeModel> dataSource = new ArrayList<>();
     private GridLayoutManager gridLayoutManager;
     private RecyclerView recyclerView;
-    private Context context;
     private int pageNumber;
-    private OnItemClickListener mOnItemClickListener;
 
-    public AnimeAdapter(Context context, GridLayoutManager gridLayoutManager, RecyclerView recyclerView, int pageNumber, OnItemClickListener onItemClickListener) {
+    private FavouritesFragment favouritesFragment;
+    private CommonFragment commonFragment;
+
+    //Favorites
+    public AnimeAdapter(GridLayoutManager gridLayoutManager, RecyclerView recyclerView, int pageNumber, FavouritesFragment fragment) {
         this.pageNumber = pageNumber;
-        this.context = context;
         this.gridLayoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
         this.recyclerView = recyclerView;
-        this.mOnItemClickListener = onItemClickListener;
+
+        this.favouritesFragment = fragment;
+
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return getItemViewType(position) == VIEWTYPE_PROGRESS ? gridLayoutManager.getSpanCount() : 1;
+            }
+        });
+    }
+
+    //Common
+    public AnimeAdapter(GridLayoutManager gridLayoutManager, RecyclerView recyclerView, int pageNumber, CommonFragment fragment) {
+        this.pageNumber = pageNumber;
+        this.gridLayoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+        this.recyclerView = recyclerView;
+
+        this.commonFragment = fragment;
 
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -71,13 +90,12 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEWTYPE_ANIMELIST) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_anime_home_item, parent, false);
-            return new ItemViewHolder(v, mOnItemClickListener);
+            return new ItemViewHolder(v);
         } else {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.loading, parent, false);
             return new ProgressHolder(v);
         }
     }
-
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
@@ -93,6 +111,20 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             byte[] decodedString = Base64.decode(currentItem.getPoster(), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             itemViewHolder.animeImage.setImageBitmap(decodedByte);
+
+            // START
+            itemViewHolder.animeImage.setTransitionName("image_" + currentItem.getId());
+            itemViewHolder.animeTitle.setTransitionName("title_" + currentItem.getId());
+
+            itemViewHolder.itemView.setOnClickListener(v -> {
+                if (favouritesFragment != null) {
+                    favouritesFragment.animeInfo(currentItem, currentItem.getId(), v.findViewById(R.id.animeImage), v.findViewById(R.id.animeTitle));
+                }
+                else if (commonFragment != null) {
+                    commonFragment.animeInfo(currentItem, currentItem.getId(), v.findViewById(R.id.animeImage), v.findViewById(R.id.animeTitle));
+                }
+            });
+            // END
 
         } else {
             if (isLoading) {
@@ -126,10 +158,6 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         isLoading = false;
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
-
     public class ProgressHolder extends RecyclerView.ViewHolder {
         ProgressBar progressBar;
 
@@ -139,24 +167,15 @@ public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ItemViewHolder extends RecyclerView.ViewHolder {
         ImageView animeImage;
         TextView animeTitle, lastEpisode;
-        OnItemClickListener onItemClickListener;
 
-        ItemViewHolder(@NonNull View itemView, OnItemClickListener onItemClickListener) {
+        ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             animeImage = itemView.findViewById(R.id.animeImage);
             animeTitle = itemView.findViewById(R.id.animeTitle);
             lastEpisode = itemView.findViewById(R.id.lastEpisode);
-            this.onItemClickListener = onItemClickListener;
-
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            onItemClickListener.onItemClick(getAdapterPosition());
         }
     }
 

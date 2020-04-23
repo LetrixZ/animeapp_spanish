@@ -1,13 +1,17 @@
 package com.letrix.animeapp.utils;
 
+import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.view.View;
 
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.R;
+import com.letrix.animeapp.fragments.RecentFragment;
 import com.letrix.animeapp.models.AnimeModel;
 import com.letrix.animeapp.viewholders.FooterViewHolder;
 import com.letrix.animeapp.viewholders.HeaderViewHolder;
@@ -22,10 +26,10 @@ public class AnimeSection extends Section {
 
     private ArrayList<AnimeModel> animeList;
     private String title;
-    private ClickListener clickListener;
+    private RecentFragment fragment;
 
-    public AnimeSection(ArrayList<AnimeModel> animeLists, String title, ClickListener clickListener) {
-        // call constructor with layout resources for this Section header and items
+
+    public AnimeSection(ArrayList<AnimeModel> animeLists, String title, RecentFragment fragment, RecyclerView recyclerView, Context context) {
         super(SectionParameters.builder()
                 .itemResourceId(R.layout.recycler_anime_home_item)
                 .headerResourceId(R.layout.recycler_anime_mini_header)
@@ -33,12 +37,32 @@ public class AnimeSection extends Section {
                 .build());
         this.animeList = animeLists;
         this.title = title;
-        this.clickListener = clickListener;
+        this.fragment = fragment;
+        GridLayoutManager gridLayoutManager;
+        if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            gridLayoutManager = new GridLayoutManager(context, 4);
+            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    return (position == 0 || position == animeList.size() + 1 || position == animeList.size() + 2 || position == (animeList.size() * 2) + 3 || position == (animeList.size() * 2) + 4 || position == (animeList.size() * 3) + 5) ? 4 : 1;
+                }
+            });
+            recyclerView.setLayoutManager(gridLayoutManager);
+        } else {
+            gridLayoutManager = new GridLayoutManager(context, 3);
+            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    return (position == 0 || position == animeList.size() + 1 || position == animeList.size() + 2 || position == (animeList.size() * 2) + 3 || position == (animeList.size() * 2) + 4 || position == (animeList.size() * 3) + 5) ? 3 : 1;
+                }
+            });
+            recyclerView.setLayoutManager(gridLayoutManager);
+        }
     }
 
     @Override
     public int getContentItemsTotal() {
-        return animeList.size(); // number of items of this section
+        return animeList.size();
     }
 
     @Override
@@ -62,8 +86,12 @@ public class AnimeSection extends Section {
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         itemHolder.animeImage.setImageBitmap(decodedByte);
 
-        itemHolder.rootView.setOnClickListener(v ->
-                clickListener.onItemRootViewClicked(title, itemHolder.getAdapterPosition()));
+        itemHolder.animeImage.setTransitionName("image_" + currentAnime.getTitle());
+        itemHolder.animeTitle.setTransitionName("title_" + currentAnime.getTitle());
+
+        itemHolder.rootView.setOnClickListener(v -> {
+            fragment.animeInfo(currentAnime, currentAnime.getTitle(), v.findViewById(R.id.animeImage), v.findViewById(R.id.animeTitle));
+        });
     }
 
     @Override
@@ -75,9 +103,6 @@ public class AnimeSection extends Section {
         HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
 
         headerHolder.animeType.setText(title);
-        /*headerHolder.rootView.setOnClickListener(v -> {
-            clickListener.onHeaderRootViewclicked();
-        });*/
     }
 
     @Override
@@ -90,17 +115,8 @@ public class AnimeSection extends Section {
         FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
         footerViewHolder.loadMore.setText(String.format(holder.itemView.getContext().getString(R.string.seemore), title));
 
-        footerViewHolder.rootView.setOnClickListener(v ->
-                clickListener.onFooterRootViewClicked(title)
-        );
+        footerViewHolder.rootView.setOnClickListener(v -> {
+            fragment.onFooterRootViewClicked(title);
+        });
     }
-
-    public interface ClickListener {
-
-        void onItemRootViewClicked(final String title, final int itemAdapterPosition);
-
-        void onFooterRootViewClicked(final String title);
-
-    }
-
 }

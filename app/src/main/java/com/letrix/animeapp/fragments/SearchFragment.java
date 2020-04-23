@@ -3,7 +3,6 @@ package com.letrix.animeapp.fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +16,11 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.letrix.animeapp.MainActivity;
 import com.letrix.animeapp.R;
 import com.letrix.animeapp.adapters.SearchAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
@@ -30,10 +28,10 @@ import com.letrix.animeapp.models.AnimeModel;
 
 import java.util.ArrayList;
 
-public class SearchFragment extends Fragment implements SearchAdapter.OnItemClickListener {
+public class SearchFragment extends Fragment {
 
     private static final String TAG="SearchFragment";
-    private MainViewModel mViewModel;
+    private MainViewModel mainViewModel;
     private EditText searchBox;
     private View view;
     private RecyclerView recyclerView;
@@ -67,7 +65,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+        mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
 
         backButton = view.findViewById(R.id.backButton);
         searchBox = view.findViewById(R.id.searchEditText);
@@ -103,11 +101,11 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
         recyclerView.setAdapter(null);
         progressBar.setVisibility(View.VISIBLE);
         relativeLayout.setVisibility(View.GONE);
-        mViewModel.getSearchList(searchTerm).observe(getViewLifecycleOwner(), animeModels -> {
+        mainViewModel.getSearchList(searchTerm).observe(getViewLifecycleOwner(), animeModels -> {
             searchList = animeModels;
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
-            final SearchAdapter dataAdapter = new SearchAdapter(animeModels, mViewModel.getFavouriteList().getValue(), SearchFragment.this);
+            final SearchAdapter dataAdapter = new SearchAdapter(animeModels,SearchFragment.this);
             recyclerView.setAdapter(dataAdapter);
             progressBar.setVisibility(View.GONE);
             if (animeModels.size() == 0) {
@@ -116,26 +114,17 @@ public class SearchFragment extends Fragment implements SearchAdapter.OnItemClic
         });
     }
 
-    @Override
-    public void onItemClick(int position) {
-
-        mViewModel.setSelectedAnime(searchList.get(position));
-
-        final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        final FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.fragment_navigation_host, new InfoFragment());
-        transaction.addToBackStack("TAG");
-        transaction.commit();
+    public void animeInfo(AnimeModel anime, String animeName, View animeImage, View animeTitle) {
+        if (requireActivity() instanceof MainActivity) {
+            mainViewModel.setSelectedAnime(anime);
+            InfoFragment animeInfo = new InfoFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("imageTransitionName", "image_" + animeName);
+            bundle.putString("titleTransitionName", "title_" + animeName);
+            bundle.putSerializable("anime", anime);
+            animeInfo.setArguments(bundle);
+            ((MainActivity)requireActivity()).showFragmentWithTransition(this, animeInfo, "animeInfo", animeImage, animeTitle, "image_" + animeName, "title_" + animeName);
+        }
     }
 
-    /*@Override
-    public void onFavoriteClick(int position) {
-        Toast.makeText(requireActivity(), searchList.get(position).getTitle(), Toast.LENGTH_SHORT).show();
-        for (AnimeModel favorites : mViewModel.getFavouriteList().getValue()) {
-            Log.d(TAG, "onFavoriteClick: " + searchList.get(position).getTitle());
-            if (searchList.get(position) == favorites)  {
-                Log.d(TAG, "onFavoriteClick: MATCHED!");
-            }
-        }
-    }*/
 }

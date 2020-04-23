@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <integer name="full_header_size">36</integer>
-    <integer name="folded_header_size">24</integer>
-</resources>

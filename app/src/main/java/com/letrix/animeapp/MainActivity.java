@@ -2,9 +2,17 @@ package com.letrix.animeapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
+import android.transition.TransitionSet;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,8 +34,9 @@ import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MainViewModel mainViewModel;
     public static Boolean saveFavorites = true, saveWatched = true;
+    boolean doubleBackToExitPressedOnce = false;
+    private MainViewModel mainViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         mainViewModel.restoreFavourite(loadFavorites());
         mainViewModel.restoreCurrentWatching(loadWatched(), loadWatchedNew());
         mainViewModel.restoreFLV(loadEnableFLV());
-        HashMap<AnimeModel, TreeMap<Integer, EpisodeTime>> temp = loadWatchedNew();
 
         if (savedInstanceState == null) {
             FragmentManager fManager = getSupportFragmentManager();
@@ -108,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    // NEW
+
     private Boolean loadEnableFLV() {
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
         Gson gson = new Gson();
@@ -118,8 +128,6 @@ public class MainActivity extends AppCompatActivity {
 
         return enableFLV;
     }
-
-    // NEW
 
     private HashMap<AnimeModel, TreeMap<Integer, EpisodeTime>> loadWatchedNew() {
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
@@ -160,5 +168,61 @@ public class MainActivity extends AppCompatActivity {
         Timber.d("Data saved");
     }
 
+    public void showFragmentWithTransition(Fragment current, Fragment newFragment, String tag, View sharedView, View sharedView2, String sharedElementName, String sharedElementName2) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        // check if the fragment is in back stack
+        boolean fragmentPopped = fragmentManager.popBackStackImmediate(tag, 0);
+        if (fragmentPopped) {
+            // fragment is pop from backStack
+        } else {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                current.setSharedElementReturnTransition(TransitionInflater.from(this).inflateTransition(R.transition.default_transition));
+                current.setExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.default_transition));
+
+                Transition titleExit = TransitionInflater.from(this).inflateTransition(R.transition.title_transition);
+                Transition image = TransitionInflater.from(this).inflateTransition(R.transition.default_transition).excludeTarget(sharedElementName2, true);
+                TransitionSet set = new TransitionSet();
+                set.addTransition(titleExit).addTransition(image);
+                newFragment.setSharedElementEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.default_transition));
+                newFragment.setSharedElementReturnTransition(set);
+                newFragment.setEnterTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.fade));
+            }
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            if (sharedView2 != null) {
+                fragmentTransaction.replace(R.id.fragment_navigation_host, newFragment, tag)
+                        .addToBackStack(tag)
+                        .addSharedElement(sharedView, sharedElementName)
+                        .addSharedElement(sharedView2, sharedElementName2)
+                        .commit();
+            } else {
+                fragmentTransaction.replace(R.id.fragment_navigation_host, newFragment, tag)
+                        .addToBackStack(tag)
+                        .addSharedElement(sharedView, sharedElementName)
+                        .commit();
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        } else if (!doubleBackToExitPressedOnce) {
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, "Presiona de nuevo para salir", Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        } else {
+            super.onBackPressed();
+            return;
+        }
+    }
 
 }

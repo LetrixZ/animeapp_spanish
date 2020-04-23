@@ -2,7 +2,6 @@ package com.letrix.animeapp.fragments;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +11,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.letrix.animeapp.MainActivity;
 import com.letrix.animeapp.R;
 import com.letrix.animeapp.adapters.GenreAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
@@ -29,7 +28,7 @@ import java.util.ArrayList;
 
 import timber.log.Timber;
 
-public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickListener {
+public class GenreFragment extends Fragment {
 
     private static final String TAG = "GenreFragment";
     private static String searchTerm;
@@ -46,6 +45,7 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
     private ArrayList<AnimeModel> dataSource = new ArrayList<>();
     private int code = 200;
     private TextView genreTitle;
+    private CardView genreCard;
 
     public GenreFragment() {
     }
@@ -98,10 +98,20 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.genre_fragment, container, false);
+        String titleTransitionName = null, genreTransitionName = null;
+
+        Bundle b = getArguments();
+        if (b != null) {
+            titleTransitionName = b.getString("genreTransitionName");
+            genreTransitionName = b.getString("cardTransitionName");
+        }
 
         recyclerView = view.findViewById(R.id.recyclerView);
         progressBar = view.findViewById(R.id.progressBarGenre);
-        genreTitle = view.findViewById(R.id.header);
+        genreTitle = view.findViewById(R.id.genreText);
+        genreCard = view.findViewById(R.id.cardView);
+        genreCard.setTransitionName(genreTransitionName);
+        genreTitle.setTransitionName(titleTransitionName);
         String genre = searchTerm.replace("-", " ");
         genre = genre.substring(0, 1).toUpperCase() + genre.substring(1).toLowerCase();
         genreTitle.setText(genre);
@@ -113,6 +123,7 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
         }
         recyclerView.setLayoutManager(gridLayoutManager);
 
+
         initData();
 
         return view;
@@ -122,10 +133,9 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
         progressBar.setVisibility(View.VISIBLE);
         if (dataSource.size() < pageNumber * 12) {
             mainViewModel.getGenreList(searchTerm, "default", 1).observe(getViewLifecycleOwner(), this::insertData);
-        }
-        else {
+        } else {
             Timber.d("initData: USING OLD DATA");
-            adapter = new GenreAdapter(requireActivity(), gridLayoutManager, recyclerView, pageNumber, this::onItemClick);
+            adapter = new GenreAdapter(requireActivity(), gridLayoutManager, recyclerView, pageNumber, this);
             recyclerView.setAdapter(adapter);
             ArrayList<AnimeModel> insertList = new ArrayList<>(dataSource);
             adapter.insertData(insertList);
@@ -139,7 +149,7 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
         progressBar.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.GONE);
         dataSource = animeModels;
-        adapter = new GenreAdapter(requireActivity(), gridLayoutManager, recyclerView, pageNumber, this::onItemClick);
+        adapter = new GenreAdapter(requireActivity(), gridLayoutManager, recyclerView, pageNumber, this);
         recyclerView.setAdapter(adapter);
         ArrayList<AnimeModel> insertList = new ArrayList<>(dataSource);
         adapter.insertData(insertList);
@@ -178,7 +188,7 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
         adapter.hideProgressBar();
     }
 
-    @Override
+    /*@Override
     public void onItemClick(int position) {
         mainViewModel.setSelectedAnime(dataSource.get(position));
         final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
@@ -186,12 +196,25 @@ public class GenreFragment extends Fragment implements GenreAdapter.OnItemClickL
         transaction.replace(R.id.fragment_navigation_host, new InfoFragment());
         transaction.addToBackStack("TAG");
         transaction.commit();
-    }
+    }*/
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         mainViewModel.addBackedData(new BackedData(searchTerm, dataSource, pageNumber), 7);
+    }
+
+    public void animeInfo(AnimeModel anime, String animeName, View animeImage, View animeTitle) {
+        if (requireActivity() instanceof MainActivity) {
+            mainViewModel.setSelectedAnime(anime);
+            InfoFragment animeInfo = new InfoFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("imageTransitionName", "image_" + animeName);
+            bundle.putString("titleTransitionName", "title_" + animeName);
+            bundle.putSerializable("anime", anime);
+            animeInfo.setArguments(bundle);
+            ((MainActivity) requireActivity()).showFragmentWithTransition(this, animeInfo, "animeInfo", animeImage, animeTitle, "image_" + animeName, "title_" + animeName);
+        }
     }
 }
 

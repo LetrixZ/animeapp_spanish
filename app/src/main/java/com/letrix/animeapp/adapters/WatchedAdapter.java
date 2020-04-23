@@ -27,12 +27,10 @@ import timber.log.Timber;
 public class WatchedAdapter extends RecyclerView.Adapter<WatchedAdapter.ViewHolder> {
 
     private ArrayList<Map.Entry<AnimeModel, ArrayList<EpisodeTime>>> animeList;
-    private OnItemClickListener mOnItemClickListener;
     private RecentFragment fragment;
 
-    public WatchedAdapter(ArrayList<Map.Entry<AnimeModel, ArrayList<EpisodeTime>>> animeList, OnItemClickListener mOnItemClickListener, RecentFragment fragment) {
+    public WatchedAdapter(ArrayList<Map.Entry<AnimeModel, ArrayList<EpisodeTime>>> animeList, RecentFragment fragment) {
         this.animeList = animeList;
-        this.mOnItemClickListener = mOnItemClickListener;
         this.fragment = fragment;
     }
 
@@ -40,7 +38,7 @@ public class WatchedAdapter extends RecyclerView.Adapter<WatchedAdapter.ViewHold
     @Override
     public WatchedAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_anime_watched_item, parent, false);
-        return new ViewHolder(view, mOnItemClickListener);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -51,7 +49,7 @@ public class WatchedAdapter extends RecyclerView.Adapter<WatchedAdapter.ViewHold
         byte[] decodedString = Base64.decode(currentItem.getPoster(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         holder.animeImage.setImageBitmap(decodedByte);
-        Timber.d("Anime title: %s", currentItem.getTitle());
+        //Timber.d("Anime title: %s", currentItem.getTitle());
         int size = currentItem.getEpisodes().size();
         // Checking the latest watched episode
         if (currentEpisode.get(currentEpisode.size() - 1).getProgressPosition() < 90) {
@@ -67,7 +65,7 @@ public class WatchedAdapter extends RecyclerView.Adapter<WatchedAdapter.ViewHold
                 EpisodeTime episodeTime = iterator.next();
                 if (episodeTime.getProgressPosition() > 90) {
                     iterator.remove();
-                    Timber.d(String.valueOf(episodeTime.getEpisodeNumber()));
+                    //Timber.d(String.valueOf(episodeTime.getEpisodeNumber()));
                 } else {
                     holder.lastEpisode.setText(String.format(holder.itemView.getResources().getString(R.string.episode), String.valueOf(episodeTime.getEpisodeNumber())));
                     holder.progressBar.setProgress((int) episodeTime.getProgressPosition());
@@ -94,6 +92,14 @@ public class WatchedAdapter extends RecyclerView.Adapter<WatchedAdapter.ViewHold
             holder.lastEpisode.setText(R.string.completed);
             holder.progressBar.setVisibility(View.GONE);
         }
+
+        holder.animeImage.setTransitionName("image_" + currentItem.getId());
+        holder.animeTitle.setTransitionName("title_" + currentItem.getId());
+
+        holder.itemView.setOnClickListener(v -> {
+            fragment.animeInfo(currentItem, currentItem.getId(), v.findViewById(R.id.animeImage), v.findViewById(R.id.animeTitle));
+            Timber.d(currentItem.getTitle());
+        });
     }
 
     @Override
@@ -101,29 +107,18 @@ public class WatchedAdapter extends RecyclerView.Adapter<WatchedAdapter.ViewHold
         return animeList.size();
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView animeTitle, lastEpisode;
         ImageView animeImage;
         ProgressBar progressBar;
 
-        ViewHolder(@NonNull View itemView, OnItemClickListener onItemClickListener) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
             animeImage = itemView.findViewById(R.id.animeImage);
             animeTitle = itemView.findViewById(R.id.animeTitle);
             lastEpisode = itemView.findViewById(R.id.lastEpisode);
             progressBar = itemView.findViewById(R.id.watchedBar);
-
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            mOnItemClickListener.onItemClick(getAdapterPosition());
         }
     }
 }

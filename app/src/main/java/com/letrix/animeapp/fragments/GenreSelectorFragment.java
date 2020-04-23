@@ -1,7 +1,6 @@
 package com.letrix.animeapp.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +9,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.HomeFragment;
+import com.letrix.animeapp.MainActivity;
 import com.letrix.animeapp.R;
 import com.letrix.animeapp.adapters.GenreSelectorAdapter;
 import com.letrix.animeapp.datamanager.MainViewModel;
@@ -47,11 +46,10 @@ public class GenreSelectorFragment extends Fragment implements GenreSelectorAdap
         recyclerView.setHasFixedSize(true);
         flowLayoutManager = new FlowLayoutManager();
         flowLayoutManager.setAutoMeasureEnabled(true);
-        //flowLayoutManager.maxItemsPerLine(3);
         flowLayoutManager.removeItemPerLineLimit();
         flowLayoutManager.setAlignment(Alignment.LEFT);
         recyclerView.setLayoutManager(flowLayoutManager);
-        adapter = new GenreSelectorAdapter(genreList, this);
+        adapter = new GenreSelectorAdapter(genreList, this, this);
         recyclerView.setAdapter(adapter);
 
         return view;
@@ -59,14 +57,14 @@ public class GenreSelectorFragment extends Fragment implements GenreSelectorAdap
 
     @Override
     public void onItemClickGenre(int position) {
-        GenreFragment genreFragment = new GenreFragment();
+        /*GenreFragment genreFragment = new GenreFragment();
         Bundle b = new Bundle();
         b.putString("genre", genreList.get(position));
         genreFragment.setArguments(b);
         final FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_navigation_host, genreFragment, "genre");
         ft.addToBackStack("genre");
-        ft.commit();
+        ft.commit();*/
     }
 
     @Override
@@ -82,5 +80,17 @@ public class GenreSelectorFragment extends Fragment implements GenreSelectorAdap
             }
             return false;
         });
+    }
+
+    public void searchGenre(String genre, View genreText, View cardView) {
+        if (requireActivity() instanceof MainActivity) {
+            GenreFragment genreFragment = new GenreFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("genreTransitionName", "genre_" + genre);
+            bundle.putString("cardTransitionName", "card_" + genre);
+            bundle.putString("genre", genre);
+            genreFragment.setArguments(bundle);
+            ((MainActivity) requireActivity()).showFragmentWithTransition(this, genreFragment, "genreFragment", genreText, cardView, "genre_" + genre, "card_" + genre);
+        }
     }
 }

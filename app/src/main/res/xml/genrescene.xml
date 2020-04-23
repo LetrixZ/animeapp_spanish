@@ -17,20 +17,9 @@
     <ConstraintSet android:id="@+id/start">
 
         <Constraint
-            android:id="@id/header"
+            android:id="@id/cardView"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="30dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="10dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-            <CustomAttribute
-                app:attributeName="textSize"
-                app:customFloatValue="28" />
-
-        </Constraint>
+            android:layout_height="wrap_content"/>
 
         <Constraint
             android:id="@+id/shadowLayout"
@@ -42,7 +31,7 @@
             android:elevation="1dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header" />
+            app:layout_constraintTop_toBottomOf="@id/cardView" />
 
         <Constraint
             android:id="@+id/progressBarGenre"
@@ -62,16 +51,11 @@
     <ConstraintSet android:id="@+id/end">
 
         <Constraint
-            android:id="@id/header"
+            android:id="@id/cardView"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-            <CustomAttribute
-                app:attributeName="textSize"
-                app:customFloatValue="24" />
-
-        </Constraint>
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <Constraint
             android:id="@+id/shadowLayout"
@@ -83,7 +67,7 @@
             android:elevation="2dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header" />
+            app:layout_constraintTop_toBottomOf="@id/cardView" />
 
 
     </ConstraintSet>

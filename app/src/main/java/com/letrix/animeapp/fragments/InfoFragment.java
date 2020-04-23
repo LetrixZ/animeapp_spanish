@@ -35,6 +35,7 @@ import com.letrix.animeapp.models.AnimeModel;
 import com.letrix.animeapp.models.EpisodeTime;
 import com.letrix.animeapp.models.ServerModel;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
+import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     private ProgressBar progressBar;
     private GridLayoutManager gridLayoutManager;
     private List<Integer> watchedEpisodes = new ArrayList<>();
+    private AnimeModel currentAnime;
 
     private TextView noEpisodeText;
 
@@ -78,9 +80,10 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
 
         // Favorite
         favouriteButton = rootView.findViewById(R.id.favourite);
+
         mainViewModel.getSelectedAnime().observe(getViewLifecycleOwner(), animeModel -> {
             selectedAnime = animeModel;
-            infoAdapter(animeModel);
+            //infoAdapter(animeModel);
             if (mainViewModel.getFavouriteList() != null) {
                 for (AnimeModel anime : mainViewModel.getFavouriteList().getValue()) {
                     if (anime.getTitle().equals(animeModel.getTitle())) {
@@ -90,6 +93,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
                 }
             }
         });
+
         favouriteButton.setOnClickListener(v -> {
             if (!isFavourite) {
                 favouriteButton.setImageResource(R.drawable.ic_favorite);
@@ -104,6 +108,14 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
             }
         });
 
+        Bundle b = getArguments();
+        if (b != null) {
+            String imageTransitionName = b.getString("imageTransitionName");
+            String titleTransitionName = b.getString("titleTransitionName");
+            currentAnime = (AnimeModel) b.getSerializable("anime");
+            infoAdapter(currentAnime, imageTransitionName, titleTransitionName);
+        }
+
         return rootView;
     }
 
@@ -115,7 +127,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         }
     }
 
-    private void infoAdapter(AnimeModel anime) {
+    private void infoAdapter(AnimeModel anime, String imageTransitionName, String titleTransitionName) {
         TextView animeTitle, animeRating, animeStatus, animeType, animeNextEpisode;
         ExpandableTextView animeSynopsis;
         ImageView animeImage;
@@ -130,14 +142,22 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         animeType = rootView.findViewById(R.id.animeInfoType);
         animeRating = rootView.findViewById(R.id.animeInfoReleased);
         animeSynopsis = rootView.findViewById(R.id.animeInfoSummary);
-        animeTitle = rootView.findViewById(R.id.animeInfoTitle);
+        animeTitle = rootView.findViewById(R.id.animeTitle);
         animeNextEpisode = rootView.findViewById(R.id.animeInfoNextEpisode);
         nextEpisodeLayout = rootView.findViewById(R.id.nextEpisodeLayout);
 
         // Set
-        byte[] decodedString = Base64.decode(anime.getPoster(), Base64.DEFAULT);
-        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        animeImage.setImageBitmap(decodedByte);
+        animeImage.setTransitionName(imageTransitionName);
+        animeTitle.setTransitionName(titleTransitionName);
+
+        if (anime.getPoster().length() > 80) {
+            byte[] decodedString = Base64.decode(anime.getPoster(), Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            animeImage.setImageBitmap(decodedByte);
+        }
+        else {
+            Picasso.get().load(anime.getPoster()).into(animeImage);
+        }
         animeStatus.setText(anime.getDebut());
         animeTitle.setText(anime.getTitle());
         animeType.setText(anime.getType());
@@ -170,13 +190,13 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
         }
         recyclerView.setLayoutManager(gridLayoutManager);
 
-        if (mainViewModel.checkWatched(selectedAnime)) {
-            for (Map.Entry<Integer, EpisodeTime> entry : mainViewModel.getCurrentlyWatching().get(selectedAnime).entrySet()) {
+        if (mainViewModel.checkWatched(anime)) {
+            for (Map.Entry<Integer, EpisodeTime> entry : mainViewModel.getCurrentlyWatching().get(anime).entrySet()) {
                 watchedEpisodes.add(entry.getKey());
             }
         }
 
-        if (selectedAnime.getEpisodes() == null) {
+        if (anime.getEpisodes() == null) {
             noEpisodeText.setVisibility(View.VISIBLE);
         } else {
             final EpisodeAdapter dataAdapter = new EpisodeAdapter(anime, InfoFragment.this, watchedEpisodes, requireActivity());
@@ -185,14 +205,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
-    }
-
-    @Override
     public void onItemClick(int position) {
-        AnimeModel currentAnime = mainViewModel.getSelectedAnime().getValue();
         AnimeModel.Episodes currentEpisode = currentAnime.getEpisodes().get(position + 1);
         initAlertDialog(currentAnime, currentEpisode);
     }
@@ -337,5 +350,11 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
     }
 }

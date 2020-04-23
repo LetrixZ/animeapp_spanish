@@ -1,7 +1,7 @@
 package com.letrix.animeapp;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
+import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +62,9 @@ public class HomeFragment extends Fragment {
         searchButton.setOnClickListener(v -> {
             final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             final FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.fragment_navigation_host, new SearchFragment());
+            SearchFragment searchFragment = new SearchFragment();
+            searchFragment.setEnterTransition(TransitionInflater.from(requireActivity()).inflateTransition(android.R.transition.slide_right));
+            transaction.replace(R.id.fragment_navigation_host, searchFragment);
             transaction.addToBackStack("TAG");
             transaction.commit();
         });
@@ -70,7 +72,9 @@ public class HomeFragment extends Fragment {
         favouritesButton.setOnClickListener(v -> {
             final FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             final FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.fragment_navigation_host, new FavouritesFragment());
+            FavouritesFragment favouritesFragment = new FavouritesFragment();
+            favouritesFragment.setEnterTransition(TransitionInflater.from(requireActivity()).inflateTransition(android.R.transition.slide_right));
+            transaction.replace(R.id.fragment_navigation_host, favouritesFragment);
             transaction.addToBackStack("TAG");
             transaction.commit();
         });
@@ -83,11 +87,10 @@ public class HomeFragment extends Fragment {
         smartTabLayout.setViewPager(pager);
         pager.setCurrentItem(2, true);
 
-        if (requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            requireActivity().getSupportFragmentManager().addOnBackStackChangedListener(
-                    () -> motionLayout.transitionToEnd());
-        }
+       /* requireActivity().getSupportFragmentManager().addOnBackStackChangedListener(
+                () -> motionLayout.transitionToEnd());*/
     }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {

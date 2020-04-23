@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.R;
+import com.letrix.animeapp.fragments.GenreFragment;
 import com.letrix.animeapp.models.AnimeModel;
 import com.letrix.animeapp.utils.DiffUtilCallback;
 
@@ -32,14 +33,14 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private RecyclerView recyclerView;
     private Context context;
     private int pageNumber;
-    private GenreAdapter.OnItemClickListener mOnItemClickListener;
+    private GenreFragment fragment;
 
-    public GenreAdapter(Context context, GridLayoutManager gridLayoutManager, RecyclerView recyclerView, int pageNumber, GenreAdapter.OnItemClickListener onItemClickListener) {
+    public GenreAdapter(Context context, GridLayoutManager gridLayoutManager, RecyclerView recyclerView, int pageNumber, GenreFragment fragment) {
         this.pageNumber = pageNumber;
         this.context = context;
         this.gridLayoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
         this.recyclerView = recyclerView;
-        this.mOnItemClickListener = onItemClickListener;
+        this.fragment = fragment;
 
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -71,7 +72,7 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEWTYPE_ANIMELIST) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_genrelist_item, parent, false);
-            return new GenreAdapter.ItemViewHolder(v, mOnItemClickListener);
+            return new GenreAdapter.ItemViewHolder(v);
         } else {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.loading, parent, false);
             return new GenreAdapter.ProgressHolder(v);
@@ -89,6 +90,14 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             byte[] decodedString = Base64.decode(currentItem.getPoster(), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             itemViewHolder.animeImage.setImageBitmap(decodedByte);
+
+            itemViewHolder.animeImage.setTransitionName("image_" + currentItem.getId());
+            itemViewHolder.animeTitle.setTransitionName("title_" + currentItem.getId());
+
+            itemViewHolder.itemView.setOnClickListener(v -> {
+                fragment.animeInfo(currentItem, currentItem.getId(), v.findViewById(R.id.animeImage), v.findViewById(R.id.animeTitle));
+            });
+
         } else {
             if (isLoading) {
                 ((GenreAdapter.ProgressHolder) holder).progressBar.setVisibility(View.VISIBLE);
@@ -133,24 +142,16 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ItemViewHolder extends RecyclerView.ViewHolder {
         ImageView animeImage;
         TextView animeTitle, animeType;
-        GenreAdapter.OnItemClickListener onItemClickListener;
 
-        ItemViewHolder(@NonNull View itemView, GenreAdapter.OnItemClickListener onItemClickListener) {
+        ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             animeImage = itemView.findViewById(R.id.animeImage);
             animeTitle = itemView.findViewById(R.id.animeTitle);
             animeType = itemView.findViewById(R.id.animeType);
-            this.onItemClickListener = onItemClickListener;
 
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            onItemClickListener.onItemClick(getAdapterPosition());
         }
     }
 }

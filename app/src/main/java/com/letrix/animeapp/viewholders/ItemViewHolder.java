@@ -2,6 +2,7 @@ package com.letrix.animeapp.viewholders;
 
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +14,7 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
     public TextView animeTitle, animeEpisode;
     public ImageView animeImage;
     public View rootView;
+    public ProgressBar progressBar;
 
     public ItemViewHolder(View view) {
         super(view);
@@ -21,5 +23,6 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
         animeTitle = view.findViewById(R.id.animeTitle);
         animeEpisode = view.findViewById(R.id.lastEpisode);
         animeImage = view.findViewById(R.id.animeImage);
+        progressBar = view.findViewById(R.id.watchedBar);
     }
 }

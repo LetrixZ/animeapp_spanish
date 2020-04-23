@@ -39,7 +39,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_toEndOf="@id/back"
-            android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
             android:text="@string/favorites"

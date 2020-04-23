@@ -10,6 +10,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.letrix.animeapp.R;
+import com.letrix.animeapp.fragments.GenreSelectorFragment;
 
 import java.util.List;
 
@@ -18,10 +19,12 @@ public class GenreSelectorAdapter extends RecyclerView.Adapter<GenreSelectorAdap
     private List<String> genreList;
     private View view;
     private OnItemClickListener mOnItemClickListener;
+    private GenreSelectorFragment fragment;
 
-    public GenreSelectorAdapter(List<String> genreList, OnItemClickListener mOnItemClickListener) {
+    public GenreSelectorAdapter(List<String> genreList, OnItemClickListener mOnItemClickListener, GenreSelectorFragment fragment) {
         this.genreList = genreList;
         this.mOnItemClickListener = mOnItemClickListener;
+        this.fragment = fragment;
     }
 
     @NonNull
@@ -38,6 +41,15 @@ public class GenreSelectorAdapter extends RecyclerView.Adapter<GenreSelectorAdap
         currentGenre = currentGenre.replace("-", " ");
         currentGenre = currentGenre.substring(0, 1).toUpperCase() + currentGenre.substring(1).toLowerCase();
         holder.genreText.setText(currentGenre);
+
+        // START
+        holder.genreText.setTransitionName("genre_" + currentGenre);
+        holder.cardView.setTransitionName("card_" + currentGenre);
+
+        holder.cardView.setOnClickListener(v -> {
+            fragment.searchGenre(genreList.get(position), v.findViewById(R.id.genreText), v.findViewById(R.id.cardView));
+        });
+        // END
     }
 
     @Override
