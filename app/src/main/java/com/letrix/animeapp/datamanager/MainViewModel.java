@@ -171,9 +171,6 @@ public class MainViewModel extends ViewModel {
         return animeVideo;
     }
 
-    public void addWatchedEpisode() {
-    }
-
     private void requestAnimeVideo(String name, float number) {
         Log.d(TAG, "requestAnimeVideo: Anime Video REQUESTED");
         JKAnime_Client.getINSTANCE().getAnimeVideo(name, number).enqueue(new CallbackWithRetry<AnimeVideo>() {

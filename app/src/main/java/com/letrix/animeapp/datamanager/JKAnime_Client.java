@@ -8,7 +8,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class JKAnime_Client {
-    private static final String BASE_URL = "https://ryuanime-api.chrismichael.now.sh/api/v1/";
+    private static final String BASE_URL = "https://jkanime-alpha.vercel.app/api/v1/";
     private static JKAnime_Client INSTANCE;
     private JKAnime_Interface jkAnime_interface;
 

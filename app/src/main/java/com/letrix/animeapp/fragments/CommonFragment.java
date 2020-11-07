@@ -63,12 +63,12 @@ public class CommonFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TYPE_MAP = new HashMap<>();
-        TYPE_MAP.put(1, "ONGOINGS");
-        TYPE_MAP.put(2, "FINISHED");
-        TYPE_MAP.put(3, "SERIES");
-        TYPE_MAP.put(4, "MOVIES");
-        TYPE_MAP.put(5, "OVAS");
-        TYPE_MAP.put(6, "SPECIALS");
+//        TYPE_MAP.put(1, "ONGOINGS");
+        TYPE_MAP.put(1, "FINISHED");
+        TYPE_MAP.put(2, "SERIES");
+        TYPE_MAP.put(3, "MOVIES");
+        TYPE_MAP.put(4, "OVAS");
+        TYPE_MAP.put(5, "SPECIALS");
         if (getArguments() != null) {
             TYPE = getArguments().getInt("TYPE");
             TAG = "CommonFragment " + TYPE_MAP.get(TYPE);

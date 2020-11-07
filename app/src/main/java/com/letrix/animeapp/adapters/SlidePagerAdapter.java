@@ -9,7 +9,7 @@ import java.util.List;
 
 public class SlidePagerAdapter extends FragmentStatePagerAdapter {
 
-    private static final String[] TABTITLES = new String[]{"Configuración", "Géneros", "Recientes", "En emisión", "Finalizados", "Series", "Películas", "OVAs", "Especiales"};
+    private static final String[] TABTITLES = new String[]{"Configuración", "Géneros", "Recientes", "Finalizados", "Series", "Películas", "OVAs", "Especiales"};
     private List<Fragment> fragmentList;
 
     public SlidePagerAdapter(FragmentManager fm, List<Fragment> fragmentList) {

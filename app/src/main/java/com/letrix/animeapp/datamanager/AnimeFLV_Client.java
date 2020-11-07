@@ -7,7 +7,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AnimeFLV_Client {
-    private static final String BASE_URL = "https://animeflv.chrismichael.now.sh/api/v1/";
+    private static final String BASE_URL = "https://animeflv-omega.vercel.app/api/v1/";
+//    private static final String BASE_URL = "https://animeflv.chrismichael.now.sh/api/v1/";
     //private static final String BASE_URL = "http://aflv.jeluchu.xyz/api/v1/";
     //private static final String BASE_URL = "http://192.168.1.40:8080";
     private static AnimeFLV_Client INSTANCE;

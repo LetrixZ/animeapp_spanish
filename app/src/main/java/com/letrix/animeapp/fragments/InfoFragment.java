@@ -246,6 +246,7 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
             animeId = animeId.substring(0, animeId.length() - 1);
         }
         DecimalFormat format = new DecimalFormat("0.#");
+        /*
         if (!enableFLV) {
             mainViewModel.getAnimeVideo(animeId, currentEpisode.getEpisode()).observe(getViewLifecycleOwner(), desuURL -> {
                 if (desuURL != null) {
@@ -327,6 +328,56 @@ public class InfoFragment extends Fragment implements EpisodeAdapter.OnItemClick
                 });
             });
         }
+        */
+        // AnimeFLV
+
+        String[] episodeId = currentEpisode.getId().split("/");
+        progressBar.setVisibility(View.VISIBLE);
+        firstSeparator.setVisibility(View.GONE);
+        secondSeparator.setVisibility(View.GONE);
+        mainViewModel.getServerList(episodeId[0], episodeId[1]).observe(getViewLifecycleOwner(), serverModels -> {
+            this.progressBar.setVisibility(View.GONE);
+            serverSelector.show();
+            firstSeparator.setVisibility(View.VISIBLE);
+            secondSeparator.setVisibility(View.VISIBLE);
+            String megaUrl = null, okruUrl = null;
+            for (ServerModel server : serverModels) {
+                if (server.getTitle().equals("MEGA")) {
+                    megaServer.setText(server.getTitle());
+                    megaUrl = server.getCode();
+                }
+                if (server.getTitle().equals("Okru")) {
+                    okruServer.setText(server.getTitle());
+                    okruUrl = server.getCode();
+                }
+            }
+            natsukiServer.setText(serverModels.get(0).getTitle());
+            natsukiServer.setOnClickListener(v -> {
+                serverSelector.dismiss();
+                watchEpisodeWeb(serverModels.get(0).getCode(), currentAnime, currentEpisode);
+            });
+            String finalMegaUrl = megaUrl;
+            if (megaUrl == null) {
+                megaServer.setVisibility(View.GONE);
+                firstSeparator.setVisibility(View.GONE);
+            } else {
+                megaServer.setOnClickListener(v -> {
+                    serverSelector.dismiss();
+                    watchEpisodeWeb(finalMegaUrl, currentAnime, currentEpisode);
+                });
+            }
+            String finalOkruUrl = okruUrl;
+            if (okruUrl == null) {
+                okruServer.setVisibility(View.GONE);
+                secondSeparator.setVisibility(View.GONE);
+            } else {
+                okruServer.setOnClickListener(v -> {
+                    serverSelector.dismiss();
+                    watchEpisodeWeb(finalOkruUrl, currentAnime, currentEpisode);
+                });
+            }
+            progressBar.setVisibility(View.GONE);
+        });
     }
 
     @SuppressLint("SourceLockedOrientationActivity")

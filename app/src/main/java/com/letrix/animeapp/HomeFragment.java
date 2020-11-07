@@ -119,7 +119,7 @@ public class HomeFragment extends Fragment {
         list.add(new ConfigFragment());
         list.add(new GenreSelectorFragment());
         list.add(new RecentFragment());
-        for (int i = 1; i <= 6; i++) {
+        for (int i = 1; i <= 5; i++) {
             list.add(CommonFragment.newInstance(i));
         }
     }
